@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/cpb_load.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/ed_diseno.xml" value="0.1" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/ic__qr_code.xml" value="0.1" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_left_checked.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_left_selector.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_left_unchecked.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_checked.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_selector.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_unchecked.xml" value="0.121" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_abcproducto.xml" value="0.18" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_login.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_responsable.xml" value="0.25" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_splash.xml" value="0.15775972637879435" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/app_bar_main.xml" value="0.17028985507246377" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/content_main.xml" value="0.16259057971014493" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_abc_categoria.xml" value="0.18704710144927536" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_abc_producto.xml" value="0.25" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_cambiocontrasena.xml" value="0.25" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_cargando.xml" value="0.16621376811594202" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_categorias.xml" value="0.17028985507246377" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_configuracion.xml" value="0.33" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_cuenta.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_generar_codigo.xml" value="0.17028985507246377" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_home.xml" value="0.1921875" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_mis_restaurantes.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_productos.xml" value="0.1921875" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_restaurantes.xml" value="0.22" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/nav_header_main.xml" value="0.1921875" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/row_categoria.xml" value="0.33" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/row_producto.xml" value="0.33" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/row_restaurante.xml" value="0.33" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/activity_main_drawer.xml" value="0.33" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/main.xml" value="0.1921875" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_productos">
+    <fragment
+        android:id="@+id/nav_productos"
+        android:name="com.carloshoil.waaljanal.FragmentProductos"
+        android:label="fragment_productos"
+        tools:layout="@layout/fragment_productos" />
+    <fragment
+        android:id="@+id/nav_categorias"
+        android:name="com.carloshoil.waaljanal.FragmentCategorias"
+        android:label="fragment_categorias"
+        tools:layout="@layout/fragment_categorias" />
+    <fragment
+        android:id="@+id/nav_configuracion"
+        android:name="com.carloshoil.waaljanal.FragmentConfiguracion"
+        android:label="fragment_configuracion"
+        tools:layout="@layout/fragment_configuracion" />
+    <fragment
+        android:id="@+id/nav_qr"
+        android:name="com.carloshoil.waaljanal.FragmentGenerarCodigo"
+        android:label="fragment_generar_codigo"
+        tools:layout="@layout/fragment_generar_codigo" />
+    <fragment
+        android:id="@+id/nav_cuenta"
+        android:name="com.carloshoil.waaljanal.FragmentCuenta"
+        android:label="fragment_cuenta"
+        tools:layout="@layout/fragment_cuenta" />
+</navigation>
