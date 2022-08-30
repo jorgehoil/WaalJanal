@@ -44,7 +44,7 @@ public class FragmentCategorias extends Fragment {
     private FloatingActionButton floatingActionButtonAgregarCat;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-    private String cTemporalMenu;
+    private String cTemporalMenu="wjag1";
     private CategoriasAdapter categoriasAdapter;
 
     public FragmentCategorias() {
@@ -100,8 +100,8 @@ public class FragmentCategorias extends Fragment {
                     {
                         categoria= new Categoria();
                         categoria.cLlave=dataSnapshot.getKey();
-                        categoria.cNombre=dataSnapshot.child("cNombre")==null?"": dataSnapshot.child("cNombre").toString();
-                        categoria.lDisponible=dataSnapshot.child("lDisponible")==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
+                        categoria.cNombre=dataSnapshot.child("cNombre")==null?"": dataSnapshot.child("cNombre").getValue().toString();
+                        categoria.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
                         lstCategoria.add(categoria);
                     }
                     CargaDatosCategoria(lstCategoria);

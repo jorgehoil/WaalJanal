@@ -51,7 +51,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
 
     private void Init() {
-        cIdProducto=getIntent().getStringExtra("cIdProducto");
+        cIdProducto=getIntent().getStringExtra("cIdProducto")==null?"":getIntent().getStringExtra("cIdProducto");
         lstCategorias= new ArrayList<>();
         lstIdCategorias= new ArrayList<>();
         firebaseDatabase=FirebaseDatabase.getInstance();
@@ -101,12 +101,12 @@ public class ABCProductoActivity extends AppCompatActivity {
                         DataSnapshot dataSnapshot=task.getResult();
                         productoG= new Producto();
                         productoG.cLlave= dataSnapshot.getKey();
-                        productoG.cNombre=dataSnapshot.child("cNombre")==null?"":dataSnapshot.child("cNombre").toString();
-                        productoG.cDescripcion=dataSnapshot.child("cDescripcion")==null?"": dataSnapshot.child("cDescripcion").toString();
-                        productoG.cPrecio=dataSnapshot.child("cPrecio")==null?"":dataSnapshot.child("cPrecio").toString();
-                        productoG.cIdCategoria=dataSnapshot.child("cIdCategoria")==null?"":dataSnapshot.child("cIdCategoria").toString();
-                        productoG.cUrlImagen=dataSnapshot.child("cUrlImagen")==null?"":dataSnapshot.child("cUrlImagen").toString();
-                        productoG.lDisponible=dataSnapshot.child("lDisponible")==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
+                        productoG.cNombre=dataSnapshot.child("cNombre").getValue()==null?"":dataSnapshot.child("cNombre").getValue().toString();
+                        productoG.cDescripcion=dataSnapshot.child("cDescripcion").getValue()==null?"": dataSnapshot.child("cDescripcion").getValue().toString();
+                        productoG.cPrecio=dataSnapshot.child("cPrecio").getValue()==null?"":dataSnapshot.child("cPrecio").getValue().toString();
+                        productoG.cIdCategoria=dataSnapshot.child("cIdCategoria").getValue()==null?"":dataSnapshot.child("cIdCategoria").getValue().toString();
+                        productoG.cUrlImagen=dataSnapshot.child("cUrlImagen").getValue()==null?"":dataSnapshot.child("cUrlImagen").getValue().toString();
+                        productoG.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
                         cargaDatosProducto();
                         cerrarDialogoCarga();
                     }
@@ -126,7 +126,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         if(ValidarDatos(edNombreProducto.getText().toString(), edPrecioProducto.getText().toString())){
             abrirDialogoCarga();
             Producto producto= obtenerProductoGuardar();
-            String cLlave= databaseReferenceMenu.child("productos").getKey();
+            String cLlave= databaseReferenceMenu.child("productos").push().getKey();
             if(cIdProducto.isEmpty())
             {
                 databaseReferenceMenu.child("productos").child(cLlave).setValue(producto).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -200,7 +200,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                     for(DataSnapshot dataSnapshot: task.getResult().getChildren())
                     {
                         cIdCat=dataSnapshot.getKey();
-                        cCat=dataSnapshot.child("cNombre").toString();
+                        cCat=dataSnapshot.child("cNombre").getValue().toString();
                         lstIdCategorias.add(cIdCat);
                         lstCategorias.add(cCat);
                     }
@@ -208,7 +208,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                     if(lstCategorias.size()==0)
                     {
                         btnGuardar.setEnabled(false);
-                        Toast.makeText(ABCProductoActivity.this, "No existe categorias ni productos, regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ABCProductoActivity.this, "No existe categorias, regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
@@ -225,7 +225,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
 
     private void SeleccionaCategoria() {
-        if(!productoG.cIdCategoria.isEmpty())
+        if(!cIdProducto.isEmpty())
         {
             int iPosition=0;
             int i=0;

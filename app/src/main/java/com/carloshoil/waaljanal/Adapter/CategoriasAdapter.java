@@ -69,7 +69,7 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
             super(itemView);
             tvNombreCat=itemView.findViewById(R.id.tvNombreCat);
             layoutRowCat=itemView.findViewById(R.id.layoutRowCat);
-            ckDisponible=itemView.findViewById(R.id.ckDiponibleCategoria);
+            ckDisponible=itemView.findViewById(R.id.ckDisponibleCat);
 
         }
     }

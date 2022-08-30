@@ -109,7 +109,7 @@ public class FragmentProductos extends Fragment {
     }
 
     private void CargaProductos(String cIdCategoria){
-        databaseReferenceMenu.child("productos").equalTo(cIdCategoria,"cIdCategoria").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        databaseReferenceMenu.child("productos").equalTo(cIdCategoria,"cIdCategoria").orderByChild("cNombre").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 List<Producto> lsProducto= new ArrayList<>();
@@ -144,13 +144,15 @@ public class FragmentProductos extends Fragment {
                 else
                 {
                     Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
-                            "un error al carga productos, inténtelo de nuevo");
+                            "un error al carga productos, inténtelo de nuevo"+ task.getException());
                 }
+                pbCargaProd.setVisibility(View.GONE);
             }
         });
     }
     private void CargaCategorias()
     {
+        pbCargaProd.setVisibility(View.VISIBLE);
         databaseReferenceMenu.child("categorias").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -163,7 +165,7 @@ public class FragmentProductos extends Fragment {
                     for(DataSnapshot dataSnapshot: task.getResult().getChildren())
                     {
                         cIdCat=dataSnapshot.getKey();
-                        cCat=dataSnapshot.child("cNombre").toString();
+                        cCat=dataSnapshot.child("cNombre").getValue().toString();
                         lstIdsCategorias.add(cIdCat);
                         lstNombresCategorias.add(cCat);
                     }
@@ -200,7 +202,7 @@ public class FragmentProductos extends Fragment {
         });
         pbCargaProd=view.findViewById(R.id.pbCargaProductos);
         recyclerViewProd=view.findViewById(R.id.rcProductos);
-        spCategorias=view.findViewById(R.id.spCategorias);
+        spCategorias=view.findViewById(R.id.spCategoriasMain);
         IniciarAdapter();
         CargaCategorias();
 
