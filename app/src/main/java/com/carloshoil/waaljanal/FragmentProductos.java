@@ -122,12 +122,12 @@ public class FragmentProductos extends Fragment {
                         {
                             producto= new Producto();
                             producto.cLlave= dataSnapshot.getKey();
-                            producto.cNombre=dataSnapshot.child("cNombre")==null?"":dataSnapshot.child("cNombre").toString();
-                            producto.cDescripcion=dataSnapshot.child("cDescripcion")==null?"": dataSnapshot.child("cDescripcion").toString();
-                            producto.cPrecio=dataSnapshot.child("cPrecio")==null?"":dataSnapshot.child("cPrecio").toString();
-                            producto.cIdCategoria=dataSnapshot.child("cIdCategoria")==null?"":dataSnapshot.child("cIdCategoria").toString();
-                            producto.cUrlImagen=dataSnapshot.child("cUrlImagen")==null?"":dataSnapshot.child("cUrlImagen").toString();
-                            producto.lDisponible=dataSnapshot.child("lDisponible")==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
+                            producto.cNombre=dataSnapshot.child("cNombre").getValue()==null?"":dataSnapshot.child("cNombre").getValue().toString();
+                            producto.cDescripcion=dataSnapshot.child("cDescripcion").getValue()==null?"": dataSnapshot.child("cDescripcion").getValue().toString();
+                            producto.cPrecio=dataSnapshot.child("cPrecio").getValue()==null?"":dataSnapshot.child("cPrecio").getValue().toString();
+                            producto.cIdCategoria=dataSnapshot.child("cIdCategoria").getValue()==null?"":dataSnapshot.child("cIdCategoria").getValue().toString();
+                            producto.cUrlImagen=dataSnapshot.child("cUrlImagen").getValue()==null?"":dataSnapshot.child("cUrlImagen").getValue().toString();
+                            producto.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
                             lsProducto.add(producto);
                         }
 
