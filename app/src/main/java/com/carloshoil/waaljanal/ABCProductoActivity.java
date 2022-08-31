@@ -123,13 +123,19 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
     private void GuardarDatos()
     {
+        String cMenu="menus/"+cTemporal+"/";
+        HashMap<String, Object> updates= new HashMap<>();
+
         if(ValidarDatos(edNombreProducto.getText().toString(), edPrecioProducto.getText().toString())){
             abrirDialogoCarga();
             Producto producto= obtenerProductoGuardar();
             String cLlave= databaseReferenceMenu.child("productos").push().getKey();
+
             if(cIdProducto.isEmpty())
             {
-                databaseReferenceMenu.child("productos").child(cLlave).setValue(producto).addOnCompleteListener(new OnCompleteListener<Void>() {
+                updates.put(cMenu+"/productos/"+cLlave,producto);
+                updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cLlave,producto);
+                firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful())
@@ -142,27 +148,28 @@ public class ABCProductoActivity extends AppCompatActivity {
             }
             else
             {
-                databaseReferenceMenu
-                        .child("productos")
-                        .child(cIdProducto)
-                        .setValue(producto)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                cerrarDialogoCarga();
-                                if(task.isSuccessful())
-                                {
-                                    Toast.makeText(ABCProductoActivity.this,
-                                            "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
-                                }
-                                else
-                                {
-                                    Global.MostrarMensaje(ABCProductoActivity.this,
-                                            "Error al guardar",
-                                            "Se ha presentado un error al guardar, intenta de nuevo");
-                                }
-
-                            }
+                updates.put(cMenu+"/productos/"+cIdProducto,producto);
+                if(productoG.cIdCategoria.equals(ObtenerIdCatSeleccionada()))
+                {
+                    updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,producto);
+                }
+                else
+                {
+                    updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,null);
+                    updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cIdProducto,producto);
+                }
+                firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
+                    if(task.isSuccessful())
+                    {
+                        Toast.makeText(ABCProductoActivity.this,
+                                "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Global.MostrarMensaje(ABCProductoActivity.this,
+                                "Error al guardar",
+                                "Se ha presentado un error al guardar, intenta de nuevo");
+                    }
                 });
             }
 
@@ -180,7 +187,6 @@ public class ABCProductoActivity extends AppCompatActivity {
         producto.cPrecio=edPrecioProducto.getText().toString();
         producto.cDescripcion=edDescripconProd.getText().toString();
         return producto;
-
     }
     private String ObtenerIdCatSeleccionada()
     {

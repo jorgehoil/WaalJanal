@@ -28,7 +28,6 @@ public class DialogoCategoria extends DialogFragment {
     Categoria categoria;
     EditText edNombreCat;
     Button btnGuardar;
-    CheckBox ckDisponible;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReferenceCat;
 
@@ -45,7 +44,7 @@ public class DialogoCategoria extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
+        return creaDialogo();
     }
 
     private Dialog creaDialogo()
@@ -57,38 +56,44 @@ public class DialogoCategoria extends DialogFragment {
         dialog.setView(view);
         edNombreCat=view.findViewById(R.id.edNombreCategoria);
         btnGuardar=view.findViewById(R.id.btnGuardarCategoria);
-        ckDisponible=view.findViewById(R.id.ckDiponibleCategoria);
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Guardar();
             }
         });
+        if(categoria!=null)
+        {
+            edNombreCat.setText(categoria.cNombre);
 
+        }
 
         return dialog.create();
     }
 
     private void Guardar()
     {
+        Categoria categoriaGuardar=obtenerDatos();
         if(edNombreCat.getText().toString().isEmpty())
         {
             edNombreCat.setText("Campo obligatorio");
         }
-        else if(categoria.cLlave.isEmpty())
+        else if(categoriaGuardar.cLlave.isEmpty())
         {
             btnGuardar.setEnabled(false);
-            String cLlave=databaseReferenceCat.getKey();
-            databaseReferenceCat.child(cLlave).setValue(categoria).addOnCompleteListener(new OnCompleteListener<Void>() {
+            String cLlave=databaseReferenceCat.push().getKey();
+            databaseReferenceCat.child(cLlave).setValue(categoriaGuardar).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    btnGuardar.setEnabled(true);
                     if(task.isSuccessful())
                     {
                         Toast.makeText(context, "!Guardado exitoso!", Toast.LENGTH_SHORT).show();
+                        dismiss();
                     }
                     else
                     {
-                        btnGuardar.setEnabled(true);
+
                         Global.MostrarMensaje(context, "Error al guardar", "Se ha presentado un error al guardar, inténtalo de nuevo");
                     }
                 }
@@ -97,13 +102,12 @@ public class DialogoCategoria extends DialogFragment {
         else
         {
             btnGuardar.setEnabled(false);
-            String cLlave= categoria.cLlave;
-            categoria.cLlave="";
-            databaseReferenceCat.child(cLlave).setValue(categoria).addOnCompleteListener(new OnCompleteListener<Void>() {
+            databaseReferenceCat.child(categoria.cLlave).setValue(categoriaGuardar).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful())
                     {
+
                         Toast.makeText(context, "!Guardado exitoso!", Toast.LENGTH_SHORT).show();
                         dismiss();
                     }
@@ -119,9 +123,10 @@ public class DialogoCategoria extends DialogFragment {
     }
     private Categoria obtenerDatos()
     {
-        Categoria categoria= new Categoria();
-        categoria.lDisponible=ckDisponible.isChecked();
-        categoria.cNombre=edNombreCat.getText().toString();
-        return categoria;
+        Categoria categoriaG= new Categoria();
+        categoriaG.cLlave= categoria
+                ==null?"": categoria.cLlave;
+        categoriaG.cNombre=edNombreCat.getText().toString();
+        return categoriaG;
     }
 }

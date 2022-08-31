@@ -41,7 +41,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         if(producto!=null)
         {
            holder.ckProdDisp.setChecked(producto.lDisponible);
-           holder.tvPrecio.setText(producto.cPrecio);
+           holder.tvPrecio.setText("$"+producto.cPrecio);
            holder.tvNombreProducto.setText(producto.cNombre);
            holder.layoutRow.setOnClickListener(new View.OnClickListener() {
                @Override

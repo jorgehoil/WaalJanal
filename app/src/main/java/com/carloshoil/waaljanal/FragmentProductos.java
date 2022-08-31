@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,7 @@ public class FragmentProductos extends Fragment {
     }
     private void CargaCategorias(List<String> lstCategorias)
     {
+        Log.d("DEBUG", "CargaCategorias");
         ArrayAdapter<String> arrayAdapter= new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_dropdown_item, lstCategorias);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -101,15 +103,16 @@ public class FragmentProductos extends Fragment {
     }
     private void IniciarAdapter()
     {
+        Log.d("DEBUG", "IniciarAdapter");
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
         recyclerViewProd.setLayoutManager(linearLayoutManager);
-        recyclerViewProd.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
 
     }
 
     private void CargaProductos(String cIdCategoria){
-        databaseReferenceMenu.child("productos").equalTo(cIdCategoria,"cIdCategoria").orderByChild("cNombre").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        Log.d("DEBUG", "CargaProductos");
+        databaseReferenceMenu.child("productos").orderByChild("cIdCategoria").equalTo("ereewwq").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 List<Producto> lsProducto= new ArrayList<>();
@@ -152,6 +155,7 @@ public class FragmentProductos extends Fragment {
     }
     private void CargaCategorias()
     {
+        Log.d("DEBUG", "CargaCategoria");
         pbCargaProd.setVisibility(View.VISIBLE);
         databaseReferenceMenu.child("categorias").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
@@ -189,6 +193,7 @@ public class FragmentProductos extends Fragment {
     }
     void Init(View view)
     {
+        Log.d("DEBUG", "Init");
         lstIdsCategorias=new ArrayList<>();
         lstNombresCategorias= new ArrayList<>();
         firebaseDatabase=FirebaseDatabase.getInstance();

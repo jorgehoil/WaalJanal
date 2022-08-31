@@ -32,12 +32,6 @@
             android:ems="10"
             android:inputType="textPersonName" />
 
-        <CheckBox
-            android:id="@+id/ckDiponibleCategoria"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Disponible" />
-
         <Button
             android:id="@+id/btnGuardarCategoria"
             android:layout_width="match_parent"

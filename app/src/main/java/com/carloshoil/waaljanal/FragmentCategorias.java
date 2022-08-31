@@ -11,10 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.carloshoil.waaljanal.Adapter.CategoriasAdapter;
 import com.carloshoil.waaljanal.Adapter.ProductosAdapter;
 import com.carloshoil.waaljanal.DTO.Categoria;
+import com.carloshoil.waaljanal.Dialog.DialogoCategoria;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -46,6 +48,8 @@ public class FragmentCategorias extends Fragment {
     private DatabaseReference databaseReference;
     private String cTemporalMenu="wjag1";
     private CategoriasAdapter categoriasAdapter;
+    private DialogoCategoria dialogoCategoria;
+    private ProgressBar pbCarga;
 
     public FragmentCategorias() {
         // Required empty public constructor
@@ -80,13 +84,27 @@ public class FragmentCategorias extends Fragment {
 
     private void Init( View view)
     {
+        pbCarga=view.findViewById(R.id.pbCargaCategorias);
         recyclerViewCategorias=view.findViewById(R.id.rcvCategorias);
         floatingActionButtonAgregarCat=view.findViewById(R.id.fbAgregarCategoria);
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference().child("menus").child(cTemporalMenu).child("categorias");
+        floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                abrirDialogo(null, "wjag1");
+            }
+        });
         preparaAdapter();
         ObtenerCategorias();
     }
+
+    private void abrirDialogo(Categoria categoria, String cIdMenu) {
+        dialogoCategoria= new DialogoCategoria(getActivity(), categoria,cIdMenu);
+        dialogoCategoria.show(getActivity().getSupportFragmentManager(), "dialogoCat");
+
+    }
+
     private void ObtenerCategorias()
     {
         List<Categoria> lstCategoria= new ArrayList<>();
@@ -95,15 +113,16 @@ public class FragmentCategorias extends Fragment {
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if(task.isSuccessful())
                 {
+
                     Categoria categoria;
                     for(DataSnapshot dataSnapshot: task.getResult().getChildren())
                     {
                         categoria= new Categoria();
                         categoria.cLlave=dataSnapshot.getKey();
                         categoria.cNombre=dataSnapshot.child("cNombre")==null?"": dataSnapshot.child("cNombre").getValue().toString();
-                        categoria.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
                         lstCategoria.add(categoria);
                     }
+                    pbCarga.setVisibility(View.GONE);
                     CargaDatosCategoria(lstCategoria);
                 }
 
@@ -116,12 +135,10 @@ public class FragmentCategorias extends Fragment {
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
         recyclerViewCategorias.setLayoutManager(linearLayoutManager);
-        recyclerViewCategorias.addItemDecoration(new DividerItemDecoration(getActivity(),DividerItemDecoration.VERTICAL));
     }
     private void CargaDatosCategoria(List<Categoria> lstCategoria) {
-        categoriasAdapter= new CategoriasAdapter(getActivity(), lstCategoria);
+        categoriasAdapter= new CategoriasAdapter(getActivity(), lstCategoria, cTemporalMenu);
         recyclerViewCategorias.setAdapter(categoriasAdapter);
-
     }
 
     @Override
