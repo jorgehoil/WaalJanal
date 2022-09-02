@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.carloshoil.waaljanal.ABCProductoActivity;
 import com.carloshoil.waaljanal.DTO.Producto;
+import com.carloshoil.waaljanal.FragmentProductos;
 import com.carloshoil.waaljanal.R;
 
 import java.util.List;
@@ -23,10 +24,12 @@ import java.util.List;
 public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.ViewHolder> {
     Context context;
     List<Producto> lstProducto;
-    public ProductosAdapter(Context context, List<Producto> lstProducto)
+    FragmentProductos fragmentProductos;
+    public ProductosAdapter(Context context, List<Producto> lstProducto, FragmentProductos fragmentProductos)
     {
         this.context=context;
         this.lstProducto=lstProducto;
+        this.fragmentProductos=fragmentProductos;
     }
     @NonNull
     @Override
@@ -51,7 +54,18 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
                    context.startActivity(i);
                }
            });
+           holder.ckProdDisp.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
+                   fragmentProductos.MostrarBotonPublicar(true);
+               }
+           });
         }
+    }
+    public List<Producto> getLstProducto()
+    {
+        return this.lstProducto;
     }
 
     @Override
@@ -74,4 +88,14 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
             layoutRow=itemView.findViewById(R.id.layoutRowProd);
         }
     }
+    public void LimpiarLista() {
+        lstProducto.clear();
+        notifyDataSetChanged();
+    }
+    public void Agregar(List<Producto> lstProducto)
+    {
+        this.lstProducto.addAll(lstProducto);
+        notifyDataSetChanged();
+    }
+
 }

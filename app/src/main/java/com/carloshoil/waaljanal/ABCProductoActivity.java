@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -108,7 +109,6 @@ public class ABCProductoActivity extends AppCompatActivity {
                         productoG.cUrlImagen=dataSnapshot.child("cUrlImagen").getValue()==null?"":dataSnapshot.child("cUrlImagen").getValue().toString();
                         productoG.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
                         cargaDatosProducto();
-                        cerrarDialogoCarga();
                     }
 
 
@@ -129,43 +129,51 @@ public class ABCProductoActivity extends AppCompatActivity {
         if(ValidarDatos(edNombreProducto.getText().toString(), edPrecioProducto.getText().toString())){
             abrirDialogoCarga();
             Producto producto= obtenerProductoGuardar();
-            String cLlave= databaseReferenceMenu.child("productos").push().getKey();
-
-            if(cIdProducto.isEmpty())
+            if(cIdProducto.isEmpty())//NUEVO PRODUCTO
             {
+                String cLlave= databaseReferenceMenu.child("productos").push().getKey();
                 updates.put(cMenu+"/productos/"+cLlave,producto);
                 updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cLlave,producto);
-                firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful())
-                        {
-                            cerrarDialogoCarga();
-                            Toast.makeText(ABCProductoActivity.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
-                        }
+                firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
+                    if(task.isSuccessful())
+                    {
+                        cerrarDialogoCarga();
+                        Toast.makeText(ABCProductoActivity.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
-            else
+            else //ACTUALIZAR PRODUCTO
             {
                 updates.put(cMenu+"/productos/"+cIdProducto,producto);
                 if(productoG.cIdCategoria.equals(ObtenerIdCatSeleccionada()))
                 {
-                    updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,producto);
+                    if(!productoG.lDisponible){
+                        updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto, null);
+                    }
+                    else
+                    {
+                        updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,producto);
+                    }
                 }
                 else
                 {
                     updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,null);
-                    updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cIdProducto,producto);
+                    if(productoG.lDisponible)
+                    {
+                        updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cIdProducto,producto);
+                    }
                 }
                 firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
+                    cerrarDialogoCarga();
                     if(task.isSuccessful())
                     {
+
                         Toast.makeText(ABCProductoActivity.this,
                                 "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
                     }
                     else
                     {
+
                         Global.MostrarMensaje(ABCProductoActivity.this,
                                 "Error al guardar",
                                 "Se ha presentado un error al guardar, intenta de nuevo");
@@ -195,7 +203,6 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
     private void ObtenerCategorias()
     {
-        abrirDialogoCarga();
         databaseReferenceMenu.child("categorias").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -210,7 +217,6 @@ public class ABCProductoActivity extends AppCompatActivity {
                         lstIdCategorias.add(cIdCat);
                         lstCategorias.add(cCat);
                     }
-                    cerrarDialogoCarga();
                     if(lstCategorias.size()==0)
                     {
                         btnGuardar.setEnabled(false);
@@ -275,6 +281,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
     private void abrirDialogoCarga()
     {
+        Log.d("DEBUG", "abrirDialogoCarga");
         dialogoCarga= new DialogoCarga(this);
         dialogoCarga.setCancelable(false);
         dialogoCarga.show(getSupportFragmentManager(), "dialogocarga");
