@@ -35,6 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/ed_diseno"
+                android:drawableLeft="@drawable/ic_email"
                 android:ems="10"
                 android:hint="ejemplo@mail.com"
                 android:inputType="textPersonName" />
@@ -50,6 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/ed_diseno"
+                android:drawableLeft="@drawable/ic_pass"
                 android:ems="10"
                 android:hint="*******"
                 android:inputType="textPersonName|textPassword" />

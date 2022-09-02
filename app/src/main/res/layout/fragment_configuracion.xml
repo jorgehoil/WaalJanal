@@ -60,6 +60,21 @@
             </RadioGroup>
 
             <TextView
+                android:id="@+id/textView22"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Número de contacto" />
+
+            <EditText
+                android:id="@+id/editTextTextPersonName3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ed_diseno"
+                android:drawableLeft="@drawable/ic_phone"
+                android:ems="10"
+                android:inputType="textPersonName|phone" />
+
+            <TextView
                 android:id="@+id/textView11"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

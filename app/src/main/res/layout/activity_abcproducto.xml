@@ -33,6 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ed_diseno"
+                android:drawableLeft="@drawable/ic_fastfood"
                 android:ems="10"
                 android:hint="Hamburguesa doble queso"
                 android:inputType="textPersonName" />
@@ -48,8 +49,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ed_diseno"
+                android:drawableLeft="@drawable/ic_money"
                 android:ems="10"
-                android:hint="$45.00"
+                android:hint="45.00"
                 android:inputType="textPersonName" />
 
             <RadioGroup
@@ -102,6 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ed_diseno"
+                android:drawableLeft="@drawable/ic_description"
                 android:ems="10"
                 android:hint="Hamburguesa con doble queso, aros de cebolla, carne a la parrilla, jamón y queso"
                 android:inputType="textMultiLine|textPersonName"

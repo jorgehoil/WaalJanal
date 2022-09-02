@@ -17,14 +17,22 @@
             android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:text="Restaurante 1" />
+
+        <Button
+            android:id="@+id/btnQR"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/ic__qr_code" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginRight="24dp"
+            android:layout_marginRight="16dp"
             android:background="@drawable/ic_account" />
 
         <CheckBox

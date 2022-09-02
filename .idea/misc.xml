@@ -12,9 +12,10 @@
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_checked.xml" value="0.121" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_selector.xml" value="0.121" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_unchecked.xml" value="0.121" />
-        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_abcproducto.xml" value="0.18" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_abcproducto.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_login.xml" value="0.18885869565217392" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_main.xml" value="0.22" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_pdf.xml" value="0.33" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_responsable.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_splash.xml" value="0.15775972637879435" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/app_bar_main.xml" value="0.17028985507246377" />
@@ -25,7 +26,7 @@
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_cargando.xml" value="0.16621376811594202" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_categorias.xml" value="0.17028985507246377" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_configuracion.xml" value="0.33" />
-        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_cuenta.xml" value="0.18614130434782608" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_cuenta.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_generar_codigo.xml" value="0.17028985507246377" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_home.xml" value="0.1921875" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_mis_restaurantes.xml" value="0.18614130434782608" />
