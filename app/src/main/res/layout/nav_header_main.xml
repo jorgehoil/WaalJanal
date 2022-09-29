@@ -31,5 +31,5 @@
         android:id="@+id/tvHeaderText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Jorge Carlos Hoil Briceno" />
+        android:text="Administrando: Báaxal ja'" />
 </LinearLayout>

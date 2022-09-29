@@ -7,23 +7,18 @@
     <fragment
         android:id="@+id/nav_productos"
         android:name="com.carloshoil.waaljanal.FragmentProductos"
-        android:label="fragment_productos"
+        android:label="Productos"
         tools:layout="@layout/fragment_productos" />
     <fragment
         android:id="@+id/nav_categorias"
         android:name="com.carloshoil.waaljanal.FragmentCategorias"
-        android:label="fragment_categorias"
+        android:label="Categorías"
         tools:layout="@layout/fragment_categorias" />
     <fragment
-        android:id="@+id/nav_configuracion"
-        android:name="com.carloshoil.waaljanal.FragmentConfiguracion"
-        android:label="fragment_configuracion"
-        tools:layout="@layout/fragment_configuracion" />
-    <fragment
-        android:id="@+id/nav_qr"
-        android:name="com.carloshoil.waaljanal.FragmentGenerarCodigo"
-        android:label="fragment_generar_codigo"
-        tools:layout="@layout/fragment_generar_codigo" />
+        android:id="@+id/nav_restaurantes"
+        android:name="com.carloshoil.waaljanal.FragmentRestaurantes"
+        android:label="fragment_restaurantes"
+        tools:layout="@layout/fragment_restaurantes" />
     <fragment
         android:id="@+id/nav_cuenta"
         android:name="com.carloshoil.waaljanal.FragmentCuenta"

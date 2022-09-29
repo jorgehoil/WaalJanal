@@ -4,13 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -52,16 +58,16 @@ public class FragmentProductos extends Fragment {
     private Spinner spCategorias;
     private RecyclerView recyclerViewProd;
     private ProgressBar pbCargaProd;
-    private Button btnPublicar;
     private String cTemporal="wjag1";
     private DialogoCarga dialogoCarga;
-
-    FloatingActionButton floatingActionButtonAgregar;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private List<String> lstNombresCategorias;
     private List<String> lstIdsCategorias;
+    private List<Producto> lstProductosPublicar;
+    private MenuItem itemPublicar;
+    private FloatingActionButton fbAgregarProd;
 
     public FragmentProductos() {
         // Required empty public constructor
@@ -92,6 +98,10 @@ public class FragmentProductos extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+    }
+    private void AgregaProductosPublicar(List<Producto> lstProductosAgregar)
+    {
+        //for()
     }
     private void Publicar()
     {
@@ -153,7 +163,7 @@ public class FragmentProductos extends Fragment {
 
     public void MostrarBotonPublicar(boolean lMostrar)
     {
-        btnPublicar.setVisibility(lMostrar?View.VISIBLE:View.GONE);
+        itemPublicar.setVisible(lMostrar);
     }
 
     private void CargaProductos(String cIdCategoria){
@@ -233,32 +243,26 @@ public class FragmentProductos extends Fragment {
             }
         });
     }
+
     void Init(View view)
     {
         Log.d("DEBUG", "Init");
-        btnPublicar=view.findViewById(R.id.btnPublicar);
         lstIdsCategorias=new ArrayList<>();
         lstNombresCategorias= new ArrayList<>();
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cTemporal);
-        floatingActionButtonAgregar= view.findViewById(R.id.fbAgregarProducto);
-        floatingActionButtonAgregar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AbreNuevo();
-            }
-        });
-        btnPublicar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Publicar();
-            }
-        });
         pbCargaProd=view.findViewById(R.id.pbCargaProductos);
         recyclerViewProd=view.findViewById(R.id.rcProductos);
         spCategorias=view.findViewById(R.id.spCategoriasMain);
         IniciarAdapter();
         CargaCategorias();
+        fbAgregarProd=view.findViewById(R.id.fbAgregarProducto);
+        fbAgregarProd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AbreNuevo();
+            }
+        });
         spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -270,6 +274,33 @@ public class FragmentProductos extends Fragment {
 
             }
         });
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onPrepareMenu(@NonNull Menu menu) {
+                MenuProvider.super.onPrepareMenu(menu);
+                itemPublicar=menu.findItem(R.id.publicarProd);
+            }
+
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_productos, menu);
+
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId())
+                {
+                    case R.id.marcarTodosProd:
+
+                        break;
+                    case R.id.publicarProd:
+                        Publicar();
+                        break;
+                }
+                return false;
+            }
+        },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
     }
     private void MostrarDialogoCarga()

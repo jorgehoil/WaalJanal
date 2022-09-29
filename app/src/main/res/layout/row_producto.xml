@@ -46,7 +46,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_weight="1"
-                    android:text="Hamburguesa doble queso" />
+                    android:text="Hamburguesa doble queso"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvProductoPrecio"

@@ -26,13 +26,12 @@
             android:text="Restaurante" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName4"
+            android:id="@+id/edRestauranteQR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/ed_diseno"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Báaxal Ja'" />
+            android:inputType="textPersonName|textCapSentences" />
 
         <TextView
             android:id="@+id/textView27"
@@ -41,7 +40,7 @@
             android:text="Recibir pedidos al teléfono" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName5"
+            android:id="@+id/edTelefonoContactoQR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/ed_diseno"
@@ -55,7 +54,7 @@
             android:text="Texto Personalizado" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName6"
+            android:id="@+id/edTextoPersonalizadoQR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/ed_diseno"
@@ -73,7 +72,7 @@
             android:text="1/60" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/btnGenerarPDFQR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Generar PDF"

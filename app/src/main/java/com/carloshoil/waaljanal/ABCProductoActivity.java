@@ -2,10 +2,14 @@ package com.carloshoil.waaljanal;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuProvider;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -35,7 +39,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     EditText edNombreProducto, edPrecioProducto, edDescripconProd;
     RadioButton rbDisProducto, rbNoDisProd;
     Spinner spCategorias;
-    Button btnGuardar, btnGaleria, btnCamara;
+    Button btnGaleria, btnCamara;
     ImageView imProducto;
     DialogoCarga dialogoCarga;
     List<String> lstCategorias;
@@ -65,12 +69,22 @@ public class ABCProductoActivity extends AppCompatActivity {
         spCategorias= findViewById(R.id.spCategorias);
         btnCamara=findViewById(R.id.btnCamaraProducto);
         btnGaleria=findViewById(R.id.btnGaleriaProducto);
-        btnGuardar=findViewById(R.id.btnGuardarProducto);
         imProducto=findViewById(R.id.imImagenProducto);
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
+        addMenuProvider(new MenuProvider() {
             @Override
-            public void onClick(View view) {
-                GuardarDatos();
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_abc_productos, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId())
+                {
+                    case R.id.guardarProducto:
+                        GuardarDatos();
+                        break;
+                }
+                return  false;
             }
         });
         ObtenerEdicion();
@@ -110,7 +124,6 @@ public class ABCProductoActivity extends AppCompatActivity {
                         productoG.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
                         cargaDatosProducto();
                     }
-
 
                 }
             });
@@ -219,7 +232,6 @@ public class ABCProductoActivity extends AppCompatActivity {
                     }
                     if(lstCategorias.size()==0)
                     {
-                        btnGuardar.setEnabled(false);
                         Toast.makeText(ABCProductoActivity.this, "No existe categorias, regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
                     }
                     else

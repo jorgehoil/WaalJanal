@@ -13,21 +13,13 @@
             android:icon="@drawable/ic_category"
             android:title="Categorias" />
         <item
-            android:id="@+id/nav_configuracion"
-            android:icon="@drawable/ic_settings"
-            android:title="Configuración" />
-        <item
-            android:id="@+id/nav_qr"
-            android:icon="@drawable/ic__qr_code"
-            android:title="GeneradorQR" />
+            android:id="@+id/nav_restaurantes"
+            android:icon="@drawable/ic_restaurant"
+            android:title="Restaurantes" />
         <item
             android:id="@+id/nav_cuenta"
             android:icon="@drawable/ic_account"
-            android:title="Mi cuenta" />
-        <item
-            android:id="@+id/nav_restaurantes"
-            android:icon="@drawable/ic_restaurant"
-            android:title="Mis Restaurantes" />
+            android:title="Cuenta" />
         <item
             android:id="@+id/nav_salir"
             android:icon="@drawable/ic_logout_24"

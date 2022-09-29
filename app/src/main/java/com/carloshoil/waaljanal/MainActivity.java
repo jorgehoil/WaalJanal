@@ -12,7 +12,6 @@ import com.carloshoil.waaljanal.Dialog.DialogPassWord;
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -48,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         MainActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        setSupportActionBar(binding.appBarMain.toolbar);
+        setSupportActionBar(binding.appBarMain.toolbarMain);
         DrawerLayout drawer = binding.drawerLayout;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_categorias, R.id.nav_configuracion, R.id.nav_productos, R.id.nav_qr, R.id.nav_cuenta)
+                R.id.nav_categorias, R.id.nav_productos, R.id.nav_cuenta, R.id.nav_restaurantes)
                 .setOpenableLayout(drawer)
                 .build();
         Init();
@@ -155,12 +154,8 @@ public class MainActivity extends AppCompatActivity {
             {
                 navigationView.getMenu().findItem(R.id.nav_productos).setVisible(false);
             }
-            if(!lModInfoRest)
-            {
-                navigationView.getMenu().findItem(R.id.nav_configuracion).setVisible(false);
-            }
             navigationView.getMenu().findItem(R.id.nav_restaurantes).setVisible(false);
-            navigationView.getMenu().findItem(R.id.nav_qr).setVisible(true);
+
         }
 
         View headerView= navigationView.getHeaderView(0);

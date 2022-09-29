@@ -35,7 +35,6 @@
                 android:background="@drawable/ed_diseno"
                 android:drawableLeft="@drawable/ic_fastfood"
                 android:ems="10"
-                android:hint="Hamburguesa doble queso"
                 android:inputType="textPersonName" />
 
             <TextView
@@ -51,8 +50,7 @@
                 android:background="@drawable/ed_diseno"
                 android:drawableLeft="@drawable/ic_money"
                 android:ems="10"
-                android:hint="45.00"
-                android:inputType="textPersonName" />
+                android:inputType="numberDecimal" />
 
             <RadioGroup
                 android:layout_width="match_parent"
@@ -106,7 +104,6 @@
                 android:background="@drawable/ed_diseno"
                 android:drawableLeft="@drawable/ic_description"
                 android:ems="10"
-                android:hint="Hamburguesa con doble queso, aros de cebolla, carne a la parrilla, jamón y queso"
                 android:inputType="textMultiLine|textPersonName"
                 android:lines="5"
                 android:singleLine="false" />
@@ -147,13 +144,6 @@
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_camera" />
-
-            <Button
-                android:id="@+id/btnGuardarProducto"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="guardar"
-                app:icon="@drawable/ic_save" />
 
         </LinearLayout>
     </ScrollView>

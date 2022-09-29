@@ -3,6 +3,7 @@ package com.carloshoil.waaljanal;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,7 +21,9 @@ import com.carloshoil.waaljanal.Dialog.DialogoCategoria;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -49,7 +52,7 @@ public class FragmentCategorias extends Fragment {
     private String cTemporalMenu="wjag1";
     private CategoriasAdapter categoriasAdapter;
     private DialogoCategoria dialogoCategoria;
-    private ProgressBar pbCarga;
+    private ChildEventListener childEventListenerCat;
 
     public FragmentCategorias() {
         // Required empty public constructor
@@ -84,7 +87,7 @@ public class FragmentCategorias extends Fragment {
 
     private void Init( View view)
     {
-        pbCarga=view.findViewById(R.id.pbCargaCategorias);
+
         recyclerViewCategorias=view.findViewById(R.id.rcvCategorias);
         floatingActionButtonAgregarCat=view.findViewById(R.id.fbAgregarCategoria);
         firebaseDatabase=FirebaseDatabase.getInstance();
@@ -95,8 +98,49 @@ public class FragmentCategorias extends Fragment {
                 abrirDialogo(null, "wjag1");
             }
         });
+        childEventListenerCat= new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if(snapshot.exists())
+                {
+                    Categoria categoria= new Categoria(
+                            snapshot.getKey(),
+                            snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
+                    );
+                    AgregaCategoriaLista(categoria);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if(snapshot.exists())
+                {
+                    Categoria categoria= new Categoria(
+                            snapshot.getKey(),
+                            snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
+                    );
+                    ModificaCategoriaLista(categoria);
+                }
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
         preparaAdapter();
-        ObtenerCategorias();
+
     }
 
     private void abrirDialogo(Categoria categoria, String cIdMenu) {
@@ -105,40 +149,34 @@ public class FragmentCategorias extends Fragment {
 
     }
 
-    private void ObtenerCategorias()
+    private void AgregaCategoriaLista(Categoria categoria)
     {
-        List<Categoria> lstCategoria= new ArrayList<>();
-        databaseReference.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if(task.isSuccessful())
-                {
-
-                    Categoria categoria;
-                    for(DataSnapshot dataSnapshot: task.getResult().getChildren())
-                    {
-                        categoria= new Categoria();
-                        categoria.cLlave=dataSnapshot.getKey();
-                        categoria.cNombre=dataSnapshot.child("cNombre")==null?"": dataSnapshot.child("cNombre").getValue().toString();
-                        lstCategoria.add(categoria);
-                    }
-                    pbCarga.setVisibility(View.GONE);
-                    CargaDatosCategoria(lstCategoria);
-                }
-
-            }
-        });
+        categoriasAdapter.AgregaCategoriaLista(categoria);
     }
-
+    private void ModificaCategoriaLista(Categoria categoria)
+    {
+        categoriasAdapter.ModificaCategoriaLista(categoria);
+    }
     private void preparaAdapter()
     {
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
         recyclerViewCategorias.setLayoutManager(linearLayoutManager);
-    }
-    private void CargaDatosCategoria(List<Categoria> lstCategoria) {
-        categoriasAdapter= new CategoriasAdapter(getActivity(), lstCategoria, cTemporalMenu);
+        categoriasAdapter= new CategoriasAdapter(getActivity(), new ArrayList<>(), cTemporalMenu);
         recyclerViewCategorias.setAdapter(categoriasAdapter);
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        databaseReference.removeEventListener(childEventListenerCat);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        databaseReference.addChildEventListener(childEventListenerCat);
     }
 
     @Override

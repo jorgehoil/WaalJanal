@@ -13,7 +13,8 @@
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_selector.xml" value="0.121" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_unchecked.xml" value="0.121" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_abcproducto.xml" value="0.25" />
-        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_login.xml" value="0.18885869565217392" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_configuracion.xml" value="0.25" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_pdf.xml" value="0.33" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_responsable.xml" value="0.25" />
@@ -38,6 +39,9 @@
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/row_restaurante.xml" value="0.33" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/activity_main_drawer.xml" value="0.33" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/main.xml" value="0.1921875" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_abc_productos.xml" value="0.19114583333333332" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_options_restaurant.xml" value="0.19114583333333332" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_productos.xml" value="0.18697916666666667" />
       </map>
     </option>
   </component>

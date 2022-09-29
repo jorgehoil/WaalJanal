@@ -117,9 +117,29 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
             }
         });
     }
+    public void ModificaCategoriaLista(Categoria categoria)
+    {
+        int iPosicion=0, iItemMod=0;
+        for(Categoria cat: lstCategoria)
+        {
 
+            if(categoria.cLlave==cat.cLlave)
+            {
+                iItemMod=iPosicion;
+            }
+            iPosicion++;
+        }
+        lstCategoria.remove(iItemMod);
+        lstCategoria.add(iItemMod, categoria);
+        notifyItemChanged(iItemMod);
+    }
+    public void AgregaCategoriaLista(Categoria categoria)
+    {
+          this.lstCategoria.add(categoria);
+          notifyItemInserted(lstCategoria.size()-1);
+    }
     private void CargaDialogo(Categoria categoria) {
-         dialogoCategoria= new DialogoCategoria(context, categoria, "wjag1");
+        dialogoCategoria= new DialogoCategoria(context, categoria, "wjag1");
        dialogoCategoria.show(((AppCompatActivity)context).getSupportFragmentManager(),"dialogocat");
     }
 
