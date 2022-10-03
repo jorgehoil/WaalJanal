@@ -35,7 +35,7 @@
                 android:id="@+id/btnEliminarCat"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/ic_eliminar" />
+                android:background="@drawable/ic_eliminar2" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

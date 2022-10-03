@@ -24,6 +24,12 @@
             android:layout_margin="4dp"
             android:orientation="horizontal">
 
+            <CheckBox
+                android:id="@+id/ckRestauranteSeleccionado"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:enabled="false" />
+
             <TextView
                 android:id="@+id/tvNombreRestauranteRow"
                 android:layout_width="wrap_content"
@@ -33,21 +39,14 @@
                 android:layout_weight="1"
                 android:text="Restaurante 1" />
 
-            <TextView
-                android:id="@+id/textViewOptions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="24dp"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:text="&#8942;"
-                android:textAppearance="?android:textAppearanceLarge" />
+            <Button
+                android:id="@+id/btnOpcionesRes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@android:color/transparent"
+                app:icon="@drawable/ic_options"
+                app:iconTint="@color/color1" />
 
-            <CheckBox
-                android:id="@+id/ckRestauranteSeleccionado"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

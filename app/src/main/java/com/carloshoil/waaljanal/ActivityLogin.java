@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
@@ -25,6 +26,7 @@ public class ActivityLogin extends AppCompatActivity {
     Button btnIngresar;
     EditText edCorreo, edContrasena;
     DialogoCarga dialogoCarga;
+    TextView tvRegistrate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +47,20 @@ public class ActivityLogin extends AppCompatActivity {
                 Login();
             }
         });
+        tvRegistrate=findViewById(R.id.tvRegistrar);
+        tvRegistrate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AbrirRegistro();
+            }
+        });
     }
+
+    private void AbrirRegistro() {
+        Intent i= new Intent(ActivityLogin.this, CreaCuentaActvity.class);
+        startActivity(i);
+    }
+
     private void Login()
     {
         String cUsuario=edCorreo.getText().toString();
@@ -62,7 +77,17 @@ public class ActivityLogin extends AppCompatActivity {
                             {
                                 Global.GuardarPreferencias("cEstatusLogin", "1", ActivityLogin.this);
                                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                                AbrirPrincipal(user);
+                                if(user.isEmailVerified())
+                                {
+                                    AbrirPrincipal(user);
+                                }
+                                else
+                                {
+                                    Global.MostrarMensaje(ActivityLogin.this, "Email no verificado", "" +
+                                            "Por favor, ingresa a tu correo y haz clic en el enlace enviado. " +
+                                            "Luego intenta nuevamente iniciar sesión, si el problema persiste, comunicate a" +
+                                            " waaljanal@gmail.com");
+                                }
                             }
                             else
                             {

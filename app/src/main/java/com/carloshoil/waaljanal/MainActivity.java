@@ -6,10 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.carloshoil.waaljanal.Dialog.DialogPassWord;
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
+import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -35,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private DatabaseReference databaseReferenceUsers;
+    private DatabaseReference databaseReferenceMenus;
     private FirebaseAuth firebaseAuth;
 
     private DialogoCarga dialogoCarga;
@@ -56,20 +56,59 @@ public class MainActivity extends AppCompatActivity {
                 .setOpenableLayout(drawer)
                 .build();
         Init();
-        abrirDialogoCarga();
-        ObtenerDatosIniciales();
+        CargaDatosIniciales();
 
 
     }
+
+    private void CargaDatosIniciales() {
+        String cNombre;
+        Boolean lAdmin;
+        String cDatosCargados= Global.RecuperaPreferencia("cDatosCargados", this);
+        if(cDatosCargados.isEmpty())
+        {
+            ObtenerDatosIniciales();
+        }
+        else
+        {
+            cNombre=Global.RecuperaPreferencia("cNombreCuenta",this );
+            lAdmin=Global.RecuperaPreferencia("lAdmin", this).equals("1");
+            Configura(cNombre, lAdmin);
+        }
+    }
+
+    private void Configura(String cNombre, Boolean lAdmin) {
+        NavigationView navigationView = binding.navView;
+        /*if(!lAdmin)
+        {
+            navigationView.getMenu().findItem(R.id.nav_categorias).setVisible(false);
+            navigationView.getMenu().findItem(R.id.nav_productos).setVisible(false);
+            navigationView.getMenu().findItem(R.id.nav_restaurantes).setVisible(false);
+        }*/
+        View headerView= navigationView.getHeaderView(0);
+        TextView tvHeaderText= headerView.findViewById(R.id.tvNombreCuenta);
+        tvHeaderText.setText(cNombre);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+        NavigationUI.setupWithNavController(navigationView, navController);
+        ValidarMenu();
+    }
+
     private void ObtenerDatosIniciales()
     {
-
-        databaseReferenceUsers.child(firebaseAuth.getCurrentUser().getUid()).child("data").child("dataconfig").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+        abrirDialogoCarga();
+        databaseReferenceUsers.child("data").child("dataconfig").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
                 if(task.isSuccessful())
                 {
-                    ProcesaDatos(task.getResult());
+                    cerrarDialogoCarga();
+                    String cNombre=task.getResult().child("cNombre")==null?"":task.getResult().child("cNombre").getValue(String.class);
+                    Boolean lAdmin= task.getResult().child("lAdmin")==null?false:task.getResult().child("lAdmin").getValue(boolean.class);
+                    Global.GuardarPreferencias("cNombreCuenta", cNombre, MainActivity.this);
+                    Global.GuardarPreferencias("lAdmin", lAdmin?"1":"0", MainActivity.this);
+                    Global.GuardarPreferencias("cDatosCargados", "1", MainActivity.this);
+                    Configura(cNombre, lAdmin);
                 }
                 else
                 {
@@ -83,97 +122,8 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference();
         firebaseAuth=FirebaseAuth.getInstance();
-        databaseReferenceUsers=databaseReference.child("usuarios");
-    }
-
-
-    private void ProcesaDatos(DataSnapshot datos)
-    {
-        boolean lActivo=datos.child("lActivo").getValue(Boolean.class);
-        boolean lBloqueado=datos.child("lBloqueado").getValue(Boolean.class);
-        boolean lAdmin=datos.child("lAdmin").getValue(Boolean.class);
-        String cNombre= datos.child("cNombre").getValue(String.class);
-        if(!lActivo||!lBloqueado)
-        {
-
-
-            if(!lAdmin)
-            {
-                ObtenerPermisos(datos);
-            }
-            else
-            {
-                ConfiguraBarraNav(null, true, datos);
-
-            }
-        }
-        else
-        {
-            cerrarDialogoCarga();
-            Toast.makeText(this, "La cuenta está bloqueada o inactiva", Toast.LENGTH_SHORT).show();
-        }
-
-
-
-    }
-
-    private void ObtenerPermisos(DataSnapshot datos) {
-        databaseReferenceUsers.child("data").child("datapermisos").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if(task.isSuccessful())
-                {
-                    ConfiguraBarraNav(task.getResult(), false, datos);
-                }
-                else
-                {
-                    ObtenerPermisos(datos);
-                }
-            }
-        });
-    }
-
-    private void ConfiguraBarraNav(DataSnapshot result, boolean lAdmin, DataSnapshot datos) {
-       boolean lPrimeraVez= datos.child("lPrimeraVez").getValue(boolean.class);
-        String cNombre= datos.child("cNombre").getValue(String.class);
-        NavigationView navigationView = binding.navView;
-        if(!lAdmin&&result!=null)
-        {
-            boolean lModCat, lModDisProd, lModInfoRest, lModProd;
-            lModCat=result.child("lModCat").getValue(boolean.class);
-            lModDisProd=result.child("lModDisProd").getValue(boolean.class);
-            lModInfoRest=result.child("lModInfoRest").getValue(boolean.class);
-            lModProd=result.child("lModProd").getValue(boolean.class);
-
-
-            if(!lModCat)
-            {
-                navigationView.getMenu().findItem(R.id.nav_categorias).setVisible(false);
-            }
-            if(!lModDisProd)
-            {
-                navigationView.getMenu().findItem(R.id.nav_productos).setVisible(false);
-            }
-            navigationView.getMenu().findItem(R.id.nav_restaurantes).setVisible(false);
-
-        }
-
-        View headerView= navigationView.getHeaderView(0);
-        TextView tvHeaderText= headerView.findViewById(R.id.tvHeaderText);
-        tvHeaderText.setText(cNombre);
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        cerrarDialogoCarga();
-        MuestraConfiguracionPassWord(lPrimeraVez);
-
-    }
-
-    private void MuestraConfiguracionPassWord(boolean lPrimeraVez) {
-        if(lPrimeraVez)
-        {
-            abrirDialogoContrasena();
-        }
+        databaseReferenceUsers=databaseReference.child("usuarios").child(firebaseAuth.getUid());
+        databaseReferenceMenus=databaseReferenceUsers.child("adminlugares");
     }
 
     @Override
@@ -204,14 +154,16 @@ public class MainActivity extends AppCompatActivity {
             dialogoCarga.dismiss();
         }
     }
-    private void abrirDialogoContrasena()
+    private void ValidarMenu()
     {
-        Log.d("DEBUG", "Se abre dialogo carga");
-        DialogPassWord dialogPassWord= new DialogPassWord(this);
-        dialogPassWord.setCancelable(false);
-        dialogPassWord.show(getSupportFragmentManager(), "dialogopass");
-
+        String cIdMenu= Global.RecuperaPreferencia("cIdMenu", MainActivity.this);
+        if(cIdMenu.isEmpty())
+        {
+            Global.MostrarMensaje(this, "Información", "No tiene seleccionado o creado algún menú, " +
+                    "vaya a la sección de Restaurantes y seleccione o cree menú para administrar");
+        }
     }
+
 
 
 

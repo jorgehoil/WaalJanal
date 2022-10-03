@@ -58,7 +58,8 @@ public class FragmentProductos extends Fragment {
     private Spinner spCategorias;
     private RecyclerView recyclerViewProd;
     private ProgressBar pbCargaProd;
-    private String cTemporal="wjag1";
+    private String cIdMenuG="";
+    private String CCLAVEMENU="cIdMenu";
     private DialogoCarga dialogoCarga;
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -68,6 +69,7 @@ public class FragmentProductos extends Fragment {
     private List<Producto> lstProductosPublicar;
     private MenuItem itemPublicar;
     private FloatingActionButton fbAgregarProd;
+    public String cIdCategoriaPub;
 
     public FragmentProductos() {
         // Required empty public constructor
@@ -112,13 +114,13 @@ public class FragmentProductos extends Fragment {
         {
             if(producto.lDisponible)
             {
-                hashMapDataPublic.put("menus/"+cTemporal+"/productos/"+producto.cLlave, producto);
-                hashMapDataPublic.put("menus/"+cTemporal+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave, producto);
+                hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave, producto);
+                hashMapDataPublic.put("menus/"+cIdMenuG+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave, producto);
             }
             else
             {
-                hashMapDataPublic.put("menus/"+cTemporal+"/productos/"+producto.cLlave, producto);
-                hashMapDataPublic.put("menus/"+cTemporal+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave,null);
+                hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave, producto);
+                hashMapDataPublic.put("menus/"+cIdMenuG+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave,null);
             }
         }
         firebaseDatabase.getReference().updateChildren(hashMapDataPublic).addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -156,7 +158,7 @@ public class FragmentProductos extends Fragment {
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
         recyclerViewProd.setLayoutManager(linearLayoutManager);
-        productosAdapter= new ProductosAdapter(getActivity(), lst, this);
+        productosAdapter= new ProductosAdapter(getActivity(), lst, this, cIdMenuG);
         recyclerViewProd.setAdapter(productosAdapter);
 
     }
@@ -192,7 +194,6 @@ public class FragmentProductos extends Fragment {
                                 producto.lDisponible = dataSnapshot.child("lDisponible").getValue() == null ? false : dataSnapshot.child("lDisponible").getValue(boolean.class);
                                 lsProducto.add(producto);
                             }
-
                         }
                         if (lsProducto.size() == 0)
                             Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
@@ -232,6 +233,7 @@ public class FragmentProductos extends Fragment {
                     else
                     {
                         String cIdCategoria=lstIdsCategorias.get(0);
+                        cIdCategoriaPub=cIdCategoria;
                         CargaCategorias(lstNombresCategorias);
                         CargaProductos(cIdCategoria);
                     }
@@ -246,62 +248,61 @@ public class FragmentProductos extends Fragment {
 
     void Init(View view)
     {
-        Log.d("DEBUG", "Init");
-        lstIdsCategorias=new ArrayList<>();
-        lstNombresCategorias= new ArrayList<>();
-        firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cTemporal);
         pbCargaProd=view.findViewById(R.id.pbCargaProductos);
         recyclerViewProd=view.findViewById(R.id.rcProductos);
         spCategorias=view.findViewById(R.id.spCategoriasMain);
-        IniciarAdapter();
-        CargaCategorias();
+        lstIdsCategorias=new ArrayList<>();
         fbAgregarProd=view.findViewById(R.id.fbAgregarProducto);
-        fbAgregarProd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AbreNuevo();
-            }
-        });
-        spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CargaProductos(lstIdsCategorias.get(i));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-        requireActivity().addMenuProvider(new MenuProvider() {
-            @Override
-            public void onPrepareMenu(@NonNull Menu menu) {
-                MenuProvider.super.onPrepareMenu(menu);
-                itemPublicar=menu.findItem(R.id.publicarProd);
-            }
-
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                menuInflater.inflate(R.menu.menu_productos, menu);
-
-            }
-
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId())
-                {
-                    case R.id.marcarTodosProd:
-
-                        break;
-                    case R.id.publicarProd:
-                        Publicar();
-                        break;
+        fbAgregarProd.setOnClickListener(view1 -> AbreNuevo());
+        lstNombresCategorias= new ArrayList<>();
+        cIdMenuG=Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
+        if(!cIdMenuG.isEmpty())
+        {
+            firebaseDatabase=FirebaseDatabase.getInstance();
+            databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cIdMenuG);
+            spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    cIdCategoriaPub=lstIdsCategorias.get(i);
+                    CargaProductos(lstIdsCategorias.get(i));
                 }
-                return false;
-            }
-        },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            requireActivity().addMenuProvider(new MenuProvider() {
+                @Override
+                public void onPrepareMenu(@NonNull Menu menu) {
+                    MenuProvider.super.onPrepareMenu(menu);
+                    itemPublicar=menu.findItem(R.id.publicarProd);
+                }
+
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.menu_productos, menu);
+
+                }
+
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId())
+                    {
+                        case R.id.marcarTodosProd:
+
+                            break;
+                        case R.id.publicarProd:
+                            Publicar();
+                            break;
+                    }
+                    return false;
+                }
+            },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+            IniciarAdapter();
+            CargaCategorias();
+
+        }
     }
     private void MostrarDialogoCarga()
     {
@@ -316,6 +317,7 @@ public class FragmentProductos extends Fragment {
     void AbreNuevo()
     {
         Intent i= new Intent(getActivity(), ABCProductoActivity.class);
+        i.putExtra("cIdCatSel", cIdCategoriaPub);
         startActivity(i);
     }
     @Override

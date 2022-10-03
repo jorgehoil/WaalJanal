@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -33,19 +34,20 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ABCProductoActivity extends AppCompatActivity {
-    String cTemporal="wjag1";
+    String cIdMenu="";
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReferenceMenu;
     EditText edNombreProducto, edPrecioProducto, edDescripconProd;
-    RadioButton rbDisProducto, rbNoDisProd;
     Spinner spCategorias;
     Button btnGaleria, btnCamara;
     ImageView imProducto;
     DialogoCarga dialogoCarga;
     List<String> lstCategorias;
     List<String> lstIdCategorias;
-    String cIdProducto, cIdCategoriaG;
+    String cIdProducto, cIdCategoriaSel;
     Producto productoG;
+    private CheckBox ckPublicar;
+    private String CCLAVEMENU="cIdMenu";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,38 +59,50 @@ public class ABCProductoActivity extends AppCompatActivity {
 
     private void Init() {
         cIdProducto=getIntent().getStringExtra("cIdProducto")==null?"":getIntent().getStringExtra("cIdProducto");
+        cIdCategoriaSel=getIntent().getStringExtra("cIdCatSel")==null?"":getIntent().getStringExtra("cIdCatSel");
         lstCategorias= new ArrayList<>();
         lstIdCategorias= new ArrayList<>();
         firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cTemporal);
         edNombreProducto= findViewById(R.id.edNombreProducto);
         edPrecioProducto= findViewById(R.id.edPrecioProducto);
         edDescripconProd=findViewById(R.id.edDescripcionProducto);
-        rbDisProducto=findViewById(R.id.rbDispProd);
-        rbNoDisProd=findViewById(R.id.rbNoDispProd);
+        ckPublicar=findViewById(R.id.ckPublicar);
         spCategorias= findViewById(R.id.spCategorias);
         btnCamara=findViewById(R.id.btnCamaraProducto);
         btnGaleria=findViewById(R.id.btnGaleriaProducto);
         imProducto=findViewById(R.id.imImagenProducto);
-        addMenuProvider(new MenuProvider() {
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                menuInflater.inflate(R.menu.menu_abc_productos, menu);
-            }
+        cIdMenu=Global.RecuperaPreferencia(CCLAVEMENU,this);
+        if(!cIdMenu.isEmpty())
+        {
+            databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cIdMenu);
 
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                switch (menuItem.getItemId())
-                {
-                    case R.id.guardarProducto:
-                        GuardarDatos();
-                        break;
+            addMenuProvider(new MenuProvider() {
+                @Override
+                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                    menuInflater.inflate(R.menu.menu_abc_productos, menu);
                 }
-                return  false;
+
+                @Override
+                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId())
+                    {
+                        case R.id.guardarProducto:
+                            GuardarDatos();
+                            break;
+                    }
+                    return  false;
+                }
+            });
+            if(!cIdProducto.isEmpty())
+            {
+                ObtenerEdicion();
             }
-        });
-        ObtenerEdicion();
-        ObtenerCategorias();
+            else
+            {
+                ObtenerCategorias();
+            }
+        }
+
     }
 
     private void cargaDatosProducto()
@@ -98,36 +112,32 @@ public class ABCProductoActivity extends AppCompatActivity {
             edNombreProducto.setText(productoG.cNombre);
             edPrecioProducto.setText(productoG.cPrecio);
             edDescripconProd.setText(productoG.cDescripcion);
-            rbDisProducto.setChecked(productoG.lDisponible);
-            rbNoDisProd.setChecked(!productoG.lDisponible);
-
+            ckPublicar.setChecked(productoG.lDisponible);
         }
     }
     private void ObtenerEdicion() {
-        if(!cIdProducto.isEmpty())
-        {
-            abrirDialogoCarga();
-            databaseReferenceMenu.child("productos").child(cIdProducto).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    if(task.isSuccessful())
-                    {
-                        cerrarDialogoCarga();
-                        DataSnapshot dataSnapshot=task.getResult();
-                        productoG= new Producto();
-                        productoG.cLlave= dataSnapshot.getKey();
-                        productoG.cNombre=dataSnapshot.child("cNombre").getValue()==null?"":dataSnapshot.child("cNombre").getValue().toString();
-                        productoG.cDescripcion=dataSnapshot.child("cDescripcion").getValue()==null?"": dataSnapshot.child("cDescripcion").getValue().toString();
-                        productoG.cPrecio=dataSnapshot.child("cPrecio").getValue()==null?"":dataSnapshot.child("cPrecio").getValue().toString();
-                        productoG.cIdCategoria=dataSnapshot.child("cIdCategoria").getValue()==null?"":dataSnapshot.child("cIdCategoria").getValue().toString();
-                        productoG.cUrlImagen=dataSnapshot.child("cUrlImagen").getValue()==null?"":dataSnapshot.child("cUrlImagen").getValue().toString();
-                        productoG.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
-                        cargaDatosProducto();
-                    }
-
+        abrirDialogoCarga();
+        databaseReferenceMenu.child("productos").child(cIdProducto).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if(task.isSuccessful())
+                {
+                    cerrarDialogoCarga();
+                    DataSnapshot dataSnapshot=task.getResult();
+                    productoG= new Producto();
+                    productoG.cLlave= dataSnapshot.getKey();
+                    productoG.cNombre=dataSnapshot.child("cNombre").getValue()==null?"":dataSnapshot.child("cNombre").getValue().toString();
+                    productoG.cDescripcion=dataSnapshot.child("cDescripcion").getValue()==null?"": dataSnapshot.child("cDescripcion").getValue().toString();
+                    productoG.cPrecio=dataSnapshot.child("cPrecio").getValue()==null?"":dataSnapshot.child("cPrecio").getValue().toString();
+                    productoG.cIdCategoria=dataSnapshot.child("cIdCategoria").getValue()==null?"":dataSnapshot.child("cIdCategoria").getValue().toString();
+                    productoG.cUrlImagen=dataSnapshot.child("cUrlImagen").getValue()==null?"":dataSnapshot.child("cUrlImagen").getValue().toString();
+                    productoG.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
+                    ObtenerCategorias();
                 }
-            });
-        }
+
+            }
+        });
+
     }
 
     private void SubirImagen()
@@ -136,7 +146,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
     private void GuardarDatos()
     {
-        String cMenu="menus/"+cTemporal+"/";
+        String cMenu="menus/"+cIdMenu+"/";
         HashMap<String, Object> updates= new HashMap<>();
 
         if(ValidarDatos(edNombreProducto.getText().toString(), edPrecioProducto.getText().toString())){
@@ -146,7 +156,10 @@ public class ABCProductoActivity extends AppCompatActivity {
             {
                 String cLlave= databaseReferenceMenu.child("productos").push().getKey();
                 updates.put(cMenu+"/productos/"+cLlave,producto);
-                updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cLlave,producto);
+                if(producto.lDisponible)
+                {
+                    updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cLlave,producto);
+                }
                 firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
                     if(task.isSuccessful())
                     {
@@ -158,9 +171,9 @@ public class ABCProductoActivity extends AppCompatActivity {
             else //ACTUALIZAR PRODUCTO
             {
                 updates.put(cMenu+"/productos/"+cIdProducto,producto);
-                if(productoG.cIdCategoria.equals(ObtenerIdCatSeleccionada()))
+                if(productoG.cIdCategoria.equals(ObtenerIdCatSeleccionada()))//SI NO CAMBIA DE CATEGORIA
                 {
-                    if(!productoG.lDisponible){
+                    if(!producto.lDisponible){
                         updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto, null);
                     }
                     else
@@ -168,7 +181,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                         updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,producto);
                     }
                 }
-                else
+                else //CAMBIO DE CATEGORIA
                 {
                     updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,null);
                     if(productoG.lDisponible)
@@ -183,6 +196,7 @@ public class ABCProductoActivity extends AppCompatActivity {
 
                         Toast.makeText(ABCProductoActivity.this,
                                 "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                     else
                     {
@@ -201,7 +215,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     {
         Producto producto= new Producto();
         producto.cNombre=edNombreProducto.getText().toString();
-        producto.lDisponible=(rbDisProducto.isChecked()?true:false);
+        producto.lDisponible=ckPublicar.isChecked();
         producto.cUrlImagen="prueba";
         producto.cLlave="";
         producto.cIdCategoria=ObtenerIdCatSeleccionada();
@@ -237,6 +251,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                     else
                     {
                         CargaCategorias(lstCategorias);
+                        cargaDatosProducto();
                         SeleccionaCategoria();
                     }
                 }
@@ -249,24 +264,20 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
 
     private void SeleccionaCategoria() {
-        if(!cIdProducto.isEmpty())
+        String cIdCategoria=cIdProducto.isEmpty()?cIdCategoriaSel:productoG.cIdCategoria;
+        int iPosition=0;
+        int i=0;
+        for(String cIdCat: lstIdCategorias)
         {
-            int iPosition=0;
-            int i=0;
-            for(String cIdCat: lstIdCategorias)
+            if(cIdCat.equals(cIdCategoria))
             {
-                if(cIdCat.equals(productoG.cIdCategoria))
-                {
-                    iPosition=i;
-                }
-                i++;
+                iPosition=i;
             }
-            spCategorias.setSelection(iPosition);
+            i++;
         }
-        else
-        {
-            spCategorias.setSelection(0);
-        }
+        spCategorias.setSelection(iPosition);
+
+
     }
 
     private void CargaCategorias(List<String> lstCategorias) {

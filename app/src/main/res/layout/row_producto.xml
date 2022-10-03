@@ -61,7 +61,8 @@
                 android:id="@+id/btnEliminarProd"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/ic_eliminar" />
+                android:background="@drawable/ic_eliminar2"
+                app:iconTint="@color/color1" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

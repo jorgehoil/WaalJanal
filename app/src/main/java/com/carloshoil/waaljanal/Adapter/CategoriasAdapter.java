@@ -84,6 +84,11 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
 
     }
 
+    public void LimpiaLista()
+    {
+        this.lstCategoria.clear();
+        notifyDataSetChanged();
+    }
     private void EliminaItem(int iPosition)
     {
         lstCategoria.remove(iPosition);
@@ -139,7 +144,7 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
           notifyItemInserted(lstCategoria.size()-1);
     }
     private void CargaDialogo(Categoria categoria) {
-        dialogoCategoria= new DialogoCategoria(context, categoria, "wjag1");
+        dialogoCategoria= new DialogoCategoria(context, categoria, cIdMenu);
        dialogoCategoria.show(((AppCompatActivity)context).getSupportFragmentManager(),"dialogocat");
     }
 

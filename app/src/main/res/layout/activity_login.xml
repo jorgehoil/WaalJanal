@@ -65,6 +65,21 @@
                 android:text="INGRESAR"
                 app:icon="@drawable/ic_login_24" />
 
+            <TextView
+                android:id="@+id/textView30"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿No tienes una cuenta?"
+                android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/tvRegistrar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Regístrate aquí"
+                android:textAlignment="center" />
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

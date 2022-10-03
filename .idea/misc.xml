@@ -14,17 +14,21 @@
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/radiobutton_right_unchecked.xml" value="0.121" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_abcproducto.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_configuracion.xml" value="0.25" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_crea_cuenta_actvity.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_pdf.xml" value="0.33" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_registro.xml" value="0.18795289855072464" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_responsable.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/activity_splash.xml" value="0.15775972637879435" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/app_bar_main.xml" value="0.17028985507246377" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/content_main.xml" value="0.16259057971014493" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_abc_categoria.xml" value="0.18704710144927536" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_abc_menu.xml" value="0.18795289855072464" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_abc_producto.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_cambiocontrasena.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_cargando.xml" value="0.16621376811594202" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/dialog_verificacion.xml" value="0.18795289855072464" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_categorias.xml" value="0.17028985507246377" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_configuracion.xml" value="0.33" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/layout/fragment_cuenta.xml" value="0.25" />

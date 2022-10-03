@@ -18,6 +18,7 @@ import com.carloshoil.waaljanal.Adapter.CategoriasAdapter;
 import com.carloshoil.waaljanal.Adapter.ProductosAdapter;
 import com.carloshoil.waaljanal.DTO.Categoria;
 import com.carloshoil.waaljanal.Dialog.DialogoCategoria;
+import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -49,7 +50,8 @@ public class FragmentCategorias extends Fragment {
     private FloatingActionButton floatingActionButtonAgregarCat;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-    private String cTemporalMenu="wjag1";
+    private String cIdMenu="";
+    private String CCLAVEMENU="cIdMenu";
     private CategoriasAdapter categoriasAdapter;
     private DialogoCategoria dialogoCategoria;
     private ChildEventListener childEventListenerCat;
@@ -87,59 +89,63 @@ public class FragmentCategorias extends Fragment {
 
     private void Init( View view)
     {
-
+        cIdMenu= Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
         recyclerViewCategorias=view.findViewById(R.id.rcvCategorias);
         floatingActionButtonAgregarCat=view.findViewById(R.id.fbAgregarCategoria);
         firebaseDatabase=FirebaseDatabase.getInstance();
-        databaseReference=firebaseDatabase.getReference().child("menus").child(cTemporalMenu).child("categorias");
-        floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                abrirDialogo(null, "wjag1");
-            }
-        });
-        childEventListenerCat= new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if(snapshot.exists())
-                {
-                    Categoria categoria= new Categoria(
-                            snapshot.getKey(),
-                            snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
-                    );
-                    AgregaCategoriaLista(categoria);
+        if(!cIdMenu.isEmpty())
+        {
+            databaseReference=firebaseDatabase.getReference().child("menus").child(cIdMenu).child("categorias");
+            floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    abrirDialogo(null, cIdMenu);
                 }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if(snapshot.exists())
-                {
-                    Categoria categoria= new Categoria(
-                            snapshot.getKey(),
-                            snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
-                    );
-                    ModificaCategoriaLista(categoria);
+            });
+            childEventListenerCat= new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if(snapshot.exists())
+                    {
+                        Categoria categoria= new Categoria(
+                                snapshot.getKey(),
+                                snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
+                        );
+                        AgregaCategoriaLista(categoria);
+                    }
                 }
 
-            }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if(snapshot.exists())
+                    {
+                        Categoria categoria= new Categoria(
+                                snapshot.getKey(),
+                                snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
+                        );
+                        ModificaCategoriaLista(categoria);
+                    }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                }
 
-            }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                }
 
-            }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+                }
 
-            }
-        };
-        preparaAdapter();
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            };
+            preparaAdapter();
+        }
+
 
     }
 
@@ -157,12 +163,16 @@ public class FragmentCategorias extends Fragment {
     {
         categoriasAdapter.ModificaCategoriaLista(categoria);
     }
+    private  void LimpiaRecycle()
+    {
+        categoriasAdapter.LimpiaLista();
+    }
     private void preparaAdapter()
     {
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
         recyclerViewCategorias.setLayoutManager(linearLayoutManager);
-        categoriasAdapter= new CategoriasAdapter(getActivity(), new ArrayList<>(), cTemporalMenu);
+        categoriasAdapter= new CategoriasAdapter(getActivity(), new ArrayList<>(), cIdMenu);
         recyclerViewCategorias.setAdapter(categoriasAdapter);
     }
 
@@ -170,13 +180,19 @@ public class FragmentCategorias extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        databaseReference.removeEventListener(childEventListenerCat);
+        if(databaseReference!=null)
+        {
+            LimpiaRecycle();
+            databaseReference.removeEventListener(childEventListenerCat);
+        }
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        databaseReference.addChildEventListener(childEventListenerCat);
+        if(databaseReference!=null)
+            databaseReference.addChildEventListener(childEventListenerCat);
     }
 
     @Override

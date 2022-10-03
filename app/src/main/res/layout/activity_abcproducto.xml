@@ -52,44 +52,30 @@
                 android:ems="10"
                 android:inputType="numberDecimal" />
 
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:id="@+id/rbDispProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/radiobutton_left_selector"
-                    android:button="@android:color/transparent"
-                    android:checked="true"
-                    android:gravity="center"
-                    android:text="DISPONIBLE" />
-
-                <RadioButton
-                    android:id="@+id/rbNoDispProd"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/radiobutton_right_selector"
-                    android:button="@android:color/transparent"
-                    android:gravity="center"
-                    android:text="NO DISPONIBLE" />
-            </RadioGroup>
-
             <TextView
                 android:id="@+id/textView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Categoría*" />
+                android:text="Categoria/Publicar" />
 
-            <Spinner
-                android:id="@+id/spCategorias"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spCategorias"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_weight="1" />
+
+                <CheckBox
+                    android:id="@+id/ckPublicar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Publicar" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView7"

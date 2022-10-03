@@ -7,11 +7,14 @@
         android:title="Marcar para Administrar" />
     <item
         android:id="@+id/informacionRes"
-        android:title="Información" />
+        android:title="Configurar información" />
     <item
         android:id="@+id/responsableRes"
         android:title="Responsable" />
     <item
-        android:id="@+id/generarQR"
+        android:id="@+id/generarQRRes"
         android:title="Generar QR" />
+    <item
+        android:id="@+id/cambiarNombreRes"
+        android:title="Cambiar nombre" />
 </menu>
