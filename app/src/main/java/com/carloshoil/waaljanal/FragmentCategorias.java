@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.carloshoil.waaljanal.Adapter.CategoriasAdapter;
 import com.carloshoil.waaljanal.Adapter.ProductosAdapter;
@@ -55,6 +56,7 @@ public class FragmentCategorias extends Fragment {
     private CategoriasAdapter categoriasAdapter;
     private DialogoCategoria dialogoCategoria;
     private ChildEventListener childEventListenerCat;
+    private TextView tvNoRegistros;
 
     public FragmentCategorias() {
         // Required empty public constructor
@@ -89,22 +91,33 @@ public class FragmentCategorias extends Fragment {
 
     private void Init( View view)
     {
+
         cIdMenu= Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
         recyclerViewCategorias=view.findViewById(R.id.rcvCategorias);
         floatingActionButtonAgregarCat=view.findViewById(R.id.fbAgregarCategoria);
+        tvNoRegistros=view.findViewById(R.id.tvSinRegistrosCate);
         firebaseDatabase=FirebaseDatabase.getInstance();
+        floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!cIdMenu.isEmpty())
+                    abrirDialogo(null, cIdMenu);
+                else
+                {
+                    Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
+                            "productos y/o categorías debes seleccionar y/o crear" +
+                            " un establecimiento para administrar desde la opcion Establecimientos");
+                }
+            }
+        });
         if(!cIdMenu.isEmpty())
         {
             databaseReference=firebaseDatabase.getReference().child("menus").child(cIdMenu).child("categorias");
-            floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    abrirDialogo(null, cIdMenu);
-                }
-            });
+
             childEventListenerCat= new ChildEventListener() {
                 @Override
                 public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    tvNoRegistros.setVisibility(View.GONE);
                     if(snapshot.exists())
                     {
                         Categoria categoria= new Categoria(

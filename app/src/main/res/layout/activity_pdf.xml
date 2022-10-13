@@ -6,76 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".ActivityPDF">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
+    <ProgressBar
+        android:id="@+id/pbCargaPDF"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:indeterminateDrawable="@drawable/cpb_load"
+        android:indeterminateDuration="1000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/tvMensaje" />
 
-        <TextView
-            android:id="@+id/textView26"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Restaurante" />
+    <TextView
+        android:id="@+id/tvMensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generando PDF, espera un momento..."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.445" />
 
-        <EditText
-            android:id="@+id/edRestauranteQR"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ed_diseno"
-            android:ems="10"
-            android:inputType="textPersonName|textCapSentences" />
-
-        <TextView
-            android:id="@+id/textView27"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Recibir pedidos al teléfono" />
-
-        <EditText
-            android:id="@+id/edTelefonoContactoQR"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ed_diseno"
-            android:ems="10"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/textView29"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Texto Personalizado" />
-
-        <EditText
-            android:id="@+id/edTextoPersonalizadoQR"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ed_diseno"
-            android:ems="10"
-            android:hint="¡No te quedes sin probar!"
-            android:inputType="textMultiLine|textPersonName"
-            android:lines="3"
-            android:maxLength="60"
-            android:singleLine="true" />
-
-        <TextView
-            android:id="@+id/tvCaracteresRestantes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="1/60" />
-
-        <Button
-            android:id="@+id/btnGenerarPDFQR"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Generar PDF"
-            app:icon="@drawable/ic__qr_code" />
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

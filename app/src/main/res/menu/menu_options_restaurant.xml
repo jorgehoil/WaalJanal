@@ -9,12 +9,21 @@
         android:id="@+id/informacionRes"
         android:title="Configurar información" />
     <item
+        android:id="@+id/copiarURL"
+        android:title="Copiar link" />
+    <item
+        android:id="@+id/menuLinea"
+        android:title="Ver menú en línea" />
+    <item
+        android:id="@+id/generarQRRes"
+        android:title="Obtener QR" />
+    <item
         android:id="@+id/responsableRes"
         android:title="Responsable" />
     <item
-        android:id="@+id/generarQRRes"
-        android:title="Generar QR" />
-    <item
         android:id="@+id/cambiarNombreRes"
         android:title="Cambiar nombre" />
+    <item
+        android:id="@+id/eliminarMenu"
+        android:title="Eliminar" />
 </menu>

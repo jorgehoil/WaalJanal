@@ -3,11 +3,13 @@ package com.carloshoil.waaljanal.Adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,16 +61,29 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
         if(categoria!=null)
         {
             holder.tvNombreCat.setText(categoria.cNombre);
-            holder.layoutRowCat.setOnClickListener(new View.OnClickListener() {
+
+            holder.btnOpciones.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    CargaDialogo(categoria);
-                }
-            });
-            holder.btnEliminar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    MuestraMensajeConfirmacion(categoria.cLlave, holder.getAdapterPosition());
+                    PopupMenu popupMenu= new PopupMenu(context, holder.btnOpciones);
+                    popupMenu.inflate(R.menu.menu_opciones_abc);
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            switch (menuItem.getItemId())
+                            {
+                                case R.id.eliminarABC:
+                                    MuestraMensajeConfirmacion(categoria.cLlave, holder.getAdapterPosition());
+                                    break;
+                                case R.id.editarABC:
+                                    CargaDialogo(categoria);
+                                    break;
+                            }
+                            return false;
+                        }
+                    });
+                    popupMenu.show();
+                    //
                 }
             });
         }
@@ -155,13 +170,11 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombreCat;
-        LinearLayout layoutRowCat;
-        Button btnEliminar;
+        Button btnOpciones;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombreCat=itemView.findViewById(R.id.tvNombreCat);
-            layoutRowCat=itemView.findViewById(R.id.layoutRowCat);
-            btnEliminar=itemView.findViewById(R.id.btnEliminarCat);
+            btnOpciones=itemView.findViewById(R.id.btnOpcionesCat);
         }
     }
 }

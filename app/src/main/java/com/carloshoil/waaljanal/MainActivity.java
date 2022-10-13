@@ -3,9 +3,11 @@ package com.carloshoil.waaljanal;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.carloshoil.waaljanal.Utils.Global;
@@ -83,8 +85,16 @@ public class MainActivity extends AppCompatActivity {
         {
             navigationView.getMenu().findItem(R.id.nav_categorias).setVisible(false);
             navigationView.getMenu().findItem(R.id.nav_productos).setVisible(false);
-            navigationView.getMenu().findItem(R.id.nav_restaurantes).setVisible(false);
+
         }*/
+        navigationView.getMenu().findItem(R.id.nav_salir).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                Toast.makeText(MainActivity.this, "Cerrando sesión", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
         View headerView= navigationView.getHeaderView(0);
         TextView tvHeaderText= headerView.findViewById(R.id.tvNombreCuenta);
         tvHeaderText.setText(cNombre);
@@ -117,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void Init() {
         firebaseDatabase=FirebaseDatabase.getInstance();

@@ -20,7 +20,7 @@
         <LinearLayout
             android:id="@+id/layoutRowCat"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <TextView
@@ -29,13 +29,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_weight="1"
-                android:text="Hamburguesas" />
+                android:text="Hamburguesas"
+                android:textSize="16sp" />
 
             <Button
-                android:id="@+id/btnEliminarCat"
+                android:id="@+id/btnOpcionesCat"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/ic_eliminar2" />
+                android:background="@android:color/transparent"
+                android:text="Button"
+                app:icon="@drawable/ic_options"
+                app:iconTint="@color/color1" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

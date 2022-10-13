@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class DialogoABCRestaurante extends DialogFragment {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReferenceRest;
     DatabaseReference databaseReferenceMain;
+    ProgressBar pbCargaRest;
     FirebaseAuth firebaseAuth;
     public DialogoABCRestaurante(Context context, String cIdRest, String cNombre)
     {
@@ -60,6 +62,7 @@ public class DialogoABCRestaurante extends DialogFragment {
         LayoutInflater layoutInflater= getActivity().getLayoutInflater();
         View view =layoutInflater.inflate(R.layout.dialog_abc_menu, null);
         dialog.setView(view);
+        pbCargaRest=view.findViewById(R.id.pbCargaMenu);
         edNombreRestaurante=view.findViewById(R.id.edNombreRestaurante);
         btnGuardarRest=view.findViewById(R.id.btnGuardaRestaurante);
         btnGuardarRest.setOnClickListener(view1 -> {
@@ -87,15 +90,20 @@ public class DialogoABCRestaurante extends DialogFragment {
     }
     private void Guardar(String cNombre)
     {
-
+        btnGuardarRest.setEnabled(false);
+        pbCargaRest.setVisibility(View.VISIBLE);
         if(!cIdRest.isEmpty())
+        {
             databaseReferenceRest.child(cIdRest).child("cNombre").setValue(cNombre).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    btnGuardarRest.setEnabled(true);
+                    pbCargaRest.setVisibility(View.INVISIBLE);
                     Toast.makeText(context, "¡Actualización correcta!", Toast.LENGTH_SHORT).show();
                     dismiss();
                 }
             });
+        }
         else
         {
             firebaseDatabase.getReference().child("datamenu").runTransaction(new Transaction.Handler() {
@@ -126,6 +134,7 @@ public class DialogoABCRestaurante extends DialogFragment {
 
                 @Override
                 public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+
                     if(committed)
                     {
                         String cClave= currentData.child("lastIdMenu").getValue(String.class);
@@ -133,6 +142,8 @@ public class DialogoABCRestaurante extends DialogFragment {
                     }
                     else
                     {
+                        pbCargaRest.setVisibility(View.INVISIBLE);
+                        btnGuardarRest.setEnabled(true);
                         Global.MostrarMensaje(context, "Error", "Se ha producido un error al guardar");
                     }
                 }
@@ -152,8 +163,11 @@ public class DialogoABCRestaurante extends DialogFragment {
         databaseReferenceRest.child(cKey).setValue(hashMapData).addOnCompleteListener(new OnCompleteListener<Void>() {
            @Override
            public void onComplete(@NonNull Task<Void> task) {
+               pbCargaRest.setVisibility(View.INVISIBLE);
+               btnGuardarRest.setEnabled(true);
                 if(task.isSuccessful())
                 {
+
                     Toast.makeText(context, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
                     dismiss();
                 }

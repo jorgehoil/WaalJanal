@@ -37,5 +37,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="GUARDAR" />
+
+        <ProgressBar
+            android:id="@+id/pbCargaMenu"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminateDrawable="@drawable/cpb_load"
+            android:visibility="invisible" />
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

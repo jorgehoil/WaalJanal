@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.ContentInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,14 +61,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
            holder.ckProdDisp.setChecked(producto.lDisponible);
            holder.tvPrecio.setText("$"+producto.cPrecio);
            holder.tvNombreProducto.setText(producto.cNombre);
-           holder.layoutRow.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   Intent i= new Intent(context, ABCProductoActivity.class);
-                   i.putExtra("cIdProducto",producto.cLlave);
-                   context.startActivity(i);
-               }
-           });
+
            holder.ckProdDisp.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View view) {
@@ -74,10 +69,31 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
                    fragmentProductos.MostrarBotonPublicar(true);
                }
            });
-           holder.btnEliminarProd.setOnClickListener(new View.OnClickListener() {
+           holder.btnOpcionesProd.setOnClickListener(new View.OnClickListener() {
                @Override
                public void onClick(View view) {
-                   ConfirmaEliminar(producto,holder.getAdapterPosition());
+                   PopupMenu popupMenu= new PopupMenu(context, holder.btnOpcionesProd);
+                   popupMenu.inflate(R.menu.menu_opciones_abc);
+                   popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                       @Override
+                       public boolean onMenuItemClick(MenuItem menuItem) {
+                           switch (menuItem.getItemId())
+                           {
+                               case R.id.eliminarABC:
+                                   ConfirmaEliminar(producto,holder.getAdapterPosition());
+                                   break;
+                               case R.id.editarABC:
+                                   Intent i= new Intent(context, ABCProductoActivity.class);
+                                   i.putExtra("cIdProducto",producto.cLlave);
+                                   context.startActivity(i);
+                                   break;
+                           }
+
+                           return false;
+                       }
+                   });
+                   popupMenu.show();
+
                }
            });
         }
@@ -141,25 +157,25 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
         TextView tvNombreProducto, tvPrecio;
-        Button btnEliminarProd;
+        Button btnOpcionesProd;
         CheckBox ckProdDisp;
-        LinearLayout layoutRow;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombreProducto=itemView.findViewById(R.id.tvProductoNombre);
             tvPrecio=itemView.findViewById(R.id.tvProductoPrecio);
-            btnEliminarProd=itemView.findViewById(R.id.btnEliminarProd);
+            btnOpcionesProd=itemView.findViewById(R.id.btnOpcionesProd);
             ckProdDisp=itemView.findViewById(R.id.ckProdDisponible);
-            layoutRow=itemView.findViewById(R.id.layoutRowProd);
         }
     }
-    public void LimpiarLista() {
+    public void LimpiarLista()
+    {
         lstProducto.clear();
         notifyDataSetChanged();
     }
     public void Agregar(List<Producto> lstProducto)
     {
+
         this.lstProducto.addAll(lstProducto);
         notifyDataSetChanged();
     }

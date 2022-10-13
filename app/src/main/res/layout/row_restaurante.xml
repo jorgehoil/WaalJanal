@@ -28,16 +28,36 @@
                 android:id="@+id/ckRestauranteSeleccionado"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:enabled="false" />
+                android:clickable="false"
+                android:enabled="true" />
 
-            <TextView
-                android:id="@+id/tvNombreRestauranteRow"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginRight="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
                 android:layout_weight="1"
-                android:text="Restaurante 1" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvNombreRestauranteRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="1"
+                    android:text="Restaurante 1"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/tvCodigoMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:text="Código: wj-7"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnOpcionesRes"

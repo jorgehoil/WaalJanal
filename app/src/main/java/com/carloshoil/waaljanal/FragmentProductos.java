@@ -140,7 +140,7 @@ public class FragmentProductos extends Fragment {
     }
     private void CargaProductos(List<Producto> lstProd)
     {
-        productosAdapter.LimpiarLista();
+        Log.d("DEBUG", "CARGA DATOS"+ lstProd.size());
         productosAdapter.Agregar(lstProd);
     }
     private void CargaCategorias(List<String> lstCategorias)
@@ -174,88 +174,95 @@ public class FragmentProductos extends Fragment {
         {
             Global.MostrarMensaje(getActivity(), "Información", "No existen categorias registrados");
         }
-        else {
+        else
+        {
+            pbCargaProd.setVisibility(View.VISIBLE);
+            databaseReferenceMenu.child("productos").orderByChild("cIdCategoria").equalTo(cIdCategoria).get().addOnCompleteListener(task -> {
+                List<Producto> lsProducto = new ArrayList<>();
+                Producto producto;
+                if (task.isSuccessful()) {
 
-            databaseReferenceMenu.child("productos").orderByChild("cIdCategoria").equalTo(cIdCategoria).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DataSnapshot> task) {
-                    List<Producto> lsProducto = new ArrayList<>();
-                    Producto producto;
-                    if (task.isSuccessful()) {
-                        for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
-                            if (dataSnapshot != null) {
-                                producto = new Producto();
-                                producto.cLlave = dataSnapshot.getKey();
-                                producto.cNombre = dataSnapshot.child("cNombre").getValue() == null ? "" : dataSnapshot.child("cNombre").getValue().toString();
-                                producto.cDescripcion = dataSnapshot.child("cDescripcion").getValue() == null ? "" : dataSnapshot.child("cDescripcion").getValue().toString();
-                                producto.cPrecio = dataSnapshot.child("cPrecio").getValue() == null ? "" : dataSnapshot.child("cPrecio").getValue().toString();
-                                producto.cIdCategoria = dataSnapshot.child("cIdCategoria").getValue() == null ? "" : dataSnapshot.child("cIdCategoria").getValue().toString();
-                                producto.cUrlImagen = dataSnapshot.child("cUrlImagen").getValue() == null ? "" : dataSnapshot.child("cUrlImagen").getValue().toString();
-                                producto.lDisponible = dataSnapshot.child("lDisponible").getValue() == null ? false : dataSnapshot.child("lDisponible").getValue(boolean.class);
-                                lsProducto.add(producto);
-                            }
+                    for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                        if (dataSnapshot != null) {
+                            producto = new Producto();
+                            producto.cLlave = dataSnapshot.getKey();
+                            producto.cNombre = dataSnapshot.child("cNombre").getValue() == null ? "" : dataSnapshot.child("cNombre").getValue().toString();
+                            producto.cDescripcion = dataSnapshot.child("cDescripcion").getValue() == null ? "" : dataSnapshot.child("cDescripcion").getValue().toString();
+                            producto.cPrecio = dataSnapshot.child("cPrecio").getValue() == null ? "" : dataSnapshot.child("cPrecio").getValue().toString();
+                            producto.cIdCategoria = dataSnapshot.child("cIdCategoria").getValue() == null ? "" : dataSnapshot.child("cIdCategoria").getValue().toString();
+                            producto.cUrlImagen = dataSnapshot.child("cUrlImagen").getValue() == null ? "" : dataSnapshot.child("cUrlImagen").getValue().toString();
+                            producto.lDisponible = dataSnapshot.child("lDisponible").getValue() == null ? false : dataSnapshot.child("lDisponible").getValue(boolean.class);
+                            lsProducto.add(producto);
                         }
-                        if (lsProducto.size() == 0)
-                            Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
-                        CargaProductos(lsProducto);
-                    } else {
-                        Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
-                                "un error al carga productos, inténtelo de nuevo" + task.getException());
                     }
-                    pbCargaProd.setVisibility(View.GONE);
+                    if (lsProducto.size() == 0)
+                    {
+                        Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
+                    }
+                    CargaProductos(lsProducto);
+                } else {
+                    Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
+                            "un error al carga productos, inténtelo de nuevo" + task.getException());
                 }
+                pbCargaProd.setVisibility(View.GONE);
             });
         }
     }
-    private void CargaCategorias()
+    private void ConsultaCategorias()
     {
-        Log.d("DEBUG", "CargaCategoria");
+        Log.d("DEBUG", "ConsultaCategorias");
         pbCargaProd.setVisibility(View.VISIBLE);
-        databaseReferenceMenu.child("categorias").get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if(task.isSuccessful())
+        databaseReferenceMenu.child("categorias").get().addOnCompleteListener(task -> {
+            if(task.isSuccessful())
+            {
+                String cIdCat;
+                String cCat;
+                for(DataSnapshot dataSnapshot: task.getResult().getChildren())
                 {
-                    String cIdCat;
-                    String cCat;
-                    for(DataSnapshot dataSnapshot: task.getResult().getChildren())
-                    {
-                        cIdCat=dataSnapshot.getKey();
-                        cCat=dataSnapshot.child("cNombre").getValue().toString();
-                        lstIdsCategorias.add(cIdCat);
-                        lstNombresCategorias.add(cCat);
-                    }
-                    if(lstNombresCategorias.size()==0)
-                    {
-                        pbCargaProd.setVisibility(View.GONE);
-                        Toast.makeText(getActivity(), "No existe categorias ni productos, regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        String cIdCategoria=lstIdsCategorias.get(0);
-                        cIdCategoriaPub=cIdCategoria;
-                        CargaCategorias(lstNombresCategorias);
-                        CargaProductos(cIdCategoria);
-                    }
+                    cIdCat=dataSnapshot.getKey();
+                    cCat=dataSnapshot.child("cNombre").getValue().toString();
+                    lstIdsCategorias.add(cIdCat);
+                    lstNombresCategorias.add(cCat);
+                }
+                if(lstNombresCategorias.size()==0)
+                {
+                    pbCargaProd.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "No existe categorias ni productos, regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
-                    CargaCategorias();
+                    String cIdCategoria=lstIdsCategorias.get(0);
+                    cIdCategoriaPub=cIdCategoria;
+                    CargaCategorias(lstNombresCategorias);
                 }
+            }
+            else
+            {
+                ConsultaCategorias();
             }
         });
     }
 
     void Init(View view)
     {
+        cIdMenuG=Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
         pbCargaProd=view.findViewById(R.id.pbCargaProductos);
         recyclerViewProd=view.findViewById(R.id.rcProductos);
         spCategorias=view.findViewById(R.id.spCategoriasMain);
         lstIdsCategorias=new ArrayList<>();
         fbAgregarProd=view.findViewById(R.id.fbAgregarProducto);
-        fbAgregarProd.setOnClickListener(view1 -> AbreNuevo());
+        fbAgregarProd.setOnClickListener(view1 -> {
+            if(!cIdMenuG.isEmpty())
+                AbreNuevo();
+            else
+            {
+                Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
+                        "productos y/o categorías debes seleccionar y/o crear" +
+                        " un establecimiento para administrar desde la opcion Establecimientos");
+            }
+        });
         lstNombresCategorias= new ArrayList<>();
-        cIdMenuG=Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
+
         if(!cIdMenuG.isEmpty())
         {
             firebaseDatabase=FirebaseDatabase.getInstance();
@@ -263,6 +270,7 @@ public class FragmentProductos extends Fragment {
             spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    productosAdapter.LimpiarLista();
                     cIdCategoriaPub=lstIdsCategorias.get(i);
                     CargaProductos(lstIdsCategorias.get(i));
                 }
@@ -272,6 +280,8 @@ public class FragmentProductos extends Fragment {
 
                 }
             });
+
+
             requireActivity().addMenuProvider(new MenuProvider() {
                 @Override
                 public void onPrepareMenu(@NonNull Menu menu) {
@@ -300,7 +310,7 @@ public class FragmentProductos extends Fragment {
                 }
             },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
             IniciarAdapter();
-            CargaCategorias();
+            ConsultaCategorias();
 
         }
     }

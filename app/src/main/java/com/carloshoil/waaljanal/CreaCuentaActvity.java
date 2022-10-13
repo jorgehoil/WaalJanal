@@ -41,8 +41,8 @@ public class CreaCuentaActvity extends AppCompatActivity {
     {
         firebaseDatabase=FirebaseDatabase.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
-        databaseReference=firebaseDatabase.getReference().child("usuarios").child(firebaseAuth.getUid());
-        edCorreo=findViewById(R.id.edCorreo);
+        databaseReference=firebaseDatabase.getReference().child("usuarios");
+        edCorreo=findViewById(R.id.edCorreoCuenta);
         edContrasena=findViewById(R.id.edContrasenaCuenta);
         edConfirmaContrasena=findViewById(R.id.edContrasenaConf);
         btnCreaCuenta=findViewById(R.id.btnCreaCuenta);
@@ -111,7 +111,7 @@ public class CreaCuentaActvity extends AppCompatActivity {
         HashMap<String,Object> hashMapData= new HashMap<>();
         hashMapData.put("cNombre", cNombre);
         hashMapData.put("lAdmin", true);
-        databaseReference.setValue(hashMapData).addOnCompleteListener(task -> {
+        databaseReference.child(firebaseAuth.getUid()).child("data").child("dataconfig").setValue(hashMapData).addOnCompleteListener(task -> {
             if(task.isSuccessful())
             {
 

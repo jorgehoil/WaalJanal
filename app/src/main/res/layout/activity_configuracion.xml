@@ -24,12 +24,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/textView28"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Configuración de menú" />
-
 
             <ProgressBar
                 android:id="@+id/progressBar5"
@@ -39,6 +33,18 @@
                 android:indeterminateDrawable="@drawable/cpb_load"
                 android:indeterminateDuration="1500"
                 android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Imagen de menú" />
+
+            <ImageView
+                android:id="@+id/ivFotoRes"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                app:srcCompat="@drawable/ic_album" />
 
             <TextView
                 android:id="@+id/textView18"
