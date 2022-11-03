@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.carloshoil.waaljanal.Utils.Values;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -26,17 +27,20 @@ public class CropperActivity extends AppCompatActivity {
     }
 
     private void Init() {
+        File obj= getCacheDir();
+        obj.mkdirs();
         cSourceUri=getIntent().getStringExtra("imageData")==null?"":getIntent().getStringExtra("imageData");
         if(!cSourceUri.isEmpty())
         {
             uri=Uri.parse(cSourceUri);
         }
-        cDestinationUri= new StringBuilder(UUID.randomUUID().toString()).append(".jpg").toString();
+        cDestinationUri= UUID.randomUUID().toString()+"jpg";
         UCrop.Options options= new UCrop.Options();
-        UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), cDestinationUri)))
+        options.setCompressionQuality(Values.PORCENTAJE_COMPRESS);
+        UCrop.of(uri, Uri.fromFile(new File(obj, cDestinationUri)))
                 .withOptions(options)
                 .withAspectRatio(16,9)
-                .withMaxResultSize(1000, 1000)
+                .withMaxResultSize(1920, 700)
                 .start(CropperActivity.this);
 
     }
@@ -50,12 +54,12 @@ public class CropperActivity extends AppCompatActivity {
             Intent intent= new Intent();
             intent.putExtra("CROP", resultUri.toString());
             setResult(101, intent);
-            finish();
 
         }
         else if(resultCode==UCrop.RESULT_ERROR)
         {
             final  Throwable error= UCrop.getError(data);
         }
+        finish();
     }
 }

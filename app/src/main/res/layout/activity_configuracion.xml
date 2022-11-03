@@ -25,6 +25,12 @@
             android:orientation="vertical">
 
 
+            <TextView
+                android:id="@+id/textView26"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Imágenes del menú" />
+
             <ProgressBar
                 android:id="@+id/progressBar5"
                 style="?android:attr/progressBarStyle"
@@ -34,17 +40,12 @@
                 android:indeterminateDuration="1500"
                 android:visibility="gone" />
 
-            <TextView
-                android:id="@+id/textView26"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerMenu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Imagen de menú" />
-
-            <ImageView
-                android:id="@+id/ivFotoRes"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                app:srcCompat="@drawable/ic_album" />
+                android:layout_height="215dp"
+                android:visibility="visible"
+                tools:visibility="gone" />
 
             <TextView
                 android:id="@+id/textView18"
@@ -109,6 +110,148 @@
                 android:ems="10"
                 android:inputType="textMultiLine|textPersonName"
                 android:lines="3" />
+
+            <TextView
+                android:id="@+id/textView29"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tema" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycleMenuPer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardMenuPerFondo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="#633030">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvTituloMenu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Lindo Chumayel Menu"
+                        android:textAlignment="center"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvMenuPerCat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#932C2C"
+                        android:text=" Hamburguesas"
+                        android:textColor="#F6F3F3" />
+
+                    <LinearLayout
+                        android:id="@+id/layoutMenuPerFondoPlato"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:background="#2F7836"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvMenuPerTextPlato"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:text="HAMBURGUESA 1"
+                                android:textColor="#FBFBFB" />
+
+                            <TextView
+                                android:id="@+id/tvMenuPerDescrip"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:text="CARNE, JAMON, TOMATES"
+                                android:textColor="#FFFFFF"
+                                android:textSize="10sp"
+                                android:textStyle="italic" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvMenuPerPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="8dp"
+                            android:text="$100"
+                            android:textColor="#FAF4F4" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutMenuPerFondoPlato2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:background="#2F7836"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvMenuPerTextPlato2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:text="HAMBURGUESA 2"
+                                android:textColor="#FFFFFF"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/tvMenuPerDescrip2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="8dp"
+                                android:lineSpacingExtra="10sp"
+                                android:text="JAMON, TOCINO, CARNE"
+                                android:textColor="#FBF9F9"
+                                android:textSize="10sp"
+                                android:textStyle="italic" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvMenuPerPrice2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginRight="8dp"
+                            android:text="$100"
+                            android:textColor="#FFFEFE" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <Button
                 android:id="@+id/btnGuardaConfig"

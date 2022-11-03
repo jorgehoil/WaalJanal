@@ -39,8 +39,6 @@ public class ABCProductoActivity extends AppCompatActivity {
     DatabaseReference databaseReferenceMenu;
     EditText edNombreProducto, edPrecioProducto, edDescripconProd;
     Spinner spCategorias;
-    Button btnGaleria, btnCamara;
-    ImageView imProducto;
     DialogoCarga dialogoCarga;
     List<String> lstCategorias;
     List<String> lstIdCategorias;
@@ -68,9 +66,6 @@ public class ABCProductoActivity extends AppCompatActivity {
         edDescripconProd=findViewById(R.id.edDescripcionProducto);
         ckPublicar=findViewById(R.id.ckPublicar);
         spCategorias= findViewById(R.id.spCategorias);
-        btnCamara=findViewById(R.id.btnCamaraProducto);
-        btnGaleria=findViewById(R.id.btnGaleriaProducto);
-        imProducto=findViewById(R.id.imImagenProducto);
         cIdMenu=Global.RecuperaPreferencia(CCLAVEMENU,this);
         if(!cIdMenu.isEmpty())
         {
@@ -164,6 +159,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                     if(task.isSuccessful())
                     {
                         cerrarDialogoCarga();
+                        limpiarCampos();
                         Toast.makeText(ABCProductoActivity.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -211,6 +207,13 @@ public class ABCProductoActivity extends AppCompatActivity {
         };
 
     }
+
+    private void limpiarCampos() {
+        edNombreProducto.setText("");
+        edPrecioProducto.setText("");
+        edDescripconProd.setText("");
+    }
+
     private Producto obtenerProductoGuardar()
     {
         Producto producto= new Producto();

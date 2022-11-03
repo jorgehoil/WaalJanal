@@ -61,6 +61,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="#F3F2EE"
                 android:orientation="horizontal">
 
                 <Spinner
@@ -93,43 +94,6 @@
                 android:inputType="textMultiLine|textPersonName"
                 android:lines="5"
                 android:singleLine="false" />
-
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Imagen" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnCamaraProducto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:layout_weight="1"
-                    android:text="Cámara"
-                    app:icon="@drawable/ic_camera" />
-
-                <Button
-                    android:id="@+id/btnGaleriaProducto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
-                    android:text="Galería"
-                    app:icon="@drawable/ic_album" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/imImagenProducto"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_camera" />
 
         </LinearLayout>
     </ScrollView>

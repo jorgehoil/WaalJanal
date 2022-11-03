@@ -38,25 +38,27 @@
                 android:layout_marginRight="8dp"
                 android:layout_marginBottom="4dp"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/tvProductoNombre"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
                     android:layout_weight="1"
+                    android:inputType="textMultiLine"
+                    android:lines="2"
                     android:text="Hamburguesa doble queso"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvProductoPrecio"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_gravity="center"
                     android:text="$45"
-                    android:textAlignment="viewStart"
-                    android:textStyle="bold" />
+                    android:textAlignment="center" />
 
             </LinearLayout>
 
