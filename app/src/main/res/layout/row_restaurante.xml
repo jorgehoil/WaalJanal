@@ -56,6 +56,7 @@
                     android:layout_marginLeft="4dp"
                     android:layout_weight="1"
                     android:text="Código: wj-7"
+                    android:textColor="@color/color3"
                     android:textSize="14sp" />
             </LinearLayout>
 

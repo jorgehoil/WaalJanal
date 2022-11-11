@@ -35,17 +35,14 @@ public class DialogoABCRestaurante extends DialogFragment {
     EditText edNombreRestaurante;
     Button btnGuardarRest;
     Context context;
-    String cIdRest, cNombre;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReferenceRest;
-    DatabaseReference databaseReferenceMain;
+    DatabaseReference databaseReferenceMenus;
     ProgressBar pbCargaRest;
     FirebaseAuth firebaseAuth;
-    public DialogoABCRestaurante(Context context, String cIdRest, String cNombre)
+    public DialogoABCRestaurante(Context context)
     {
         this.context=context;
-        this.cIdRest=cIdRest;
-        this.cNombre=cNombre;
         firebaseDatabase=FirebaseDatabase.getInstance();
         firebaseAuth=FirebaseAuth.getInstance();
         databaseReferenceRest=firebaseDatabase.getReference().child("usuarios").child(firebaseAuth.getUid()).child("adminlugares");
@@ -73,10 +70,6 @@ public class DialogoABCRestaurante extends DialogFragment {
             }
 
         });
-        if(!cIdRest.isEmpty())
-        {
-            edNombreRestaurante.setText(cNombre);
-        }
         return dialog.create();
     }
     private boolean Valida(String cNombre)
@@ -92,21 +85,7 @@ public class DialogoABCRestaurante extends DialogFragment {
     {
         btnGuardarRest.setEnabled(false);
         pbCargaRest.setVisibility(View.VISIBLE);
-        if(!cIdRest.isEmpty())
-        {
-            databaseReferenceRest.child(cIdRest).child("cNombre").setValue(cNombre).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    btnGuardarRest.setEnabled(true);
-                    pbCargaRest.setVisibility(View.INVISIBLE);
-                    Toast.makeText(context, "¡Actualización correcta!", Toast.LENGTH_SHORT).show();
-                    dismiss();
-                }
-            });
-        }
-        else
-        {
-            firebaseDatabase.getReference().child("datamenu").runTransaction(new Transaction.Handler() {
+        firebaseDatabase.getReference().child("datamenu").runTransaction(new Transaction.Handler() {
                 @NonNull
                 @Override
                 public Transaction.Result doTransaction(@NonNull MutableData currentData) {
@@ -148,9 +127,6 @@ public class DialogoABCRestaurante extends DialogFragment {
                     }
                 }
             });
-
-        }
-
 
     }
 

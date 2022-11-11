@@ -41,6 +41,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -64,16 +65,16 @@ public class ActivityConfiguracion extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReferenceMenu;
     DatabaseReference databaseReference;
+    FirebaseAuth firebaseAuth;
     FirebaseStorage firebaseStorage;
     StorageReference storageReferenceImagenes;
     TextView cTextPrice1, cTextPrice2, cTextPlat1, cTextPlat2, cTextDescrip1, cTextDescrip2, cTextCat, tvTituloMenu;
-    String cIdMenu, cKeyImagen;
+    String cIdMenu, cKeyImagen, cKeyRestaurant;
     CardView cFondo;
     LinearLayout cFondoPlat, cFondoPlat2;
     EditText edNombreRes, edHorarioRes, edDireccionRes, edTelefono;
     Button btnGuardar;
     DialogoCarga dialogoCarga;
-    Uri uriImagenCarga;
     ViewPagerAdapter viewPagerAdapter;
     ViewPager2 viewPager2;
     int iPositionEdicionViewPager;
@@ -162,15 +163,14 @@ public class ActivityConfiguracion extends AppCompatActivity {
         edNombreRes=findViewById(R.id.edNombreRes);
         edTelefono=findViewById(R.id.edTelefonoRes);
         btnGuardar=findViewById(R.id.btnGuardaConfig);
-        cIdMenu=getIntent().getStringExtra("cIdMenu");
+        cIdMenu=getIntent().getStringExtra("cIdMenu")==null?"":getIntent().getStringExtra("cIdMenu");
         firebaseStorage=FirebaseStorage.getInstance();
         storageReferenceImagenes=firebaseStorage.getReference().child("imgmenus");
         firebaseDatabase=FirebaseDatabase.getInstance();
+        firebaseAuth=FirebaseAuth.getInstance();
         databaseReference=firebaseDatabase.getReference();
         if(!cIdMenu.isEmpty())
-            databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cIdMenu).child("info");
-        else
-            btnGuardar.setEnabled(false);
+            databaseReferenceMenu=databaseReference.child("menus").child(cIdMenu).child("info");
         btnGuardar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -345,16 +345,16 @@ public class ActivityConfiguracion extends AppCompatActivity {
     }
     private void Guardar()
     {
-        muestradialogoCarga();
-        HashMap<String,Object> hashMapData= new HashMap<>();
         if(databaseReferenceMenu!=null)
         {
-            hashMapData.put("cNombre", edNombreRes.getText().toString());
-            hashMapData.put("cDireccion", edDireccionRes.getText().toString());
-            hashMapData.put("cTelefono", edTelefono.getText().toString());
-            hashMapData.put("cHorario", edHorarioRes.getText().toString());
-            hashMapData.put("menuperinfo", personalizacionAdapter.obtenerSeleccionado());
-            databaseReferenceMenu.updateChildren(hashMapData).addOnCompleteListener(task -> {
+            muestradialogoCarga();
+            HashMap<String,Object> hashMapDataInfo= new HashMap<>();
+            hashMapDataInfo.put("cNombre", edNombreRes.getText().toString());
+            hashMapDataInfo.put("cDireccion", edDireccionRes.getText().toString());
+            hashMapDataInfo.put("cTelefono", edTelefono.getText().toString());
+            hashMapDataInfo.put("cHorario", edHorarioRes.getText().toString());
+            hashMapDataInfo.put("menuperinfo", personalizacionAdapter.obtenerSeleccionado());
+            databaseReferenceMenu.updateChildren(hashMapDataInfo).addOnCompleteListener(task -> {
                 ocultaDialogoCarga();
                 if(task.isSuccessful())
                 {
@@ -369,17 +369,23 @@ public class ActivityConfiguracion extends AppCompatActivity {
                 }
             });
         }
+        else
+        {
+            Global.MostrarMensaje(this, "Error al guardar", "No existe un id de menu, intente de nuevo");
+        }
+
+
 
     }
     private void ConsultaDatos()
     {
-
         if(databaseReferenceMenu!=null)
         {
             muestradialogoCarga();
             databaseReferenceMenu.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DataSnapshot> task) {
+                    ocultaDialogoCarga();
                     if(task.isSuccessful())
                     {
                         int iAux=0;
@@ -392,32 +398,31 @@ public class ActivityConfiguracion extends AppCompatActivity {
                             edHorarioRes.setText(dataSnapshot.child("cHorario").getValue()==null?"":dataSnapshot.child("cHorario").getValue(String.class));
                             edTelefono.setText(dataSnapshot.child("cTelefono").getValue()==null?"":dataSnapshot.child("cTelefono").getValue(String.class));
                             edDireccionRes.setText(dataSnapshot.child("cDireccion").getValue()==null?"":dataSnapshot.child("cDireccion").getValue(String.class));
-                            if(dataSnapshot.child("dataImages").getValue()!=null)
-                            {
-                                for(DataSnapshot dataSnapshot1:dataSnapshot.child("dataImages").getChildren())
-                                {
-                                  viewPagerData= new ViewPagerData();
-                                  viewPagerData.cKey=dataSnapshot1.getKey();
-                                  viewPagerData.lUrl= dataSnapshot1.child("cUrl").getValue() != null &&
-                                          !dataSnapshot1.child("cUrl").getValue(String.class).isEmpty();
-                                  viewPagerData.cUrl=dataSnapshot1.child("cUrl").getValue()==null?"":
-                                          dataSnapshot1.child("cUrl").getValue(String.class);
-                                  lstData.add(viewPagerData);
+                            if(dataSnapshot.child("dataImages").getValue()!=null) {
+                                for (DataSnapshot dataSnapshot1 : dataSnapshot.child("dataImages").getChildren()) {
+                                    viewPagerData = new ViewPagerData();
+                                    viewPagerData.cKey = dataSnapshot1.getKey();
+                                    viewPagerData.lUrl = dataSnapshot1.child("cUrl").getValue() != null &&
+                                            !dataSnapshot1.child("cUrl").getValue(String.class).isEmpty();
+                                    viewPagerData.cUrl = dataSnapshot1.child("cUrl").getValue() == null ? "" :
+                                            dataSnapshot1.child("cUrl").getValue(String.class);
+                                    lstData.add(viewPagerData);
                                 }
 
                             }
-                            iAux=lstData.size();
-                           for(int i=0; i<(Values.IMAGENESMENU-iAux);i++)
-                           {
-                               lstData.add(new ViewPagerData(false,"loc",""));
-                           }
-                           cargaImagenViewPager(lstData);
-                           ConsultaMenusPersonalizados();
+
                         }
                         else
                         {
                             Toast.makeText(ActivityConfiguracion.this, "No existen datos registrados", Toast.LENGTH_SHORT).show();
                         }
+                        iAux=lstData.size();
+                        for(int i=0; i<(Values.IMAGENESMENU-iAux);i++)
+                        {
+                            lstData.add(new ViewPagerData(false,"loc",""));
+                        }
+                        ConsultaMenusPersonalizados();
+                        cargaImagenViewPager(lstData);
                     }
                     else
                     {

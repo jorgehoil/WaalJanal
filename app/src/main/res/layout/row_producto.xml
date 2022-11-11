@@ -22,7 +22,10 @@
             android:id="@+id/layoutRowProd"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="2dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginBottom="8dp"
             android:orientation="horizontal">
 
             <CheckBox
@@ -49,8 +52,7 @@
                     android:inputType="textMultiLine"
                     android:lines="2"
                     android:text="Hamburguesa doble queso"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvProductoPrecio"
@@ -58,7 +60,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="$45"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/color3"
+                    android:textStyle="italic" />
 
             </LinearLayout>
 

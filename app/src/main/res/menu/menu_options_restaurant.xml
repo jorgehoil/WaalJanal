@@ -7,22 +7,16 @@
         android:title="Marcar para Administrar" />
     <item
         android:id="@+id/informacionRes"
-        android:title="Configurar información" />
+        android:title="Configurar" />
     <item
         android:id="@+id/copiarURL"
-        android:title="Copiar link" />
+        android:title="Copiar Link de Menú" />
     <item
         android:id="@+id/menuLinea"
         android:title="Ver menú en línea" />
     <item
         android:id="@+id/generarQRRes"
-        android:title="Obtener QR" />
-    <item
-        android:id="@+id/responsableRes"
-        android:title="Responsable" />
-    <item
-        android:id="@+id/cambiarNombreRes"
-        android:title="Cambiar nombre" />
+        android:title="Generar QR" />
     <item
         android:id="@+id/eliminarMenu"
         android:title="Eliminar" />

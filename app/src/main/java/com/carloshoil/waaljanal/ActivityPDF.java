@@ -1,10 +1,13 @@
 package com.carloshoil.waaljanal;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -32,6 +35,7 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class ActivityPDF extends AppCompatActivity {
@@ -39,6 +43,20 @@ public class ActivityPDF extends AppCompatActivity {
 
     TextView tvMensajeInfo;
     String cIdMenu="", cNombreG;
+    private ActivityResultLauncher<String[]> requestPermissionLaucher=
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), hashMapGranted->
+            {
+               if(!hashMapGranted.containsValue(false))
+               {
+                    GenerarPDF();
+               }
+               else
+               {
+                   Toast.makeText(this, "Es necesario otorgar los permisos para continuar" +
+                           "", Toast.LENGTH_SHORT).show();
+                   finish();
+               }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +79,11 @@ public class ActivityPDF extends AppCompatActivity {
         {
             new Handler().postDelayed(() -> GenerarPDF(), 2500);
         }
+    }
+    private void solicitaPermiso() {
+        requestPermissionLaucher.launch(new String[]{
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE});
     }
 
     private boolean checkPermiso()
@@ -131,11 +154,13 @@ public class ActivityPDF extends AppCompatActivity {
             try {
                 pdfDocument.writeTo(new FileOutputStream(document));
                 Toast.makeText(this, "Se ha generado correctamente el archivo "+ "wj_"+cNombre+".pdf" , Toast.LENGTH_LONG).show();
-                finish();
+
 
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "¡ERROR AL GENERAR ARCHIVO!", Toast.LENGTH_SHORT).show();
             }
+            finish();
             pdfDocument.close();
         }
     }
@@ -155,11 +180,7 @@ public class ActivityPDF extends AppCompatActivity {
         }
     }
 
-    private void solicitaPermiso() {
-        ActivityCompat.requestPermissions(this, new String[]{
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 400);
-    }
+
 
     private Bitmap ObtenerQR()
     {
@@ -179,9 +200,7 @@ public class ActivityPDF extends AppCompatActivity {
                }catch (Exception e)
                {
                    return null;
-
                }
-
         }
         else
         {

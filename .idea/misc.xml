@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/cpb_load.xml" value="0.121" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/ed_diseno.xml" value="0.1" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/gradiente.xml" value="0.2" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/ic__qr_code.xml" value="0.1" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/ic_time.xml" value="0.2" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/drawable/imageview.xml" value="0.199" />
@@ -52,6 +53,7 @@
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/main.xml" value="0.1921875" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_abc_productos.xml" value="0.19114583333333332" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_categorias_op.xml" value="0.19114583333333332" />
+        <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_opciones_abc.xml" value="0.1921875" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_options_restaurant.xml" value="0.25" />
         <entry key="..\:/Users/Carlos/AndroidStudioProjects/WaalJanal/app/src/main/res/menu/menu_productos.xml" value="0.18697916666666667" />
       </map>

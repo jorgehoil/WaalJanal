@@ -70,6 +70,7 @@ public class FragmentProductos extends Fragment {
     private MenuItem itemPublicar;
     private FloatingActionButton fbAgregarProd;
     public String cIdCategoriaPub;
+    private boolean lPrimeraCarga=true;
 
     public FragmentProductos() {
         // Required empty public constructor
@@ -134,16 +135,17 @@ public class FragmentProductos extends Fragment {
                 }
                 else
                 {
-                    Global.MostrarMensaje(getActivity(), "Error", "No se ha podido actualizar los datos, intenta de nuevo");
+                    Global.MostrarMensaje(getActivity(), "Error", "No se ha podido" +
+                            " actualizar los datos, intenta de nuevo");
                 }
             }});
     }
-    private void CargaProductos(List<Producto> lstProd)
+    private void CargaProductosAdapter(List<Producto> lstProd)
     {
-        Log.d("DEBUG", "CARGA DATOS"+ lstProd.size());
+        Log.d("DEBUG", "CargaProductosAdapter");
         productosAdapter.Agregar(lstProd);
     }
-    private void CargaCategorias(List<String> lstCategorias)
+    private void CargaCategoriasAdapter(List<String> lstCategorias)
     {
         Log.d("DEBUG", "CargaCategorias");
         ArrayAdapter<String> arrayAdapter= new ArrayAdapter<>(getActivity(),
@@ -151,10 +153,10 @@ public class FragmentProductos extends Fragment {
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategorias.setAdapter(arrayAdapter);
     }
-    private void IniciarAdapter()
+    private void IniciarAdapterProductos()
     {
         List<Producto> lst= new ArrayList<>();
-        Log.d("DEBUG", "IniciarAdapter");
+        Log.d("DEBUG", "IniciarAdapterProductos");
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
         recyclerViewProd.setLayoutManager(linearLayoutManager);
@@ -168,8 +170,8 @@ public class FragmentProductos extends Fragment {
         itemPublicar.setVisible(lMostrar);
     }
 
-    private void CargaProductos(String cIdCategoria){
-        Log.d("DEBUG", "CargaProductos");
+    private void ConsultaProductos(String cIdCategoria){
+        Log.d("DEBUG", "ConsultaProductos");
         if(cIdCategoria.isEmpty())
         {
             Global.MostrarMensaje(getActivity(), "Información", "No existen categorias registrados");
@@ -199,7 +201,7 @@ public class FragmentProductos extends Fragment {
                     {
                         Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
                     }
-                    CargaProductos(lsProducto);
+                    CargaProductosAdapter(lsProducto);
                 } else {
                     Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
                             "un error al carga productos, inténtelo de nuevo" + task.getException());
@@ -227,13 +229,14 @@ public class FragmentProductos extends Fragment {
                 if(lstNombresCategorias.size()==0)
                 {
                     pbCargaProd.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "No existe categorias ni productos, regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "No existe categorias ni productos," +
+                            " regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
                 }
                 else
                 {
                     String cIdCategoria=lstIdsCategorias.get(0);
                     cIdCategoriaPub=cIdCategoria;
-                    CargaCategorias(lstNombresCategorias);
+                    CargaCategoriasAdapter(lstNombresCategorias);
                 }
             }
             else
@@ -245,6 +248,8 @@ public class FragmentProductos extends Fragment {
 
     void Init(View view)
     {
+        Log.d("DEBUG", "Init");
+        lPrimeraCarga=true;
         cIdMenuG=Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
         pbCargaProd=view.findViewById(R.id.pbCargaProductos);
         recyclerViewProd=view.findViewById(R.id.rcProductos);
@@ -270,9 +275,10 @@ public class FragmentProductos extends Fragment {
             spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    MostrarBotonPublicar(false);
                     productosAdapter.LimpiarLista();
                     cIdCategoriaPub=lstIdsCategorias.get(i);
-                    CargaProductos(lstIdsCategorias.get(i));
+                    ConsultaProductos(cIdCategoriaPub);
                 }
 
                 @Override
@@ -280,8 +286,6 @@ public class FragmentProductos extends Fragment {
 
                 }
             });
-
-
             requireActivity().addMenuProvider(new MenuProvider() {
                 @Override
                 public void onPrepareMenu(@NonNull Menu menu) {
@@ -300,7 +304,7 @@ public class FragmentProductos extends Fragment {
                     switch (menuItem.getItemId())
                     {
                         case R.id.marcarTodosProd:
-
+                            MarcarTodos();
                             break;
                         case R.id.publicarProd:
                             Publicar();
@@ -309,11 +313,16 @@ public class FragmentProductos extends Fragment {
                     return false;
                 }
             },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-            IniciarAdapter();
-            ConsultaCategorias();
-
+            IniciarAdapterProductos();
         }
     }
+
+    private void MarcarTodos() {
+        productosAdapter.MarcarTodos();
+        MostrarBotonPublicar(true);
+
+    }
+
     private void MostrarDialogoCarga()
     {
         dialogoCarga= new DialogoCarga(getActivity());
@@ -334,8 +343,60 @@ public class FragmentProductos extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        Log.d("DEBUG", "onCreate");
         View view=inflater.inflate(R.layout.fragment_productos, container, false);
         Init(view);
+
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        Log.d("debug", "onResume");
+        super.onResume();
+        CargaDatos();
+
+    }
+
+    private void CargaDatos() {
+        if(databaseReferenceMenu!=null)
+        {
+            if(lPrimeraCarga)
+            {
+                ConsultaCategorias();
+                lPrimeraCarga=false;
+            }
+            else
+            {
+                productosAdapter.LimpiarLista();
+                ConsultaProductos(cIdCategoriaPub);
+            }
+        }
+        else
+        {
+            Global.MostrarMensaje(getActivity(), "Seleccionar menú", "No tiene" +
+                    "seleccionado o creado un menú para adminsitrar. Ingrese a la sección de " +
+                    "Establecimientos para crear/configurar.");
+        }
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("DEBUG", "onPause");
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("DEBUG", "onStart");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("DEBUG", "onStop");
     }
 }

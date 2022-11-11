@@ -79,17 +79,11 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
                         case R.id.administrarRes:
                             MarcarRestaurante(restaurante.cIdMenu);
                             break;
-                        case R.id.responsableRes:
-                            AbrirResponsable();
-                            break;
                         case R.id.informacionRes:
-                            AbrirInformacion(restaurante.cIdMenu);
+                            AbrirInformacion(restaurante.cIdMenu, restaurante.cLlave);
                             break;
                         case R.id.generarQRRes:
                             AbrirQRGen(restaurante);
-                            break;
-                        case R.id.cambiarNombreRes:
-                            AbrirCambiarNombre(restaurante.cLlave, restaurante.cNombre);
                             break;
                         case R.id.menuLinea:
                             AbrirMenuLinea(restaurante.cIdMenu);
@@ -170,24 +164,13 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
     private void AbrirMenuLinea(String cIdMenu) {
         Intent i= new Intent(context, ActivityMenuOnline.class);
         i.putExtra("cIdMenu", cIdMenu);
+
         context.startActivity(i);
     }
-
-    private void AbrirCambiarNombre(String cKey, String cNombre)
-    {
-        DialogoABCRestaurante dialogoABCRestaurante= new DialogoABCRestaurante(context,cKey,cNombre);
-        dialogoABCRestaurante.show(((AppCompatActivity)context).getSupportFragmentManager(), "dialogoABCRest");
-    }
-
     private void MarcarRestaurante(String cIdMenuP) {
         Global.GuardarPreferencias(CCLAVEMENU,cIdMenuP, context);
         cIdMenu=cIdMenuP;
         notifyDataSetChanged();
-    }
-
-    private void AbrirResponsable() {
-        Intent i= new Intent(context, ActivityResponsable.class);
-        context.startActivity(i);
     }
 
     private void AbrirQRGen(Restaurante restaurante) {
@@ -197,9 +180,10 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
         context.startActivity(i);
     }
 
-    private void AbrirInformacion(String cKey) {
+    private void AbrirInformacion(String cIdMenu, String cKey) {
         Intent i= new Intent(context, ActivityConfiguracion.class);
-        i.putExtra("cIdMenu", cKey);
+        i.putExtra("cIdMenu", cIdMenu);
+        i.putExtra("cKeyRestaurante", cKey);
         context.startActivity(i);
     }
     public void LimpiaLista()

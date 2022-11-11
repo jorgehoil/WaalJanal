@@ -101,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-        ValidarMenu();
     }
 
     private void ObtenerDatosIniciales()
@@ -135,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
         databaseReference=firebaseDatabase.getReference();
         firebaseAuth=FirebaseAuth.getInstance();
         databaseReferenceUsers=databaseReference.child("usuarios").child(firebaseAuth.getUid());
-        databaseReferenceMenus=databaseReferenceUsers.child("adminlugares");
     }
 
     @Override
@@ -166,15 +164,7 @@ public class MainActivity extends AppCompatActivity {
             dialogoCarga.dismiss();
         }
     }
-    private void ValidarMenu()
-    {
-        String cIdMenu= Global.RecuperaPreferencia("cIdMenu", MainActivity.this);
-        if(cIdMenu.isEmpty())
-        {
-            Global.MostrarMensaje(this, "Información", "No tiene seleccionado o creado algún menú, " +
-                    "vaya a la sección de Restaurantes y seleccione o cree menú para administrar");
-        }
-    }
+
 
 
 

@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.core.utilities.Utilities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -112,6 +113,33 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         lstProducto.remove(iPosicion);
         notifyItemRemoved(iPosicion);
         notifyItemRangeChanged(iPosicion, lstProducto.size());
+    }
+    public void MarcarTodos()
+    {
+        boolean lMarcar=true;
+        int iMarcados=0, iDesMarcados=0;
+        for(Producto producto: lstProducto)
+        {
+            if(producto.lDisponible)
+                iMarcados++;
+            else
+                iDesMarcados++;
+        }
+        if(iMarcados>iDesMarcados)
+        {
+            lMarcar=false;
+        }
+
+        List<Producto> lstProductosTemp= new ArrayList<>();
+        for(Producto producto: lstProducto)
+        {
+            producto.lDisponible=lMarcar;
+            lstProductosTemp.add(producto);
+
+        }
+        lstProducto.clear();
+        lstProducto.addAll(lstProductosTemp);
+        notifyDataSetChanged();
     }
     private  void EliminaProducto(Producto producto)
     {

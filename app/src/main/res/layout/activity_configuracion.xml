@@ -29,7 +29,14 @@
                 android:id="@+id/textView26"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Imágenes del menú" />
+                android:text="Imágenes del menú"
+                android:textColor="@color/color3" />
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
 
             <ProgressBar
                 android:id="@+id/progressBar5"
@@ -48,10 +55,26 @@
                 tools:visibility="gone" />
 
             <TextView
+                android:id="@+id/textView8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Datos del menú"
+                android:textColor="@color/color3" />
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
                 android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre Restaurante" />
+                android:text="Nombre" />
 
             <EditText
                 android:id="@+id/edNombreRes"
@@ -67,7 +90,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Número de contacto" />
+                android:text="Teléfono" />
 
             <EditText
                 android:id="@+id/edTelefonoRes"
@@ -115,7 +138,16 @@
                 android:id="@+id/textView29"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tema" />
+                android:text="Personalizar"
+                android:textColor="@color/color3" />
+
+            <View
+                android:id="@+id/divider3"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycleMenuPer"
@@ -259,6 +291,12 @@
                 android:layout_height="wrap_content"
                 android:text="guardar"
                 app:icon="@drawable/ic_cloud" />
+
+            <View
+                android:id="@+id/divider2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider" />
 
         </LinearLayout>
     </ScrollView>

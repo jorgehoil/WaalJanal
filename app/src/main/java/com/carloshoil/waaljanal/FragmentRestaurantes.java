@@ -181,7 +181,7 @@ public class FragmentRestaurantes extends Fragment {
     }
 
     public void AbreDialogoABC() {
-        DialogoABCRestaurante dialogoABCRestaurante= new DialogoABCRestaurante(getActivity(),"","");
+        DialogoABCRestaurante dialogoABCRestaurante= new DialogoABCRestaurante(getActivity());
         dialogoABCRestaurante.show(getActivity().getSupportFragmentManager(), "dialogNuevo");
     }
 

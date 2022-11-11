@@ -43,7 +43,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
         {
             if(pagerData.lUrl)
             {
-                Picasso.get().load(pagerData.cUrl).placeholder(R.drawable.ic_time).into(holder.imageViewMenu);
+                Picasso.get().load(pagerData.cUrl).placeholder(R.drawable.ic_image).into(holder.imageViewMenu);
             }
             else
             {
