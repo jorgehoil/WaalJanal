@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="monedas">
+        <item>Peso Mexicano (MXN)</item>
+        <item>Dolar Estadounidense (USD)</item>
+        <item>Dolar Canadiense(CAD)</item>
+        <item>Sol Peruano (PEN)</item>
+        <item>Euros (EUR)</item>
+        <item>Boliviano (BOB)</item>
+        <item>Quetzal (GTQ)</item>
+        <item>Peso argentino (ARS)</item>
+        <item>Peso chileno (CLP)</item>
+        <item>Peso colombiano (CLP)</item>
+        <item></item>
+    </string-array>
+</resources>

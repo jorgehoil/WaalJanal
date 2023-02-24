@@ -2,6 +2,7 @@ package com.carloshoil.waaljanal;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,6 +19,7 @@ public class ActivityMenuOnline extends AppCompatActivity {
         webView=findViewById(R.id.webView);
         Init();
     }
+    @SuppressLint("SetJavaScriptEnabled")
     private void Init()
     {
         String cUrl="waaljanal.web.app/menu.html?IdMenu=";

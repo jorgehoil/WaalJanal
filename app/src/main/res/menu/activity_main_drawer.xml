@@ -15,11 +15,19 @@
         <item
             android:id="@+id/nav_restaurantes"
             android:icon="@drawable/ic_restaurant"
-            android:title="Establecimientos" />
+            android:title="Menus" />
         <item
-            android:id="@+id/nav_cuenta"
-            android:icon="@drawable/ic_account"
-            android:title="Cuenta" />
+            android:id="@+id/nav_registropagos"
+            android:icon="@drawable/ic_money"
+            android:title="Registro de pagos" />
+        <item
+            android:id="@+id/nav_suscripcion"
+            android:icon="@drawable/ic_baseline_subscriptions_24"
+            android:title="Suscripciones" />
+        <item
+            android:id="@+id/nav_acerca_de"
+            android:icon="@drawable/ic_info"
+            android:title="Acerca de" />
         <item
             android:id="@+id/nav_salir"
             android:icon="@drawable/ic_logout_24"

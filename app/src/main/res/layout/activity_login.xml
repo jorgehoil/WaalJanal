@@ -38,7 +38,7 @@
                 android:drawableLeft="@drawable/ic_email"
                 android:ems="10"
                 android:hint="ejemplo@mail.com"
-                android:inputType="textPersonName" />
+                android:inputType="textEmailAddress" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/ed_diseno"
-                android:drawableLeft="@drawable/ic_pass"
+                android:drawableLeft="@drawable/ic_key"
                 android:ems="10"
                 android:hint="*******"
                 android:inputType="textPersonName|textPassword" />
@@ -78,7 +78,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Regístrate aquí"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/color3" />
 
         </LinearLayout>
     </ScrollView>

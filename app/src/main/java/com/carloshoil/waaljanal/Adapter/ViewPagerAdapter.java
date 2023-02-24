@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.carloshoil.waaljanal.ActivityConfiguracion;
+import com.carloshoil.waaljanal.ActivityImagenes;
 import com.carloshoil.waaljanal.DTO.ViewPagerData;
 import com.carloshoil.waaljanal.R;
 import com.squareup.picasso.Picasso;
@@ -21,12 +22,12 @@ import java.util.List;
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
     private List<ViewPagerData> lstData;
     Context context;
-    ActivityConfiguracion configuracion;
-    public ViewPagerAdapter(List<ViewPagerData> lstData, Context context, ActivityConfiguracion activityConfiguracion)
+    ActivityImagenes activityImagenes;
+    public ViewPagerAdapter(List<ViewPagerData> lstData, Context context, ActivityImagenes activityIamgenes)
     {
         this.lstData=lstData;
         this.context=context;
-        this.configuracion=activityConfiguracion;
+        this.activityImagenes=activityIamgenes;
     }
     @NonNull
     @Override
@@ -55,7 +56,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
             holder.btnCambiaImagen.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                   configuracion.abrirCropperViewPager(pagerData.cKey, holder.getAdapterPosition());
+                   activityImagenes.abrirCropperViewPager(pagerData.cKey, holder.getAdapterPosition());
                 }
             });
         }

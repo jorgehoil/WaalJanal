@@ -135,10 +135,6 @@ public class ABCProductoActivity extends AppCompatActivity {
 
     }
 
-    private void SubirImagen()
-    {
-
-    }
     private void GuardarDatos()
     {
         String cMenu="menus/"+cIdMenu+"/";

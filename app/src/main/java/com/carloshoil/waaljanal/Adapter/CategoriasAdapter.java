@@ -111,30 +111,31 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
         notifyItemRangeChanged(iPosition, lstCategoria.size());
     }
     private void EliminarCategoria(String cLlave, int iPosition) {
-        databaseReference.child("menus").child(cIdMenu).child("productos").orderByChild("cIdCategoria").equalTo(cLlave).get().addOnCompleteListener(task -> {
-            HashMap<String, Object> hashMapDelete= new HashMap<>();
-            if(task.isSuccessful())
-            {
-                for(DataSnapshot dataSnapshot: task.getResult().getChildren())
-                {
-                    hashMapDelete.put("menus/"+cIdMenu+"/productos/"+dataSnapshot.getKey(), null);
-                }
-                hashMapDelete.put("menus/"+cIdMenu+"/categorias/"+cLlave, null);
-                hashMapDelete.put("menus/"+cIdMenu+"/menu_publico/"+cLlave, null);
-                databaseReference.updateChildren(hashMapDelete).addOnCompleteListener(task1 -> {
-                    if(task1.isSuccessful())
+        databaseReference.child("menus").child(cIdMenu).child("productos")
+                .orderByChild("cIdCategoria").equalTo(cLlave).get().addOnCompleteListener(task -> {
+                    HashMap<String, Object> hashMapDelete= new HashMap<>();
+                    if(task.isSuccessful())
                     {
-                        EliminaItem(iPosition);
-                        Toast.makeText(context, "Se ha eliminado correctamente", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Global.MostrarMensaje(context, "Error", "Se ha presentado" +
-                                " un error al borrar la categoría, intenta de nuevo");
-                    }
+                        for(DataSnapshot dataSnapshot: task.getResult().getChildren())
+                        {
+                            hashMapDelete.put("menus/"+cIdMenu+"/productos/"+dataSnapshot.getKey(), null);
+                        }
+                        hashMapDelete.put("menus/"+cIdMenu+"/categorias/"+cLlave, null);
+                        hashMapDelete.put("menus/"+cIdMenu+"/menu_publico/"+cLlave, null);
+                        databaseReference.updateChildren(hashMapDelete).addOnCompleteListener(task1 -> {
+                            if(task1.isSuccessful())
+                            {
+                                EliminaItem(iPosition);
+                                Toast.makeText(context, "Se ha eliminado correctamente", Toast.LENGTH_SHORT).show();
+                            }
+                            else
+                            {
+                                Global.MostrarMensaje(context, "Error", "Se ha presentado" +
+                                        " un error al borrar la categoría, intenta de nuevo");
+                            }
 
-                });
-            }
+                        });
+                    }
         });
     }
     public void ModificaCategoriaLista(Categoria categoria)

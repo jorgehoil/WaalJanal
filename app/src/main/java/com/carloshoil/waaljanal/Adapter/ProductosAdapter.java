@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.carloshoil.waaljanal.ABCProductoActivity;
@@ -97,6 +99,14 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
 
                }
            });
+           holder.tvNombreProducto.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+                   holder.ckProdDisp.setChecked(!holder.ckProdDisp.isChecked());
+                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
+                   fragmentProductos.MostrarBotonPublicar(true);
+               }
+           });
         }
     }
     private void EliminaProductoLista(String cKey)
@@ -162,7 +172,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         });
 
     }
-    private void ConfirmaEliminar(Producto producto, int iPosicion) {
+   private void ConfirmaEliminar(Producto producto, int iPosicion) {
 
         AlertDialog.Builder alertDialog= new AlertDialog.Builder(context);
         alertDialog.setTitle("¿Eliminar producto?");
@@ -203,7 +213,6 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
     }
     public void Agregar(List<Producto> lstProducto)
     {
-
         this.lstProducto.addAll(lstProducto);
         notifyDataSetChanged();
     }

@@ -2,6 +2,7 @@ package com.carloshoil.waaljanal;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -18,6 +19,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         SplashActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
@@ -36,11 +38,11 @@ public class SplashActivity extends AppCompatActivity {
             }
             else
             {
-                i= new Intent(SplashActivity.this, MainActivity.class);
+                i= new Intent(SplashActivity.this, ActivityInicioSeleccion.class);
             }
             startActivity(i);
             finish();
-        }, 1500);
+        }, 1000);
 
     }
 }

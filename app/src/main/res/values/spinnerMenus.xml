@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerMenus">
+        <item>1 menú</item>
+        <item>2 menús</item>
+        <item>3 menús</item>
+        <item>5 menús</item>
+    </string-array>
+    <string-array name="spinnerMeses">
+        <item>1 Mes</item>
+        <item>3 Meses</item>
+        <item>6 Meses</item>
+        <item>12 Meses</item>
+    </string-array>
+</resources>

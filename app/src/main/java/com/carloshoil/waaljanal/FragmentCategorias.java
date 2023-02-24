@@ -1,5 +1,6 @@
 package com.carloshoil.waaljanal;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,7 +51,6 @@ public class FragmentCategorias extends Fragment {
     private String mParam2;
     private RecyclerView recyclerViewCategorias;
     private FloatingActionButton floatingActionButtonAgregarCat;
-    private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
     private String cIdMenu="";
     private String CCLAVEMENU="cIdMenu";
@@ -57,6 +58,7 @@ public class FragmentCategorias extends Fragment {
     private DialogoCategoria dialogoCategoria;
     private ChildEventListener childEventListenerCat;
     private TextView tvNoRegistros;
+    FirebaseAuth firebaseAuth;
 
     public FragmentCategorias() {
         // Required empty public constructor
@@ -91,75 +93,90 @@ public class FragmentCategorias extends Fragment {
 
     private void Init( View view)
     {
-
-        cIdMenu= Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
-        recyclerViewCategorias=view.findViewById(R.id.rcvCategorias);
-        floatingActionButtonAgregarCat=view.findViewById(R.id.fbAgregarCategoria);
-        tvNoRegistros=view.findViewById(R.id.tvSinRegistrosCate);
-        firebaseDatabase=FirebaseDatabase.getInstance();
-        floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!cIdMenu.isEmpty())
-                    abrirDialogo(null, cIdMenu);
-                else
-                {
-                    Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
-                            "productos y/o categorías debes seleccionar y/o crear" +
-                            " un establecimiento para administrar desde la opcion Establecimientos");
-                }
-            }
-        });
-        if(!cIdMenu.isEmpty())
+        firebaseAuth=FirebaseAuth.getInstance();
+        if(firebaseAuth!=null)
         {
-            databaseReference=firebaseDatabase.getReference().child("menus").child(cIdMenu).child("categorias");
-
-            childEventListenerCat= new ChildEventListener() {
+            cIdMenu= Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
+            recyclerViewCategorias=view.findViewById(R.id.rcvCategorias);
+            floatingActionButtonAgregarCat=view.findViewById(R.id.fbAgregarCategoria);
+            tvNoRegistros=view.findViewById(R.id.tvSinRegistrosCate);
+            FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+            floatingActionButtonAgregarCat.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    tvNoRegistros.setVisibility(View.GONE);
-                    if(snapshot.exists())
+                public void onClick(View view) {
+                    if(!cIdMenu.isEmpty())
+                        abrirDialogo(null, cIdMenu);
+                    else
                     {
-                        Categoria categoria= new Categoria(
-                                snapshot.getKey(),
-                                snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
-                        );
-                        AgregaCategoriaLista(categoria);
+                        Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
+                                "productos y/o categorías debes seleccionar y/o crear" +
+                                " un establecimiento para administrar desde la opcion Establecimientos");
                     }
                 }
+            });
+            if(!cIdMenu.isEmpty())
+            {
+                databaseReference= firebaseDatabase.getReference().child("menus").child(cIdMenu).child("categorias");
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    if(snapshot.exists())
-                    {
-                        Categoria categoria= new Categoria(
-                                snapshot.getKey(),
-                                snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
-                        );
-                        ModificaCategoriaLista(categoria);
+                childEventListenerCat= new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        tvNoRegistros.setVisibility(View.GONE);
+                        if(snapshot.exists())
+                        {
+                            Categoria categoria= new Categoria(
+                                    snapshot.getKey(),
+                                    snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
+                            );
+                            AgregaCategoriaLista(categoria);
+                        }
                     }
 
-                }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                        if(snapshot.exists())
+                        {
+                            Categoria categoria= new Categoria(
+                                    snapshot.getKey(),
+                                    snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class)
+                            );
+                            ModificaCategoriaLista(categoria);
+                        }
 
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    }
 
-                }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    }
 
-                }
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
+                    }
 
-                }
-            };
-            preparaAdapter();
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                };
+                preparaAdapter();
+            }
+
+        }
+        else
+        {
+            IniciaLogin();
         }
 
 
+    }
+
+    private void IniciaLogin() {
+        Global.GuardarPreferencias("cEstatusLogin", "0",getActivity());
+        Intent i= new Intent(getActivity(), ActivityLogin.class);
+        i.putExtra("cData", "USER_NULL");
+        startActivity(i);
     }
 
     private void abrirDialogo(Categoria categoria, String cIdMenu) {

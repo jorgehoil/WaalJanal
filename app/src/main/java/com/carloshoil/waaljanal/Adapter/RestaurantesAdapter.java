@@ -1,26 +1,33 @@
 package com.carloshoil.waaljanal.Adapter;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.carloshoil.waaljanal.ActivityConfiguracion;
+import com.carloshoil.waaljanal.ActivityImagenes;
 import com.carloshoil.waaljanal.ActivityLogin;
 import com.carloshoil.waaljanal.ActivityMenuOnline;
 import com.carloshoil.waaljanal.ActivityPDF;
@@ -30,9 +37,11 @@ import com.carloshoil.waaljanal.Dialog.DialogoABCRestaurante;
 import com.carloshoil.waaljanal.R;
 import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -63,13 +72,15 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
         return new RestaurantesAdapter.ViewHolder(view);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Restaurante restaurante= lstRestaurante.get(position);
         if(restaurante!=null){
             holder.tvCodigoMenu.setText(restaurante.cIdMenu);
             holder.tvNombreRestaurante.setText(restaurante.cNombre);
-            holder.ckSelecionado.setChecked(cIdMenu.equals(restaurante.cIdMenu));
+            //holder.cardView.setCardBackgroundColor(cIdMenu.equals(restaurante.cIdMenu)?context.getColor(R.color.color2):Color.WHITE);
+            holder.ivSeleccionado.setVisibility(cIdMenu.equals(restaurante.cIdMenu)?View.VISIBLE:View.INVISIBLE);
             holder.btnOpciones.setOnClickListener(view -> {
                 PopupMenu popupMenu= new PopupMenu(context, holder.btnOpciones);
                 popupMenu.inflate(R.menu.menu_options_restaurant);
@@ -94,11 +105,24 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
                         case R.id.copiarURL:
                             CopiarUrl(restaurante);
                             break;
+                        case R.id.abrirImg:
+                            abrirImagenes(restaurante.cIdMenu);
+                            break;
 
                     }
                     return false;
                 });
                 popupMenu.show();
+            });
+            holder.swDisponible.setChecked(restaurante.lDisponible);
+            holder.swDisponible.setOnTouchListener(new View.OnTouchListener() {
+                @SuppressLint("ClickableViewAccessibility")
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    ConfirmarAbrirCerrar(!restaurante.lDisponible,restaurante);
+                    return false;
+
+                }
             });
 
 
@@ -108,7 +132,6 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
     }
 
     private void CopiarUrl(Restaurante restaurante) {
-
         ClipboardManager clipboardManager= (ClipboardManager)context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData;
         String cCodigo= "waaljanal.web.app/menu.html?menu="+ restaurante.cIdMenu;
@@ -142,8 +165,18 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
         alertDialog.setNegativeButton("NO", (dialogInterface, i) -> dialogInterface.dismiss());
         alertDialog.show();
 
+    }
+    private void ConfirmarAbrirCerrar(boolean lDisponible, Restaurante restaurante){
 
-
+        AlertDialog.Builder alertDialog= new AlertDialog.Builder(context);
+        alertDialog.setTitle("¿"+(restaurante.lDisponible?"Cerrar":"Abrir")+"?");
+        alertDialog.setIcon(R.drawable.ic_info);
+        alertDialog.setMessage("El menú"+(lDisponible?"":" ya no")+" podrá ser visible ahora");
+        alertDialog.setPositiveButton("SI", (dialogInterface, i) ->{
+           MarcaDisponible(lDisponible,restaurante);
+        });
+        alertDialog.setNegativeButton("NO", (dialogInterface, i) -> dialogInterface.dismiss());
+        alertDialog.show();
     }
 
     private void EliminaMenu(Restaurante restaurante) {
@@ -151,6 +184,7 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
             {
                 HashMap<String, Object> hashMapDelete= new HashMap<>();
                 hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+restaurante.cLlave, null);
+                hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUsoMenu/iTotalMenus", ServerValue.increment(-1));
                 hashMapDelete.put("menus/"+restaurante.cIdMenu, null);
                 firebaseDatabase.getReference().updateChildren(hashMapDelete).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
@@ -198,7 +232,7 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
         int iPosicion=0;
         for(Restaurante rest: lstRestaurante)
         {
-            if(rest.cLlave==restaurante.cLlave)
+            if(rest.cLlave.equals(restaurante.cLlave))
             {
                 iPosicion=iContador;
             }
@@ -225,6 +259,29 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
         notifyItemRangeChanged(iPosicion, lstRestaurante.size());
     }
 
+    private void abrirImagenes(String cIdMenu)
+    {
+        Intent i= new Intent(context, ActivityImagenes.class);
+        i.putExtra("cIdMenu", cIdMenu);
+        context.startActivity(i);
+
+    }
+    public void MarcaDisponible(boolean lDisponible, Restaurante restaurante)
+    {
+        HashMap<String, Object> hashMap= new HashMap<>();
+        hashMap.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+restaurante.cLlave+"/lDisponible",lDisponible);
+        hashMap.put("menus/"+restaurante.cIdMenu+"/info/lDisponible", lDisponible);
+        firebaseDatabase.getReference().updateChildren(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(context, "¡Se ha "+(lDisponible?"abierto":"cerrado")+" el menú de "+restaurante.cNombre+"!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+    }
     public void AgregaRestaurante(Restaurante restaurante)
     {
         this.lstRestaurante.add(restaurante);
@@ -239,13 +296,17 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombreRestaurante, tvCodigoMenu;
         Button btnOpciones;
-        CheckBox ckSelecionado;
+        ImageView ivSeleccionado;
+        Switch swDisponible;
+        CardView cardView;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombreRestaurante=itemView.findViewById(R.id.tvNombreRestauranteRow);
-            ckSelecionado=itemView.findViewById(R.id.ckRestauranteSeleccionado);
+            ivSeleccionado=itemView.findViewById(R.id.ivRestauranteSeleccionado);
             btnOpciones=itemView.findViewById(R.id.btnOpcionesRes);
             tvCodigoMenu=itemView.findViewById(R.id.tvCodigoMenu);
+            swDisponible=itemView.findViewById(R.id.swDisponible);
+            cardView=itemView.findViewById(R.id.cardRestaurant);
 
         }
     }

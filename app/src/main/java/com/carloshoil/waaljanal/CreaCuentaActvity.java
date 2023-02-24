@@ -3,6 +3,7 @@ package com.carloshoil.waaljanal;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.carloshoil.waaljanal.Utils.Global;
+import com.carloshoil.waaljanal.Utils.Values;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -18,8 +20,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 import java.util.HashMap;
+
+import javax.security.auth.login.LoginException;
 
 public class CreaCuentaActvity extends AppCompatActivity {
 
@@ -41,7 +46,7 @@ public class CreaCuentaActvity extends AppCompatActivity {
     {
         firebaseDatabase=FirebaseDatabase.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
-        databaseReference=firebaseDatabase.getReference().child("usuarios");
+        databaseReference=firebaseDatabase.getReference();
         edCorreo=findViewById(R.id.edCorreoCuenta);
         edContrasena=findViewById(R.id.edContrasenaCuenta);
         edConfirmaContrasena=findViewById(R.id.edContrasenaConf);
@@ -64,7 +69,11 @@ public class CreaCuentaActvity extends AppCompatActivity {
     }
     private boolean ValidaDatos(String cCorreo, String cNombre, String cPassword, String cPasswordConf)
     {
-        if(cNombre.isEmpty()||cPasswordConf.isEmpty()||cPassword.isEmpty()||cCorreo.isEmpty())
+        if(cNombre.isEmpty())
+        {
+           Global.MostrarMensaje(this, "Ingrese su nombre", "Debe ingresar por lo menos un nombre y un apellido");
+        }
+        if(cPasswordConf.isEmpty()||cPassword.isEmpty()||cCorreo.isEmpty())
         {
             Global.MostrarMensaje(this, "Llene todos los campos", "Es necesario llenar todos los campos");
             return false;
@@ -72,6 +81,11 @@ public class CreaCuentaActvity extends AppCompatActivity {
         if(!cPassword.equals(cPasswordConf))
         {
             Global.MostrarMensaje(this, "Error de contraseña", "Las constraseñas ingresadas no coinciden, intenta de nuevo");
+            return false;
+        }
+        if(cPassword.length()<8)
+        {
+            Global.MostrarMensaje(this, "Error de contraseña", "La contraseña debe tener al menos 8 caracteres");
             return false;
         }
         if(!cCorreo.contains("@"))
@@ -92,7 +106,10 @@ public class CreaCuentaActvity extends AppCompatActivity {
                     }
                     else
                     {
-                        Global.MostrarMensaje(CreaCuentaActvity.this, "Error al crear cuenta", "Ha ocurrido un error al crear la cuenta, intente de nuevo");
+                        cerrarDialogoCarga();
+                        Global.MostrarMensaje(CreaCuentaActvity.this, "Error al crear " +
+                                "cuenta", "Ha ocurrido un error al crear la cuenta. Es posible " +
+                                "que este correo ya haya sido utilizado, intenta de nuevo");
                     }
                 });
     }
@@ -108,13 +125,23 @@ public class CreaCuentaActvity extends AppCompatActivity {
         dialogoCarga.dismiss();
     }
     private void CreaRegistro(String cNombre) {
+        HashMap<String,Object> hashMapUpdate= new HashMap<>();
+        HashMap<String, Object> hashMapInfoUso= new HashMap<>();
+        HashMap<String, Object> hashMapUsoMenus= new HashMap<>();
         HashMap<String,Object> hashMapData= new HashMap<>();
+        HashMap<String, Object> hashMapInfoPrueba= new HashMap<>();
+        hashMapUsoMenus.put("iLimiteMenus", 1);
+        hashMapUsoMenus.put("iTotalMenus", 0);
+        hashMapInfoUso.put("iEstatusPrueba", Values.PRUEBA_NO_INICIADA);
+        hashMapInfoUso.put("iEstatusSuscripcion", Values.SUSCRIPCION_INACTIVA);
         hashMapData.put("cNombre", cNombre);
-        hashMapData.put("lAdmin", true);
-        databaseReference.child(firebaseAuth.getUid()).child("data").child("dataconfig").setValue(hashMapData).addOnCompleteListener(task -> {
+        hashMapData.put("lAdmin", false);
+        hashMapData.put("dataInfoUso",hashMapInfoUso);
+        hashMapData.put("dataInfoUsoMenu",hashMapUsoMenus);
+        hashMapUpdate.put("usuarios/"+firebaseAuth.getUid(), hashMapData);
+        databaseReference.updateChildren(hashMapUpdate).addOnCompleteListener(task -> {
             if(task.isSuccessful())
             {
-
                 EnviarVerificacion(firebaseAuth.getCurrentUser());
             }
             else
@@ -134,11 +161,7 @@ public class CreaCuentaActvity extends AppCompatActivity {
                     cerrarDialogoCarga();
                     if(task.isSuccessful())
                     {
-
-                        Global.MostrarMensaje(CreaCuentaActvity.this,"Email enviado",
-                                "Se ha enviado un correo a la dirección "
-                                        + firebaseUser.getEmail()+ ". Revisa tu bandeja y haz clic " +
-                                        "en el enlace adjunto. Luego, podrás iniciar sesión con tus datos");
+                        IniciaLogin();
                     }
                     else
                     {
@@ -155,6 +178,13 @@ public class CreaCuentaActvity extends AppCompatActivity {
             Global.MostrarMensaje(this, "Información", "El correo "+ firebaseUser.getEmail()
                     +" ya ha sido verificado, puede iniciar sesión usando su correo creados");
         }
+    }
+    public void IniciaLogin()
+    {
+        Intent i= new Intent(CreaCuentaActvity.this, ActivityLogin.class);
+        i.putExtra("cData", "VERIFY_MAIL");
+        startActivity(i);
+
     }
 
 }

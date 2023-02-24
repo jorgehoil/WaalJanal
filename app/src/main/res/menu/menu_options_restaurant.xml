@@ -9,6 +9,9 @@
         android:id="@+id/informacionRes"
         android:title="Configurar" />
     <item
+        android:id="@+id/abrirImg"
+        android:title="Imágenes" />
+    <item
         android:id="@+id/copiarURL"
         android:title="Copiar Link de Menú" />
     <item

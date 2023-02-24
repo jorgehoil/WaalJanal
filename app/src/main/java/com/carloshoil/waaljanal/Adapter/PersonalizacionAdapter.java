@@ -23,14 +23,14 @@ import java.util.List;
 
 public class PersonalizacionAdapter extends RecyclerView.Adapter<PersonalizacionAdapter.ViewHolder> {
     Context context;
-    String cIdMenuPersonal="";
     List<MenuPersonalizado> lstMenuPer;
     ActivityConfiguracion activityConfiguracion;
     MenuPersonalizado menuPersonalizadoSeleccionado=null;
-    public PersonalizacionAdapter(Context context, List<MenuPersonalizado> lstMenuPer, ActivityConfiguracion activityConfiguracion)
+    String cIdMenuPer;
+    public PersonalizacionAdapter(Context context, List<MenuPersonalizado> lstMenuPer, ActivityConfiguracion activityConfiguracion, String cIdMenuPer)
     {
         this.activityConfiguracion=activityConfiguracion;
-        cIdMenuPersonal= Global.RecuperaPreferencia("cIdMenuPersonal", context);
+        this.cIdMenuPer=cIdMenuPer;
         this.context=context;
         this.lstMenuPer=lstMenuPer;
     }
@@ -46,10 +46,8 @@ public class PersonalizacionAdapter extends RecyclerView.Adapter<Personalizacion
         MenuPersonalizado menuPersonalizado= lstMenuPer.get(position);
         if(menuPersonalizado!=null)
         {
-            if(cIdMenuPersonal.equals(menuPersonalizado.cKey))
+            if(cIdMenuPer.equals(menuPersonalizado.cKey))
             {
-                menuPersonalizadoSeleccionado=menuPersonalizado;
-                activityConfiguracion.ConfiguraMenu(menuPersonalizado);
                 holder.ckMenuPer.setChecked(true);
             }
             else
@@ -60,7 +58,8 @@ public class PersonalizacionAdapter extends RecyclerView.Adapter<Personalizacion
                 @Override
                 public void onClick(View view) {
                     menuPersonalizadoSeleccionado=menuPersonalizado;
-                    cIdMenuPersonal=menuPersonalizado.cKey;
+                    cIdMenuPer=menuPersonalizado.cKey;
+                    activityConfiguracion.ConfiguraMenu(menuPersonalizadoSeleccionado);
                     notifyDataSetChanged();
                 }
             });
@@ -68,10 +67,21 @@ public class PersonalizacionAdapter extends RecyclerView.Adapter<Personalizacion
             holder.tvNombreMenu.setText(menuPersonalizado.cNombre);
         }
     }
+
     public MenuPersonalizado obtenerSeleccionado()
     {
+        if(menuPersonalizadoSeleccionado==null){
+            for(MenuPersonalizado menuPersonalizadoLoc: lstMenuPer)
+            {
+                if(menuPersonalizadoLoc.cKey.equals(cIdMenuPer))
+                {
+                    menuPersonalizadoSeleccionado=menuPersonalizadoLoc;
+                }
+            }
+        }
         return menuPersonalizadoSeleccionado;
     }
+
 
     @Override
     public int getItemCount() {
@@ -81,6 +91,10 @@ public class PersonalizacionAdapter extends RecyclerView.Adapter<Personalizacion
     {
         this.lstMenuPer=lstMenuPer;
         notifyDataSetChanged();
+    }
+    public void ActualizaIdMenuPer(String cIdMenuPer)
+    {
+        this.cIdMenuPer=cIdMenuPer;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{

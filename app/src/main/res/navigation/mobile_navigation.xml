@@ -17,11 +17,21 @@
     <fragment
         android:id="@+id/nav_restaurantes"
         android:name="com.carloshoil.waaljanal.FragmentRestaurantes"
-        android:label="Establecimientos/Menús"
+        android:label="Menús"
         tools:layout="@layout/fragment_restaurantes" />
     <fragment
-        android:id="@+id/nav_cuenta"
-        android:name="com.carloshoil.waaljanal.FragmentCuenta"
-        android:label="Mi cuenta"
-        tools:layout="@layout/fragment_cuenta" />
+        android:id="@+id/nav_acerca_de"
+        android:name="com.carloshoil.waaljanal.FragmentAcercaDe"
+        android:label="Acerca de"
+        tools:layout="@layout/fragment_acerca_de" />
+    <fragment
+        android:id="@+id/nav_registropagos"
+        android:name="com.carloshoil.waaljanal.FragmentRegistroPago"
+        android:label="Registro de pagos"
+        tools:layout="@layout/fragment_registro_pago" />
+    <fragment
+        android:id="@+id/nav_suscripcion"
+        android:name="com.carloshoil.waaljanal.FragmentSuscripcion"
+        android:label="fragment_suscripcion"
+        tools:layout="@layout/fragment_suscripcion" />
 </navigation>

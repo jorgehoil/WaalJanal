@@ -33,6 +33,7 @@ import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -52,6 +53,7 @@ public class FragmentProductos extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReferenceMenu;
     private ProductosAdapter productosAdapter;
@@ -229,8 +231,8 @@ public class FragmentProductos extends Fragment {
                 if(lstNombresCategorias.size()==0)
                 {
                     pbCargaProd.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(), "No existe categorias ni productos," +
-                            " regístrelos en la sección correspondiente", Toast.LENGTH_SHORT).show();
+                    Global.MostrarMensaje(getActivity(), "No existen categorías", "Dirígete a la opción <<Categorías>> para iniciar el registro.");
+                    fbAgregarProd.setEnabled(false);
                 }
                 else
                 {
@@ -248,73 +250,91 @@ public class FragmentProductos extends Fragment {
 
     void Init(View view)
     {
+
         Log.d("DEBUG", "Init");
         lPrimeraCarga=true;
-        cIdMenuG=Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
-        pbCargaProd=view.findViewById(R.id.pbCargaProductos);
-        recyclerViewProd=view.findViewById(R.id.rcProductos);
-        spCategorias=view.findViewById(R.id.spCategoriasMain);
-        lstIdsCategorias=new ArrayList<>();
-        fbAgregarProd=view.findViewById(R.id.fbAgregarProducto);
-        fbAgregarProd.setOnClickListener(view1 -> {
-            if(!cIdMenuG.isEmpty())
-                AbreNuevo();
-            else
-            {
-                Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
-                        "productos y/o categorías debes seleccionar y/o crear" +
-                        " un establecimiento para administrar desde la opcion Establecimientos");
-            }
-        });
-        lstNombresCategorias= new ArrayList<>();
-
-        if(!cIdMenuG.isEmpty())
+        firebaseAuth=FirebaseAuth.getInstance();
+        if(firebaseAuth!=null)
         {
-            firebaseDatabase=FirebaseDatabase.getInstance();
-            databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cIdMenuG);
-            spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    MostrarBotonPublicar(false);
-                    productosAdapter.LimpiarLista();
-                    cIdCategoriaPub=lstIdsCategorias.get(i);
-                    ConsultaProductos(cIdCategoriaPub);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
+            cIdMenuG=Global.RecuperaPreferencia(CCLAVEMENU, getActivity());
+            pbCargaProd=view.findViewById(R.id.pbCargaProductos);
+            recyclerViewProd=view.findViewById(R.id.rcProductos);
+            spCategorias=view.findViewById(R.id.spCategoriasMain);
+            lstIdsCategorias=new ArrayList<>();
+            fbAgregarProd=view.findViewById(R.id.fbAgregarProducto);
+            fbAgregarProd.setOnClickListener(view1 -> {
+                if(!cIdMenuG.isEmpty())
+                    AbreNuevo();
+                else
+                {
+                    Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
+                            "productos y/o categorías debes seleccionar y/o crear" +
+                            " un establecimiento para administrar desde la opcion Establecimientos");
                 }
             });
-            requireActivity().addMenuProvider(new MenuProvider() {
-                @Override
-                public void onPrepareMenu(@NonNull Menu menu) {
-                    MenuProvider.super.onPrepareMenu(menu);
-                    itemPublicar=menu.findItem(R.id.publicarProd);
-                }
+            lstNombresCategorias= new ArrayList<>();
 
-                @Override
-                public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                    menuInflater.inflate(R.menu.menu_productos, menu);
-
-                }
-
-                @Override
-                public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                    switch (menuItem.getItemId())
-                    {
-                        case R.id.marcarTodosProd:
-                            MarcarTodos();
-                            break;
-                        case R.id.publicarProd:
-                            Publicar();
-                            break;
+            if(!cIdMenuG.isEmpty())
+            {
+                firebaseDatabase=FirebaseDatabase.getInstance();
+                databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cIdMenuG);
+                spCategorias.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        MostrarBotonPublicar(false);
+                        productosAdapter.LimpiarLista();
+                        cIdCategoriaPub=lstIdsCategorias.get(i);
+                        ConsultaProductos(cIdCategoriaPub);
                     }
-                    return false;
-                }
-            },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-            IniciarAdapterProductos();
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> adapterView) {
+
+                    }
+                });
+                requireActivity().addMenuProvider(new MenuProvider() {
+                    @Override
+                    public void onPrepareMenu(@NonNull Menu menu) {
+                        MenuProvider.super.onPrepareMenu(menu);
+                        itemPublicar=menu.findItem(R.id.publicarProd);
+                    }
+
+                    @Override
+                    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                        menuInflater.inflate(R.menu.menu_productos, menu);
+
+                    }
+
+                    @Override
+                    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                        switch (menuItem.getItemId())
+                        {
+                            case R.id.marcarTodosProd:
+                                MarcarTodos();
+                                break;
+                            case R.id.publicarProd:
+                                Publicar();
+                                break;
+                        }
+                        return false;
+                    }
+                },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+                IniciarAdapterProductos();
+            }
         }
+        else
+        {
+            AbreLogin();
+        }
+
+    }
+
+    private void AbreLogin() {
+        Global.GuardarPreferencias("cEstatusLogin", "0",getActivity());
+        Intent i= new Intent(getActivity(), ActivityLogin.class);
+        i.putExtra("cData", "USER_NULL");
+        startActivity(i);
+
     }
 
     private void MarcarTodos() {
@@ -359,7 +379,7 @@ public class FragmentProductos extends Fragment {
     }
 
     private void CargaDatos() {
-        if(databaseReferenceMenu!=null)
+        if(databaseReferenceMenu!=null||!cIdMenuG.isEmpty())
         {
             if(lPrimeraCarga)
             {
@@ -374,9 +394,10 @@ public class FragmentProductos extends Fragment {
         }
         else
         {
-            Global.MostrarMensaje(getActivity(), "Seleccionar menú", "No tiene" +
-                    "seleccionado o creado un menú para adminsitrar. Ingrese a la sección de " +
-                    "Establecimientos para crear/configurar.");
+            Global.MostrarMensaje(getActivity(), "No tiene seleccionado un menú",
+                    "Ingrese a la sección de " +
+                    "<<Establecimientos>> para crear o seleccionar");
+            fbAgregarProd.setEnabled(false);
         }
 
     }

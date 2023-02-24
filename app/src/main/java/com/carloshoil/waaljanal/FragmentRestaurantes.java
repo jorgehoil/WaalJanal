@@ -19,6 +19,9 @@ import com.carloshoil.waaljanal.Adapter.RestaurantesAdapter;
 import com.carloshoil.waaljanal.DTO.Producto;
 import com.carloshoil.waaljanal.DTO.Restaurante;
 import com.carloshoil.waaljanal.Dialog.DialogoABCRestaurante;
+import com.carloshoil.waaljanal.Utils.Global;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -118,71 +121,126 @@ public class FragmentRestaurantes extends Fragment {
     }
 
     private void Init(View view) {
-        fbNuevoRestaurant=view.findViewById(R.id.fbCrearRestaurantMenu);
-        recyclerViewRestaurantes=view.findViewById(R.id.recycleRestaurantes);
-        firebaseDatabase=FirebaseDatabase.getInstance();
         firebaseAuth=FirebaseAuth.getInstance();
-        firebaseUser=firebaseAuth.getCurrentUser();
-        fbNuevoRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AbreDialogoABC();
-            }
-        });
-        childEventListenerRes= new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                if(snapshot.exists())
-                {
+        if(firebaseAuth!=null)
+        {
+            fbNuevoRestaurant=view.findViewById(R.id.fbCrearRestaurantMenu);
+            recyclerViewRestaurantes=view.findViewById(R.id.recycleRestaurantes);
+            firebaseDatabase=FirebaseDatabase.getInstance();
+
+            firebaseUser=firebaseAuth.getCurrentUser();
+            fbNuevoRestaurant.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ValidaCreacionMenu();
+
+
+                }
+            });
+            childEventListenerRes= new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                    if(snapshot.exists())
+                    {
+                        Restaurante restaurante= new Restaurante(
+                                snapshot.getKey(),
+                                snapshot.child("cNombre").getValue()==null?"":snapshot.child("cNombre").getValue(String.class),
+                                snapshot.getKey(),
+                                snapshot.child("lDisponible").getValue()==null?true:snapshot.child("lDisponible").getValue(boolean.class));
+                        AgregaRestaurante(restaurante);
+                    }
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                     Restaurante restaurante= new Restaurante(
                             snapshot.getKey(),
-                            snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class),
-                            snapshot.child("cIdMenu")==null?"":snapshot.child("cIdMenu").getValue(String.class));
-                    AgregaRestaurante(restaurante);
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Restaurante restaurante= new Restaurante(
-                        snapshot.getKey(),
-                        snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class),
-                        snapshot.child("cIdMenu")==null?"":snapshot.child("cIdMenu").getValue(String.class));
-                ActualizaRestaurante(restaurante);
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists())
-                {
-                    Restaurante restaurante= new Restaurante(
+                            snapshot.child("cNombre").getValue()==null?"":snapshot.child("cNombre").getValue(String.class),
                             snapshot.getKey(),
-                            snapshot.child("cNombre")==null?"":snapshot.child("cNombre").getValue(String.class),
-                            snapshot.child("cIdMenu")==null?"":snapshot.child("cIdMenu").getValue(String.class));
-                    EliminaRestaurante(restaurante);
+                            snapshot.child("lDisponible").getValue()==null?true:snapshot.child("lDisponible").getValue(boolean.class));
+                    ActualizaRestaurante(restaurante);
                 }
+
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+                    if(snapshot.exists())
+                    {
+                        Restaurante restaurante= new Restaurante(
+                                snapshot.getKey(),
+                                snapshot.child("cNombre").getValue()==null?"":snapshot.child("cNombre").getValue(String.class),
+                                snapshot.getKey(),
+                                snapshot.child("lDisponible").getValue()==null?true:snapshot.child("lDisponible").getValue(boolean.class));
+                        EliminaRestaurante(restaurante);
+                    }
+                }
+
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            };
+            if(firebaseUser!=null) {
+                databaseReferenceRestaurantes = firebaseDatabase.getReference().child("usuarios").child(firebaseUser.getUid()).child("adminlugares");
             }
+            IniciaAdapter();
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-        if(firebaseUser!=null) {
-            databaseReferenceRestaurantes = firebaseDatabase.getReference().child("usuarios").child(firebaseUser.getUid()).child("adminlugares");
         }
-        IniciaAdapter();
+        else
+        {
+            IniciaLogin();
+        }
 
     }
 
+    private void ValidaCreacionMenu() {
+        firebaseDatabase.getReference().child("usuarios")
+                .child(firebaseAuth.getUid())
+                .child("dataInfoUsoMenu")
+                .get()
+                .addOnCompleteListener(task -> {
+                    int iLimite=0, iTotalActual=0;
+                    String cTitulo="";
+                    String cMensaje="";
+                    iLimite=task.getResult().child("iLimiteMenus").getValue()==null?0:
+                            task.getResult().child("iLimiteMenus").getValue(Integer.class);
+                    iTotalActual=task.getResult().child("iTotalMenus").getValue()==null?0:
+                            task.getResult().child("iTotalMenus").getValue(Integer.class);
+                    if(iTotalActual==0&&iLimite==0)
+                    {
+                       cTitulo="Error al crear menu";
+                       cMensaje="Ha ocurrido un error al crear el menú, si el problema persiste" +
+                               "envianos un correo a la dirección de contacto describiendo el problema";
+                       Global.MostrarMensaje(getActivity(), cTitulo, cMensaje);
+                    }
+                    else if(iTotalActual<iLimite)
+                    {
+                        AbreDialogoABC();
+                    }
+                    else {
+                        cTitulo="Límite alcanzado";
+                        cMensaje="Con tu plan actual solo puedes crear hasta " + iLimite +" menús. Puedes" +
+                                " crear más menús suscribiéndote al plan que mejor se adapte a tus necesidades." +
+                                "Consulta más información en la sección de Suscripciones";
+                        Global.MostrarMensaje(getActivity(), cTitulo, cMensaje);
+                    }
+                });
+    }
+
+    private void IniciaLogin() {
+        Global.GuardarPreferencias("cEstatusLogin", "0",getActivity());
+        Intent i= new Intent(getActivity(), ActivityLogin.class);
+        i.putExtra("cData", "USER_NULL");
+        startActivity(i);
+    }
+
     public void AbreDialogoABC() {
-        DialogoABCRestaurante dialogoABCRestaurante= new DialogoABCRestaurante(getActivity());
-        dialogoABCRestaurante.show(getActivity().getSupportFragmentManager(), "dialogNuevo");
+       Intent i= new Intent(getActivity(), ActivityConfiguracion.class);
+       startActivity(i);
     }
 
     private void AgregaRestaurante(Restaurante restaurante)

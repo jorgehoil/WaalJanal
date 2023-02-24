@@ -14,19 +14,26 @@ import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.carloshoil.waaljanal.Utils.Global;
+import com.carloshoil.waaljanal.Utils.Values;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class ActivityLogin extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
     Button btnIngresar;
     EditText edCorreo, edContrasena;
     DialogoCarga dialogoCarga;
     TextView tvRegistrate;
+    String cData="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +44,10 @@ public class ActivityLogin extends AppCompatActivity {
     }
     private void Init()
     {
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference();
+        cData=getIntent().getStringExtra("cData");
+        MuestraInfoSesion(cData);
         firebaseAuth=FirebaseAuth.getInstance();
         btnIngresar= findViewById(R.id.btnIngresar);
         edContrasena=findViewById(R.id.edContrasenia);
@@ -56,6 +67,37 @@ public class ActivityLogin extends AppCompatActivity {
         });
     }
 
+    private void MuestraInfoSesion(String cData) {
+        cData=cData==null?"":cData;
+        String cTitulo, cMensaje;
+        if(!cData.isEmpty())
+        {
+            switch (cData)
+            {
+                case "USER_NULL":
+                    cMensaje="Se ha iniciado sesión en otro dispositivo, vuelve a iniciar sesión. Si " +
+                            "no has sido tú, te recomendamos cambiar tu contraseña inmediatamente";
+                    cTitulo="Sesión no válida";
+                    break;
+                case "VERIFY_MAIL":
+                    cTitulo="Verifica tu correo electrónico";
+                    cMensaje="Hemos enviado un correo a la direccion ingresada," +
+                            " haz clic en el enlace adjunto a él para activar tu cuenta. " +
+                            " " +
+                            "Verifica todas tus bandejas, incluso las de spam.";
+                    break;
+                default:
+                    cMensaje="Se ha producido un error, por favor vuelve a iniciar sesión";
+                    cTitulo="Error de sesión";
+                    break;
+
+            }
+            Global.MostrarMensaje(this, cTitulo, cMensaje);
+        }
+
+
+    }
+
     private void AbrirRegistro() {
         Intent i= new Intent(ActivityLogin.this, CreaCuentaActvity.class);
         startActivity(i);
@@ -63,7 +105,7 @@ public class ActivityLogin extends AppCompatActivity {
 
     private void Login()
     {
-        String cUsuario=edCorreo.getText().toString();
+        String cUsuario=edCorreo.getText().toString().trim();
         String cContrasena=edContrasena.getText().toString();
         if(ValidaCampos(cUsuario, cContrasena))
         {
@@ -76,17 +118,19 @@ public class ActivityLogin extends AppCompatActivity {
                             if(task.isSuccessful())
                             {
                                 Global.GuardarPreferencias("cEstatusLogin", "1", ActivityLogin.this);
+                                Global.GuardarPreferencias("cEmailId", cUsuario, ActivityLogin.this);
                                 FirebaseUser user = firebaseAuth.getCurrentUser();
                                 if(user.isEmailVerified())
                                 {
-                                    AbrirPrincipal(user);
+                                    ObtenerNombre(user);
+
                                 }
                                 else
                                 {
                                     Global.MostrarMensaje(ActivityLogin.this, "Email no verificado", "" +
-                                            "Por favor, ingresa a tu correo y haz clic en el enlace enviado. " +
+                                            "Ingresa a tu correo y haz clic en el enlace enviado. " +
                                             "Luego intenta nuevamente iniciar sesión, si el problema persiste, comunicate a" +
-                                            " waaljanal@gmail.com");
+                                            " kookaydev@gmail.com");
                                 }
                             }
                             else
@@ -99,10 +143,28 @@ public class ActivityLogin extends AppCompatActivity {
 
     }
 
-    private void AbrirPrincipal(FirebaseUser user) {
+    private void ObtenerNombre(FirebaseUser user) {
+        databaseReference.child("usuarios")
+                .child(firebaseAuth.getUid())
+                .child("cNombre")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DataSnapshot> task) {
+                        if(task.isSuccessful())
+                        {
+                            Global.GuardarPreferencias("cNombreUsuario", (task.getResult().getValue()==null?"":
+                                    task.getResult().getValue(String.class)), ActivityLogin.this);
+                            AbrirInicioSeleccion(user);
+                        }
+                    }
+                });
+    }
+
+    private void AbrirInicioSeleccion(FirebaseUser user) {
         if(user!=null)
         {
-            Intent i= new Intent(ActivityLogin.this, MainActivity.class);
+            Intent i= new Intent(ActivityLogin.this, ActivityInicioSeleccion.class);
             startActivity(i);
             finish();
         }

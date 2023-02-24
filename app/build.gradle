@@ -32,6 +32,11 @@ android {
 }
 
 dependencies {
+    def fragment_version = "1.5.4"
+    def billing_version = "5.1.0"
+    implementation 'com.github.afreakyelf:Pdf-Viewer:v1.0.7'
+    implementation "com.android.billingclient:billing:$billing_version"
+    implementation "androidx.fragment:fragment:$fragment_version"
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-storage'
