@@ -91,30 +91,38 @@ public class ActivityInicioSeleccion extends AppCompatActivity {
         databaseReference.child("usuarios")
                 .child(firebaseAuth.getUid())
                 .child("dataInfoUso")
-                .child("iEstatusPrueba")
+                .child("iPeriodoEstatus")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DataSnapshot> task) {
-                        if(task.isSuccessful())
-                        {
-                            btnSiguiente.setEnabled(true);
-                            if(task.getResult().exists()) {
-                                int iEstatusPrueba = task.getResult().getValue(Integer.class);
+                .addOnCompleteListener(task -> {
+                    if(task.isSuccessful())
+                    {
+                        btnSiguiente.setEnabled(true);
+                        if(task.getResult().exists()) {
+                            int iEstatusPrueba = task.getResult().getValue(Integer.class);
+                            if(iEstatusPrueba==Values.PERIODO_INACTIVO||iEstatusPrueba==Values.PERIODO_ACTIVO)
+                            {
                                 AbrirRegistroMenu(iEstatusPrueba);
                             }
                             else {
-                                AbrirRegistroMenu(Values.PRUEBA_NO_INICIADA);
+                                AbrirPrincipal();
                             }
+
                         }
-                        else
-                        {
-                            Global.MostrarMensaje(ActivityInicioSeleccion.this,
-                                    "Error", "Ha ocurrido un error, intenta de nuevo");
-                        }
+                    }
+                    else
+                    {
+                        Global.MostrarMensaje(ActivityInicioSeleccion.this,
+                                "Error", "Ha ocurrido un error, intenta de nuevo");
                     }
                 });
     }
+
+    private void AbrirPrincipal() {
+        Intent i= new Intent(ActivityInicioSeleccion.this, MainActivity.class);
+        i.putExtra("cData", "FINALIZADO");
+        startActivity(i);
+    }
+
     private void GuardarSeleccion() {
         String cIdMenu= restaurantesSelAdapter.ObtenerSeleccionado();
         if(cIdMenu.isEmpty())
@@ -206,7 +214,7 @@ public class ActivityInicioSeleccion extends AppCompatActivity {
     private void AbrirRegistroMenu(int iEstatusPrueba) {
         Intent i= new Intent(ActivityInicioSeleccion.this, ActivityConfiguracion.class);
         i.putExtra("lInicio", true);
-        i.putExtra("iEstatusPrueba", iEstatusPrueba);
+        i.putExtra("iEstatusPeriodo", iEstatusPrueba);
         startActivity(i);
     }
 

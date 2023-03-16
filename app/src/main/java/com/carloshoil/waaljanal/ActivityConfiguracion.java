@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -20,6 +21,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -57,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class ActivityConfiguracion extends AppCompatActivity {
 
@@ -69,7 +74,6 @@ public class ActivityConfiguracion extends AppCompatActivity {
     CardView cFondo;
     LinearLayout cFondoPlat, cFondoPlat2;
     EditText edNombreRes, edHorarioRes, edTelefono;
-    Button btnGuardar;
     DialogoCarga dialogoCarga;
 
     RecyclerView recyclerViewMenuPer;
@@ -85,7 +89,14 @@ public class ActivityConfiguracion extends AppCompatActivity {
         Init();
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
     private void Init() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         ActivityConfiguracion.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         recyclerViewMenuPer=findViewById(R.id.recycleMenuPer);
         tvTituloMenu=findViewById(R.id.tvTituloMenu);
@@ -103,22 +114,30 @@ public class ActivityConfiguracion extends AppCompatActivity {
         edHorarioRes=findViewById(R.id.edHorarioRes);
         edNombreRes=findViewById(R.id.edNombreRes);
         edTelefono=findViewById(R.id.edTelefonoRes);
-        btnGuardar=findViewById(R.id.btnGuardaConfig);
         cIdMenuG=getIntent().getStringExtra("cIdMenu")==null?"":getIntent().getStringExtra("cIdMenu");
         lInicio=getIntent().getBooleanExtra("lInicio", false);
-        iEstatusPrueba=getIntent().getIntExtra("iEstatusPrueba", 1);
+        iEstatusPrueba=getIntent().getIntExtra("iEstatusPeriodo", 3);
         firebaseDatabase=FirebaseDatabase.getInstance();
         firebaseAuth=FirebaseAuth.getInstance();
         cIdMenuActual=Global.RecuperaPreferencia("cIdMenu", this);
         databaseReference=firebaseDatabase.getReference();
-        btnGuardar.setOnClickListener(new View.OnClickListener() {
+        addMenuProvider(new MenuProvider() {
             @Override
-            public void onClick(View view) {
-                if(ValidaGuardar())
-                {
-                   IniciarGuardado();
-                }
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_guardar, menu);
+            }
 
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int iId= menuItem.getItemId();
+                if(iId==R.id.itemGuardar)
+                {
+                    if(ValidaGuardar())
+                    {
+                        IniciarGuardado();
+                    }
+                }
+                return false;
             }
         });
         PreparaAdapterMenuPer();
@@ -222,7 +241,7 @@ public class ActivityConfiguracion extends AppCompatActivity {
         else {
             if(lInicio)
             {
-                if(iEstatusPrueba==Values.PRUEBA_NO_INICIADA)
+                if(iEstatusPrueba==Values.PERIODO_INACTIVO)
                 {
                     MostrarMensajeInicioPrueba();
                 }
@@ -262,7 +281,7 @@ public class ActivityConfiguracion extends AppCompatActivity {
         hashMapInfoPrueba.put("cNombre", Global.RecuperaPreferencia("cNombreUsuario", this));
         hashMapInfoPrueba.put("dateCreacion", ServerValue.TIMESTAMP);
         hashMapUpdate.put("usuariosprueba/"+ firebaseAuth.getUid(), hashMapInfoPrueba);
-        hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUso/iEstatusPrueba", Values.PRUEBA_INICIADA);
+        hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUso/iPeriodoEstatus", Values.PERIODO_ACTIVO);
         firebaseDatabase.getReference()
                 .updateChildren(hashMapUpdate)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -330,7 +349,7 @@ public class ActivityConfiguracion extends AppCompatActivity {
 
     }
 
-    private void Guardar(String cIdMenu, boolean lNuevo)
+    private void GuardarMenuPub(String cIdMenu, boolean lNuevo)
     {
         HashMap<String, Object> hashMapUpdate= new HashMap<>();
         hashMapUpdate.put("menus/"+cIdMenu+"/info/cNombre", edNombreRes.getText().toString() );
@@ -339,19 +358,16 @@ public class ActivityConfiguracion extends AppCompatActivity {
         hashMapUpdate.put("menus/"+ cIdMenu+"/info/iIdMoneda", spMoneda.getSelectedItemPosition());
         hashMapUpdate.put("menus/"+cIdMenu+"/info/cIdMenuPer", personalizacionAdapter.obtenerSeleccionado().cKey );
         hashMapUpdate.put("menus/"+cIdMenu+"/info/menuperinfo",personalizacionAdapter.obtenerSeleccionado());
-        hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+cIdMenu+"/cNombre",edNombreRes.getText().toString());
         if(lNuevo)
         {
             hashMapUpdate.put("menus/"+cIdMenu+"/info/lDisponible", false);
             hashMapUpdate.put("menus/"+cIdMenu+"/info/lActivo", true);
-            hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+cIdMenu+"/lDisponible",false);
-            hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUsoMenu/iTotalMenus", ServerValue.increment(1));
         }
         databaseReference.updateChildren(hashMapUpdate).addOnCompleteListener(task -> {
             ocultaDialogoCarga();
             if(task.isSuccessful())
             {
-                btnGuardar.setEnabled(true);
+
                 Toast.makeText(ActivityConfiguracion.this, "¡Guardado exitoso!", Toast.LENGTH_SHORT).show();
                 if(cIdMenuActual.isEmpty())
                 {
@@ -364,10 +380,31 @@ public class ActivityConfiguracion extends AppCompatActivity {
                 else {
                     finish();
                 }
+            }
+            else {
+                Global.MostrarMensaje(ActivityConfiguracion.this, "Error",
+                        "Se ha producido un error al guardar, intenta de nuevo");
+            }
+        });
+    }
+    private void Guardar(String cIdMenu, boolean lNuevo)
+    {
+        HashMap<String, Object> hashMapUpdate= new HashMap<>();
+        hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+cIdMenu+"/cNombre",edNombreRes.getText().toString());
+        if(lNuevo)
+        {
+            hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+cIdMenu+"/lDisponible",false);
+            hashMapUpdate.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUso/iTotalMenus", ServerValue.increment(1));
+        }
+        databaseReference.updateChildren(hashMapUpdate).addOnCompleteListener(task -> {
 
+            if(task.isSuccessful())
+            {
+                GuardarMenuPub(cIdMenu, lNuevo);
             }
             else
             {
+                ocultaDialogoCarga();
                 Global.MostrarMensaje(ActivityConfiguracion.this, "Error",
                         "Se ha producido un error al guardar, intenta de nuevo");
             }

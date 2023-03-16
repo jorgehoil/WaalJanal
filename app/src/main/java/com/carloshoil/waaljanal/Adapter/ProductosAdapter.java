@@ -65,47 +65,33 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
            holder.tvPrecio.setText("$"+producto.cPrecio);
            holder.tvNombreProducto.setText(producto.cNombre);
 
-           holder.ckProdDisp.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
-                   fragmentProductos.MostrarBotonPublicar(true);
-               }
+           holder.ckProdDisp.setOnClickListener(view -> {
+               lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
+               fragmentProductos.MostrarBotonPublicar(true);
            });
-           holder.btnOpcionesProd.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   PopupMenu popupMenu= new PopupMenu(context, holder.btnOpcionesProd);
-                   popupMenu.inflate(R.menu.menu_opciones_abc);
-                   popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                       @Override
-                       public boolean onMenuItemClick(MenuItem menuItem) {
-                           switch (menuItem.getItemId())
-                           {
-                               case R.id.eliminarABC:
-                                   ConfirmaEliminar(producto,holder.getAdapterPosition());
-                                   break;
-                               case R.id.editarABC:
-                                   Intent i= new Intent(context, ABCProductoActivity.class);
-                                   i.putExtra("cIdProducto",producto.cLlave);
-                                   context.startActivity(i);
-                                   break;
-                           }
+           holder.btnOpcionesProd.setOnClickListener(view -> {
+               PopupMenu popupMenu= new PopupMenu(context, holder.btnOpcionesProd);
+               popupMenu.inflate(R.menu.menu_opciones_abc);
+               popupMenu.setOnMenuItemClickListener(menuItem -> {
+                   int iIdItem=menuItem.getItemId();
+                   if(iIdItem==R.id.eliminarABC)
+                   {
+                       ConfirmaEliminar(producto,holder.getAdapterPosition());
+                   } else if(iIdItem==R.id.editarABC) {
+                       Intent i= new Intent(context, ABCProductoActivity.class);
+                       i.putExtra("cIdProducto",producto.cLlave);
+                       context.startActivity(i);
+                   }
 
-                           return false;
-                       }
-                   });
-                   popupMenu.show();
+                   return false;
+               });
+               popupMenu.show();
 
-               }
            });
-           holder.tvNombreProducto.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View view) {
-                   holder.ckProdDisp.setChecked(!holder.ckProdDisp.isChecked());
-                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
-                   fragmentProductos.MostrarBotonPublicar(true);
-               }
+           holder.tvNombreProducto.setOnClickListener(view -> {
+               holder.ckProdDisp.setChecked(!holder.ckProdDisp.isChecked());
+               lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
+               fragmentProductos.MostrarBotonPublicar(true);
            });
         }
     }
@@ -156,18 +142,15 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         HashMap<String, Object> hashMapUpdate= new HashMap<>();
         hashMapUpdate.put("menus/"+cIdMenu+"/productos/"+producto.cLlave, null);
         hashMapUpdate.put("menus/"+cIdMenu+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave, null);
-        firebaseDatabase.getReference().updateChildren(hashMapUpdate).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful())
-                {
-                    Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show();
-                    EliminaProductoLista(producto.cLlave);
-                }
-                else
-                {
-                    Global.MostrarMensaje(context, "Error", "No se ha podido eliminar el producto, intenta de nuevo");
-                }
+        firebaseDatabase.getReference().updateChildren(hashMapUpdate).addOnCompleteListener(task -> {
+            if(task.isSuccessful())
+            {
+                Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show();
+                EliminaProductoLista(producto.cLlave);
+            }
+            else
+            {
+                Global.MostrarMensaje(context, "Error", "No se ha podido eliminar el producto, intenta de nuevo");
             }
         });
 

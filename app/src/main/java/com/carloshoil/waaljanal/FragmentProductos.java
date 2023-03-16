@@ -39,6 +39,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -203,6 +204,7 @@ public class FragmentProductos extends Fragment {
                     {
                         Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
                     }
+
                     CargaProductosAdapter(lsProducto);
                 } else {
                     Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
@@ -269,7 +271,7 @@ public class FragmentProductos extends Fragment {
                 {
                     Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
                             "productos y/o categorías debes seleccionar y/o crear" +
-                            " un establecimiento para administrar desde la opcion Establecimientos");
+                            " un menú desde <<Menús>>");
                 }
             });
             lstNombresCategorias= new ArrayList<>();
@@ -307,14 +309,13 @@ public class FragmentProductos extends Fragment {
 
                     @Override
                     public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                        switch (menuItem.getItemId())
+                        int iId=menuItem.getItemId();
+                        if(iId==R.id.marcarTodosProd)
                         {
-                            case R.id.marcarTodosProd:
-                                MarcarTodos();
-                                break;
-                            case R.id.publicarProd:
-                                Publicar();
-                                break;
+                            MarcarTodos();
+                        }else if(iId==R.id.publicarProd)
+                        {
+                            Publicar();
                         }
                         return false;
                     }
@@ -388,8 +389,12 @@ public class FragmentProductos extends Fragment {
             }
             else
             {
-                productosAdapter.LimpiarLista();
-                ConsultaProductos(cIdCategoriaPub);
+                if(cIdCategoriaPub!=null)
+                {
+                    productosAdapter.LimpiarLista();
+                    ConsultaProductos(cIdCategoriaPub);
+                }
+
             }
         }
         else

@@ -19,9 +19,15 @@ public class ActivityMenuOnline extends AppCompatActivity {
         webView=findViewById(R.id.webView);
         Init();
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
     @SuppressLint("SetJavaScriptEnabled")
     private void Init()
     {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         String cUrl="waaljanal.web.app/menu.html?IdMenu=";
         webView.clearCache(true);
         webView.getSettings().setJavaScriptEnabled(true);

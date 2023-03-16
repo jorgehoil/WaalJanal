@@ -131,6 +131,8 @@ public class FragmentRegistroPago extends Fragment {
                                     snapshot.child("cReferencia").getValue().toString();
                             registroPago.cPaquete=snapshot.child("cPaquete").getValue()==null?"--":
                                     snapshot.child("cPaquete").getValue().toString();
+                            registroPago.cMensaje=snapshot.child("cMensaje").getValue()==null?"":
+                                    snapshot.child("cMensaje").getValue().toString();
                             if(registroPago.iEstatus== Values.PAGO_REVISION)
                             {
                                 lExistePendiente=true;

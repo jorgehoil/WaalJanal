@@ -3,20 +3,27 @@ package com.carloshoil.waaljanal;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Adapter.CategoriasAdapter;
 import com.carloshoil.waaljanal.Adapter.SuscripcionAdapter;
 import com.carloshoil.waaljanal.DTO.Suscripcion;
+import com.carloshoil.waaljanal.Dialog.DialogEstatusSuscripcion;
 import com.carloshoil.waaljanal.Utils.Global;
 import com.carloshoil.waaljanal.Utils.Values;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -92,10 +99,37 @@ public class FragmentSuscripcion extends Fragment {
 
             }
         });
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_suscripcion, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int iIdItem= menuItem.getItemId();
+                if(iIdItem==R.id.estatusSuscripcion)
+                {
+                    AbrirDialogoEstatus();
+                }else if(iIdItem==R.id.ayudaSuscripcion)
+                {
+                    Toast.makeText(getActivity(), "Abrir ayuda", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
         InicializarAdapter();
         ObtenerPaquetes("1menu");
 
     }
+
+    private void AbrirDialogoEstatus() {
+        DialogEstatusSuscripcion dialogEstatusSuscripcion = new DialogEstatusSuscripcion(getActivity());
+        dialogEstatusSuscripcion.setCancelable(false);
+        dialogEstatusSuscripcion.show(getActivity().getSupportFragmentManager(), "dialg_suscripcion");
+
+    }
+
     private void InicializarAdapter()
     {
 
@@ -104,6 +138,7 @@ public class FragmentSuscripcion extends Fragment {
         recyclePaquetes.setLayoutManager(linearLayoutManager);
         suscripcionAdapter= new SuscripcionAdapter(getActivity(), new ArrayList<>());
         recyclePaquetes.setAdapter(suscripcionAdapter);
+
     }
     private void ObtenerPaquetes(String cIdTipo)
     {

@@ -127,7 +127,7 @@ public class ActivityPDF extends AppCompatActivity {
         {
             String cPath;
             File document=null;
-            float iX=180,iY=230;
+            float iX=230,iY=280;
             PdfDocument pdfDocument= new PdfDocument();
             Paint paint= new Paint();
             Paint texto= new Paint();
@@ -138,24 +138,23 @@ public class ActivityPDF extends AppCompatActivity {
             canvas.drawBitmap(bitmapQr, 77, 100, paint);
             texto.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
             texto.setColor(ContextCompat.getColor(this, R.color.black));
-            canvas.drawText("PERRO", 110,220,texto);
-            for(int iColumn=0; iColumn<4; iColumn++)
+            for(int iColumn=0; iColumn<3; iColumn++)
             {
-                for(int iFila=0; iFila<4;iFila++)
+                for(int iFila=0; iFila<3;iFila++)
                 {
                     texto.setTextSize(14);
                     canvas.drawBitmap(bitmapQr, 77+(iFila*iX), 100+(iColumn*iY), paint);
-                    canvas.drawText("¡VISITA NUESTRO MENÚ!",50+(iFila*iX), 95+(iColumn*iY), texto);
+                    canvas.drawText("¡VISITA NUESTRO MENÚ!",73+(iFila*iX), 95+(iColumn*iY), texto);
                     texto.setTextSize(13);
-                    canvas.drawText("¿Sin escaner?", 85+(iFila*iX), 207+(iColumn*iY), texto);
+                    canvas.drawText("¿Sin escaner?", 110+(iFila*iX), 257+(iColumn*iY), texto);
                     texto.setTextSize(12);
-                    canvas.drawText("Visita:", 110+(iFila*iX),220+(iColumn*iY),texto);
-                    canvas.drawText("waaljanal.web.app",77+(iFila*iX),235+(iColumn*iY),texto);
-                    canvas.drawText("e ingresa el código:",74+(iFila*iX),251+(iColumn*iY),texto);
+                    canvas.drawText("Visita:", 135+(iFila*iX),270+(iColumn*iY),texto);
+                    canvas.drawText("waaljanal.web.app",100+(iFila*iX),285+(iColumn*iY),texto);
+                    canvas.drawText("e ingresa el código:",98+(iFila*iX),301+(iColumn*iY),texto);
                     texto.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
                     texto.setTextSize(12);
                     texto.setTextAlign(Paint.Align.CENTER);
-                    canvas.drawText(cIdMenu, 125+(iFila*iX),271+(iColumn*iY),texto);
+                    canvas.drawText(cIdMenu, 150+(iFila*iX),321+(iColumn*iY),texto);
                     texto.setTextAlign(Paint.Align.LEFT);
                     texto.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
                 }
@@ -211,7 +210,7 @@ public class ActivityPDF extends AppCompatActivity {
         try {
             startActivity(pdfOpenIntent);
         } catch (ActivityNotFoundException activityNotFoundException) {
-            Toast.makeText(this,"There is no app to load corresponding PDF",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"No hay ninguna app para abrir PDF",Toast.LENGTH_LONG).show();
 
         }
 
@@ -227,7 +226,7 @@ public class ActivityPDF extends AppCompatActivity {
         {
                try {
                    cUrl=cUrl+cIdMenu;
-                   matrix= mWriter.encode(cUrl, BarcodeFormat.QR_CODE, 100,100);
+                   matrix= mWriter.encode(cUrl, BarcodeFormat.QR_CODE, 150,150);
                    BarcodeEncoder barcodeEncoder= new BarcodeEncoder();
                    bitmapQR=barcodeEncoder.createBitmap(matrix);
                    return bitmapQR;

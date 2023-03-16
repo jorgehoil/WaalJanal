@@ -20,6 +20,7 @@ import com.carloshoil.waaljanal.DTO.Producto;
 import com.carloshoil.waaljanal.DTO.Restaurante;
 import com.carloshoil.waaljanal.Dialog.DialogoABCRestaurante;
 import com.carloshoil.waaljanal.Utils.Global;
+import com.carloshoil.waaljanal.Utils.Values;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -200,34 +201,48 @@ public class FragmentRestaurantes extends Fragment {
     private void ValidaCreacionMenu() {
         firebaseDatabase.getReference().child("usuarios")
                 .child(firebaseAuth.getUid())
-                .child("dataInfoUsoMenu")
+                .child("dataInfoUso")
                 .get()
                 .addOnCompleteListener(task -> {
                     int iLimite=0, iTotalActual=0;
+                    int iPeriodoEstatus=0;
                     String cTitulo="";
                     String cMensaje="";
                     iLimite=task.getResult().child("iLimiteMenus").getValue()==null?0:
                             task.getResult().child("iLimiteMenus").getValue(Integer.class);
                     iTotalActual=task.getResult().child("iTotalMenus").getValue()==null?0:
                             task.getResult().child("iTotalMenus").getValue(Integer.class);
-                    if(iTotalActual==0&&iLimite==0)
+                    iPeriodoEstatus=task.getResult().child("iPeriodoEstatus").getValue()==null?3:
+                            task.getResult().child("iPeriodoEstatus").getValue(Integer.class);
+                    if(iPeriodoEstatus== Values.PERIODO_FINALIZADO)
                     {
-                       cTitulo="Error al crear menu";
-                       cMensaje="Ha ocurrido un error al crear el menú, si el problema persiste" +
-                               "envianos un correo a la dirección de contacto describiendo el problema";
-                       Global.MostrarMensaje(getActivity(), cTitulo, cMensaje);
-                    }
-                    else if(iTotalActual<iLimite)
-                    {
-                        AbreDialogoABC();
-                    }
-                    else {
-                        cTitulo="Límite alcanzado";
-                        cMensaje="Con tu plan actual solo puedes crear hasta " + iLimite +" menús. Puedes" +
-                                " crear más menús suscribiéndote al plan que mejor se adapte a tus necesidades." +
-                                "Consulta más información en la sección de Suscripciones";
+                        cTitulo="Periodo finalizado";
+                        cMensaje="Tu periodo de prueba/suscripción ha vencido. Si WaalJanal " +
+                                "te ha parecido útil, puedes comprar/renovar tu suscripción en el " +
+                                "apartado de <<Suscripción>>";
                         Global.MostrarMensaje(getActivity(), cTitulo, cMensaje);
                     }
+                    else {
+                        if(iTotalActual==0&&iLimite==0)
+                        {
+                            cTitulo="Error al crear menu";
+                            cMensaje="Ha ocurrido un error al crear el menú, si el problema persiste" +
+                                    "envianos un correo a la dirección de contacto describiendo el problema";
+                            Global.MostrarMensaje(getActivity(), cTitulo, cMensaje);
+                        }
+                        else if(iTotalActual<iLimite)
+                        {
+                            AbreDialogoABC();
+                        }
+                        else {
+                            cTitulo="Límite alcanzado";
+                            cMensaje="Con tu plan actual solo puedes crear hasta " + iLimite +" menús. Puedes" +
+                                    " crear más menús suscribiéndote a un plan superior." +
+                                    " Consulta más información en la sección de <<Suscripciones>>";
+                            Global.MostrarMensaje(getActivity(), cTitulo, cMensaje);
+                        }
+                    }
+
                 });
     }
 

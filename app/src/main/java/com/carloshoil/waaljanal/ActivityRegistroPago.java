@@ -3,9 +3,12 @@ package com.carloshoil.waaljanal;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuProvider;
 
 import android.os.Bundle;
-import android.renderscript.Sampler;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -33,8 +36,8 @@ public class ActivityRegistroPago extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReferenceMain;
-    private EditText edReferenciaPago, edFechaPago;
-    private Button btnRegistrarPago, btnSelectorFecha;
+    private EditText edReferenciaPago, edFechaPago, edCorreoElectronico;
+    private Button btnSelectorFecha;
     private Spinner spNumeroMenus, spCantidadMeses;
     DialogoCarga dialogoCarga;
 
@@ -45,22 +48,43 @@ public class ActivityRegistroPago extends AppCompatActivity {
         setContentView(R.layout.activity_registro_pago);
         Init();
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
     private void Init()
     {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReferenceMain=firebaseDatabase.getReference();
         firebaseAuth= FirebaseAuth.getInstance();
+        edCorreoElectronico=findViewById(R.id.edCorreoRegPago);
         edFechaPago=findViewById(R.id.edFechaPago);
         edReferenciaPago=findViewById(R.id.edReferenciaPago);
-        btnRegistrarPago=findViewById(R.id.btnRegistrarPago);
         spCantidadMeses=findViewById(R.id.spCantidadMeses);
         spNumeroMenus=findViewById(R.id.spCantidadMenu);
         btnSelectorFecha=findViewById(R.id.btnAbrirSelectorFecha);
-        btnRegistrarPago.setOnClickListener(v->{
-            Guardar();
-        });
         btnSelectorFecha.setOnClickListener(v->{
             AbrirDatePicker();
+        });
+        edCorreoElectronico.setText(Global.RecuperaPreferencia("cEmailId", this));
+        addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_guardar, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int iId= menuItem.getItemId();
+                if(iId==R.id.itemGuardar)
+                {
+                    Guardar();
+                }
+                return false;
+            }
         });
 
     }
@@ -109,7 +133,7 @@ public class ActivityRegistroPago extends AppCompatActivity {
         hashMapRegPagoMain.put("dateRegistro", ServerValue.TIMESTAMP);
         hashMapRegPagoMain.put("cUserId", firebaseAuth.getUid());
         hashMapRegPagoMain.put("cNombreUsuario", Global.RecuperaPreferencia("cNombreUsuario", this));
-        hashMapRegPagoMain.put("cCorreo", Global.RecuperaPreferencia("cEmailId", this));
+        hashMapRegPagoMain.put("cCorreo",edCorreoElectronico.getText().toString());
         hashMapRegPagoMain.put("cPaquete", spNumeroMenus.getSelectedItem()+" - "+spCantidadMeses.getSelectedItem());
         hashMapUpdate.put("usuarios/"+ firebaseAuth.getUid()+"/registropagos/"+cFolio, hashMapRegPagoUser);
         hashMapUpdate.put("registropagos/"+cFolio, hashMapRegPagoMain);

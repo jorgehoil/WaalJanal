@@ -108,7 +108,7 @@
                     android:id="@+id/tvContactoCorreo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="kookaydev@gmail.com"
+                    android:text="waaljanal@gmail.com"
                     android:textColor="@color/color3"
                     android:textSize="16sp" />
 

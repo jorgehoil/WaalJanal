@@ -85,30 +85,26 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
                 PopupMenu popupMenu= new PopupMenu(context, holder.btnOpciones);
                 popupMenu.inflate(R.menu.menu_options_restaurant);
                 popupMenu.setOnMenuItemClickListener(menuItem -> {
-                    switch (menuItem.getItemId())
-                    {
-                        case R.id.administrarRes:
-                            MarcarRestaurante(restaurante.cIdMenu);
-                            break;
-                        case R.id.informacionRes:
-                            AbrirInformacion(restaurante.cIdMenu, restaurante.cLlave);
-                            break;
-                        case R.id.generarQRRes:
-                            AbrirQRGen(restaurante);
-                            break;
-                        case R.id.menuLinea:
-                            AbrirMenuLinea(restaurante.cIdMenu);
-                            break;
-                        case R.id.eliminarMenu:
-                            ConfirmaEliminar(restaurante);
-                            break;
-                        case R.id.copiarURL:
-                            CopiarUrl(restaurante);
-                            break;
-                        case R.id.abrirImg:
-                            abrirImagenes(restaurante.cIdMenu);
-                            break;
+                    int iIdItem=menuItem.getItemId();
 
+                    if(iIdItem==R.id.administrarRes)
+                    {
+                        MarcarRestaurante(restaurante.cIdMenu);
+                    } else if(iIdItem==R.id.informacionRes){
+                        AbrirInformacion(restaurante.cIdMenu, restaurante.cLlave);
+                    }
+                    else if(iIdItem==R.id.generarQRRes)
+                    {
+                        AbrirQRGen(restaurante);
+                    } else if(iIdItem==R.id.menuLinea){
+                        AbrirMenuLinea(restaurante.cIdMenu);
+                    } else if(iIdItem==R.id.eliminarMenu)
+                    {
+                        ConfirmaEliminar(restaurante);
+                    } else if(iIdItem==R.id.copiarURL){
+                        CopiarUrl(restaurante);
+                    }else if(iIdItem==R.id.abrirImg){
+                        abrirImagenes(restaurante.cIdMenu);
                     }
                     return false;
                 });
@@ -184,7 +180,7 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
             {
                 HashMap<String, Object> hashMapDelete= new HashMap<>();
                 hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+restaurante.cLlave, null);
-                hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUsoMenu/iTotalMenus", ServerValue.increment(-1));
+                hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUso/iTotalMenus", ServerValue.increment(-1));
                 hashMapDelete.put("menus/"+restaurante.cIdMenu, null);
                 firebaseDatabase.getReference().updateChildren(hashMapDelete).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

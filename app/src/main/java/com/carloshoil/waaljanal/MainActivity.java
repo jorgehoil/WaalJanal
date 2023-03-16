@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
 
     private DialogoCarga dialogoCarga;
-    private ChildEventListener childEventListenerEstatus;
+    private ValueEventListener valueEventListener;
+
 
 
     @Override
@@ -75,44 +76,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void IniciaLizaEscuchaEstatus() {
-        childEventListenerEstatus= new ChildEventListener() {
+        valueEventListener= new ValueEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                    int iEstatusPrueba;
-                    int iSuscripcion;
-                    iEstatusPrueba=snapshot.child("iEstatusPrueba").getValue()==null?1:
-                            snapshot.child("iEstatusPrueba").getValue(Integer.class);
-                    iSuscripcion=snapshot.child("lSuscrito").getValue()==null?0:
-                            snapshot.child("iEstatusSuscripcion").getValue(Integer.class);
-                    if(iEstatusPrueba== Values.PRUEBA_FINALIZADA&& iSuscripcion==Values.SUSCRIPCION_INACTIVA)
-                    {
-                        Global.MostrarMensaje(MainActivity.this, "Periodo de prueba finalizada",
-                                "Si WaalJanal te ha parecido útil, puedes suscribirte y " +
-                                        "seguir disfrutando de sus beneficios. Conoce los planes" +
-                                        " vigentes en el apartado de Suscripciones");
-                    }
-                    else if(iSuscripcion== Values.SUSCRIPCION_FINALIZADA)
-                    {
-                        Global.MostrarMensaje(MainActivity.this, "Tu suscripcion ha caducado",
-                                "Renueva tu plan comprando uno de los paquetes vigentes" +
-                                        "en el apartado de Suscripciones");
-                    }
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int iEstatusPrueba;
+                iEstatusPrueba=snapshot.getValue()==null?3:
+                        snapshot.getValue(Integer.class);
+                if(iEstatusPrueba==Values.PERIODO_FINALIZADO)
+                {
+                    Global.MostrarMensaje(MainActivity.this,"Suscripción vencida",
+                            "Tu periodo de prueba/suscripción ha vencido," +
+                                    " si WaalJanal te ha parecido útil, puedes reactivarlo " +
+                                    "comprando una suscripción en el apartado de <<Suscripciones>>");
+                } else if(iEstatusPrueba==3)
+                {
+                    Global.MostrarMensaje(MainActivity.this,"Error desconocido",
+                            "Se ha presentado un error desconocido, por favor comunicate" +
+                                    "al correo de contacto.");
+                    Toast.makeText(MainActivity.this, "", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -121,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+
     }
 
     private void CargaDatosIniciales() {
         String cNombre;
-        Boolean lAdmin;
         String cDatosCargados= Global.RecuperaPreferencia("cDatosCargados", this);
         if(cDatosCargados.isEmpty())
         {
@@ -133,20 +115,13 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            cNombre=Global.RecuperaPreferencia("cNombreCuenta",this );
-            lAdmin=Global.RecuperaPreferencia("lAdmin", this).equals("1");
-            Configura(cNombre, lAdmin);
+            cNombre=Global.RecuperaPreferencia("cNombreUsuario",this );
+            Configura(cNombre);
         }
     }
 
-    private void Configura(String cNombre, Boolean lAdmin) {
+    private void Configura(String cNombre) {
         NavigationView navigationView = binding.navView;
-        /*if(!lAdmin)
-        {
-            navigationView.getMenu().findItem(R.id.nav_categorias).setVisible(false);
-            navigationView.getMenu().findItem(R.id.nav_productos).setVisible(false);
-
-        }*/
         navigationView.getMenu().findItem(R.id.nav_salir).setOnMenuItemClickListener(menuItem -> {
             ConfirmaCerrarSesion();
             return false;
@@ -191,11 +166,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                     cerrarDialogoCarga();
                     String cNombre=task.getResult().child("cNombre").getValue()==null?"":task.getResult().child("cNombre").getValue(String.class);
-                    Boolean lAdmin= task.getResult().child("lAdmin").getValue()==null?false:task.getResult().child("lAdmin").getValue(boolean.class);
                     Global.GuardarPreferencias("cNombreCuenta", cNombre, MainActivity.this);
-                    Global.GuardarPreferencias("lAdmin", lAdmin?"1":"0", MainActivity.this);
                     Global.GuardarPreferencias("cDatosCargados", "1", MainActivity.this);
-                    Configura(cNombre, lAdmin);
+                    Configura(cNombre);
                 }
                 else
                 {
@@ -210,11 +183,13 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase=FirebaseDatabase.getInstance();
         databaseReference=firebaseDatabase.getReference();
         firebaseAuth=FirebaseAuth.getInstance();
-        if(firebaseAuth!=null)
+        if(firebaseAuth.getUid()!=null)
         {
             databaseReferenceUsers=databaseReference.child("usuarios").child(firebaseAuth.getUid());
-            databaseReferenceUsers.addChildEventListener(childEventListenerEstatus);
-
+            databaseReferenceUsers
+                    .child("dataInfoUso")
+                    .child("iPeriodoEstatus")
+                    .addValueEventListener(valueEventListener);
         }
         else
         {
@@ -266,13 +241,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        databaseReferenceUsers.removeEventListener(childEventListenerEstatus);
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        databaseReferenceUsers.removeEventListener(childEventListenerEstatus);
+        databaseReferenceUsers.removeEventListener(valueEventListener);
         super.onStop();
     }
 }

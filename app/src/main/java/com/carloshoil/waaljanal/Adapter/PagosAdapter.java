@@ -1,8 +1,8 @@
 package com.carloshoil.waaljanal.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.support.v4.os.IResultReceiver;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,15 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.carloshoil.waaljanal.DTO.RegistroPago;
-import com.carloshoil.waaljanal.DTO.Restaurante;
 import com.carloshoil.waaljanal.R;
 import com.carloshoil.waaljanal.Utils.Values;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
 public class PagosAdapter extends RecyclerView.Adapter<PagosAdapter.ViewHolder> {
 
@@ -54,14 +50,22 @@ public class PagosAdapter extends RecyclerView.Adapter<PagosAdapter.ViewHolder> 
             holder.tvEstatus.setText(ObtenerInfoEstatus(registroPago.iEstatus));
             holder.tvFechaRegistro.setText(ObtenerFecha(registroPago.dateRegistro));
             holder.tvFechaPago.setText(registroPago.cFechaAprobacion);
-            holder.btnInfo.setOnClickListener(view -> {
-                Toast.makeText(context, "Información", Toast.LENGTH_SHORT).show();
+            holder.btnMostrarInfo.setOnClickListener(view -> {
+                Toast.makeText(context, registroPago.cMensaje, Toast.LENGTH_LONG).show();
             });
-            holder.btnInfo.setEnabled(registroPago.iEstatus==Values.PAGO_ERROR);
-            holder.btnInfo.setVisibility(registroPago.iEstatus==Values.PAGO_ERROR?View.VISIBLE: View.INVISIBLE);
+            holder.btnMostrarInfo.setEnabled(registroPago.iEstatus==Values.PAGO_ERROR);
+            holder.btnMostrarInfo.setVisibility(registroPago.iEstatus==Values.PAGO_ERROR?View.VISIBLE: View.INVISIBLE);
             holder.imgViewEstatus.setImageResource(ObtenerImagen(registroPago.iEstatus));
             holder.imgViewEstatus.setColorFilter(ObtenerColor(registroPago.iEstatus));
+            //holder.tvMensaje.setVisibility(registroPago.cMensaje.trim().isEmpty()?View.GONE: View.VISIBLE);
+            //holder.ivInfoRechazo.setVisibility(registroPago.cMensaje.trim().isEmpty()?View.GONE: View.VISIBLE);
+            holder.tvMensaje.setText(registroPago.cMensaje);
         }
+
+    }
+
+    private void AbrirRegistroPago(RegistroPago registroPago) {
+        Intent i= new Intent(context, RegistroPago.class);
 
     }
 
@@ -146,9 +150,9 @@ public class PagosAdapter extends RecyclerView.Adapter<PagosAdapter.ViewHolder> 
     }
 
     public static class ViewHolder  extends RecyclerView.ViewHolder{
-        TextView tvFolio, tvFechaRegistro, tvFechaPago, tvReferencia, tvPaquete, tvEstatus;
-        Button btnInfo;
-        ImageView imgViewEstatus;
+        TextView tvFolio, tvFechaRegistro, tvFechaPago, tvReferencia, tvPaquete, tvEstatus, tvMensaje;
+        Button btnMostrarInfo;
+        ImageView imgViewEstatus, ivInfoRechazo;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvFolio=itemView.findViewById(R.id.tvFolioPago);
@@ -157,8 +161,10 @@ public class PagosAdapter extends RecyclerView.Adapter<PagosAdapter.ViewHolder> 
             tvEstatus=itemView.findViewById(R.id.tvEstatusPago);
             tvReferencia=itemView.findViewById(R.id.tvNumeroOperacionPago);
             tvPaquete=itemView.findViewById(R.id.tvPaqPago);
-            btnInfo=itemView.findViewById(R.id.btnInfoPago);
+            btnMostrarInfo=itemView.findViewById(R.id.btnMostrarInfo);
             imgViewEstatus=itemView.findViewById(R.id.imgEstatusPago);
+            tvMensaje=itemView.findViewById(R.id.tvMensajePago);
+            ivInfoRechazo=itemView.findViewById(R.id.ivInfoRechazo);
         }
     }
 }

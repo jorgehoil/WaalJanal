@@ -110,7 +110,7 @@ public class FragmentCategorias extends Fragment {
                     {
                         Global.MostrarMensaje(getActivity(),"Información", " Para poder crear " +
                                 "productos y/o categorías debes seleccionar y/o crear" +
-                                " un establecimiento para administrar desde la opcion Establecimientos");
+                                " un menu desde <<Menús>>");
                     }
                 }
             });

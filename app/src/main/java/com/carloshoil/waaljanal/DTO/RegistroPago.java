@@ -7,6 +7,7 @@ public class RegistroPago {
     public long dateRegistro;
     public String cReferencia;
     public int iEstatus;
+    public String cMensaje;
 
 
     public RegistroPago(String cFolio, String cFechaAprobacion, String cPaquete, long dateRegistro, String cReferencia, int iEstatus) {

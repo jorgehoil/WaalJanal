@@ -54,8 +54,14 @@ public class ABCProductoActivity extends AppCompatActivity {
         ABCProductoActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Init();
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
 
     private void Init() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         cIdProducto=getIntent().getStringExtra("cIdProducto")==null?"":getIntent().getStringExtra("cIdProducto");
         cIdCategoriaSel=getIntent().getStringExtra("cIdCatSel")==null?"":getIntent().getStringExtra("cIdCatSel");
         lstCategorias= new ArrayList<>();
@@ -74,16 +80,15 @@ public class ABCProductoActivity extends AppCompatActivity {
             addMenuProvider(new MenuProvider() {
                 @Override
                 public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                    menuInflater.inflate(R.menu.menu_abc_productos, menu);
+                    menuInflater.inflate(R.menu.menu_guardar, menu);
                 }
 
                 @Override
                 public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                    switch (menuItem.getItemId())
+                    int iId= menuItem.getItemId();
+                    if(iId==R.id.itemGuardar)
                     {
-                        case R.id.guardarProducto:
-                            GuardarDatos();
-                            break;
+                        GuardarDatos();
                     }
                     return  false;
                 }
@@ -215,7 +220,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         Producto producto= new Producto();
         producto.cNombre=edNombreProducto.getText().toString();
         producto.lDisponible=ckPublicar.isChecked();
-        producto.cUrlImagen="prueba";
+        producto.cUrlImagen=".";
         producto.cLlave="";
         producto.cIdCategoria=ObtenerIdCatSeleccionada();
         producto.cPrecio=edPrecioProducto.getText().toString();

@@ -127,17 +127,13 @@ public class CreaCuentaActvity extends AppCompatActivity {
     private void CreaRegistro(String cNombre) {
         HashMap<String,Object> hashMapUpdate= new HashMap<>();
         HashMap<String, Object> hashMapInfoUso= new HashMap<>();
-        HashMap<String, Object> hashMapUsoMenus= new HashMap<>();
-        HashMap<String,Object> hashMapData= new HashMap<>();
-        HashMap<String, Object> hashMapInfoPrueba= new HashMap<>();
-        hashMapUsoMenus.put("iLimiteMenus", 1);
-        hashMapUsoMenus.put("iTotalMenus", 0);
-        hashMapInfoUso.put("iEstatusPrueba", Values.PRUEBA_NO_INICIADA);
-        hashMapInfoUso.put("iEstatusSuscripcion", Values.SUSCRIPCION_INACTIVA);
+        HashMap<String, Object> hashMapData= new HashMap<>();
+        hashMapInfoUso.put("iLimiteMenus", 1);
+        hashMapInfoUso.put("iTotalMenus", 0);
+        hashMapInfoUso.put("iPeriodoEstatus", Values.PERIODO_INACTIVO);
         hashMapData.put("cNombre", cNombre);
         hashMapData.put("lAdmin", false);
         hashMapData.put("dataInfoUso",hashMapInfoUso);
-        hashMapData.put("dataInfoUsoMenu",hashMapUsoMenus);
         hashMapUpdate.put("usuarios/"+firebaseAuth.getUid(), hashMapData);
         databaseReference.updateChildren(hashMapUpdate).addOnCompleteListener(task -> {
             if(task.isSuccessful())

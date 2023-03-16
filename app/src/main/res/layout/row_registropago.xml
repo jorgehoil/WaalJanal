@@ -158,7 +158,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/btnInfoPago"
+                    android:id="@+id/btnMostrarInfo"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_gravity="center"
@@ -166,6 +166,33 @@
                     app:icon="@drawable/ic_info"
                     app:iconTint="@color/color1" />
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/ivInfoRechazo"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:tint="#C1B2B2"
+                    android:visibility="visible"
+                    app:srcCompat="@drawable/ic_info" />
+
+                <TextView
+                    android:id="@+id/tvMensajePago"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_weight="1"
+                    android:textStyle="italic" />
             </LinearLayout>
 
         </LinearLayout>

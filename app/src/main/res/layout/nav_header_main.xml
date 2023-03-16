@@ -33,9 +33,4 @@
         android:layout_height="wrap_content"
         android:text="Jorge Carlos Hoil Briceno" />
 
-    <TextView
-        android:id="@+id/tvMenuAdministrado"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Menu: (No seleccionado)" />
 </LinearLayout>

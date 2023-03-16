@@ -70,14 +70,13 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem menuItem) {
-                            switch (menuItem.getItemId())
+                            int iIdItem=menuItem.getItemId();
+                            if(iIdItem==R.id.eliminarABC)
                             {
-                                case R.id.eliminarABC:
-                                    MuestraMensajeConfirmacion(categoria.cLlave, holder.getAdapterPosition());
-                                    break;
-                                case R.id.editarABC:
-                                    CargaDialogo(categoria);
-                                    break;
+                                MuestraMensajeConfirmacion(categoria.cLlave, holder.getAdapterPosition());
+                            } else if(iIdItem==R.id.editarABC)
+                            {
+                                CargaDialogo(categoria);
                             }
                             return false;
                         }

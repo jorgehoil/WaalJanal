@@ -58,8 +58,14 @@ public class ActivityImagenes extends AppCompatActivity {
         setContentView(R.layout.activity_imagenes);
         Init();
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
     private void Init()
     {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         viewPager2= findViewById(R.id.viewPagerImagenes);
         cIdMenuG=getIntent().getStringExtra("cIdMenu");
         btnCerrarImagenes=findViewById(R.id.btnCerrarImagenes);
