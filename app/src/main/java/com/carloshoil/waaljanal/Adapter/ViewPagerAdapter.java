@@ -50,7 +50,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
             {
                 if(pagerData.cUrl.equals("loc"))
                 {
-                    holder.imageViewMenu.setImageDrawable(context.getDrawable(R.drawable.ic_upload));
+                    holder.imageViewMenu.setImageDrawable(context.getDrawable(R.drawable.add_photo));
                 }
             }
             holder.btnCambiaImagen.setOnClickListener(new View.OnClickListener() {

@@ -7,6 +7,7 @@ public class Producto {
     public String cPrecio;
     public String cIdCategoria;
     public String cUrlImagen;
+    public String cUrlImagenMin;
     public boolean lDisponible;
 
 

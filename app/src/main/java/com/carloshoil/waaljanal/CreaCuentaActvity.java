@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
@@ -29,6 +31,7 @@ import javax.security.auth.login.LoginException;
 public class CreaCuentaActvity extends AppCompatActivity {
 
     private EditText edCorreo, edContrasena, edConfirmaContrasena, edNombre;
+    private TextView tvTerminos;
     private Button btnCreaCuenta;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
@@ -46,23 +49,25 @@ public class CreaCuentaActvity extends AppCompatActivity {
     {
         firebaseDatabase=FirebaseDatabase.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
+        tvTerminos=findViewById(R.id.tvAbrirCondiciones);
         databaseReference=firebaseDatabase.getReference();
         edCorreo=findViewById(R.id.edCorreoCuenta);
         edContrasena=findViewById(R.id.edContrasenaCuenta);
         edConfirmaContrasena=findViewById(R.id.edContrasenaConf);
         btnCreaCuenta=findViewById(R.id.btnCreaCuenta);
         edNombre=findViewById(R.id.edNomCuenta);
-        btnCreaCuenta.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String cCorreo= edCorreo.getText().toString();
-                String cNombre=edNombre.getText().toString();
-                String cPassword=edContrasena.getText().toString();
-                String cPasswordConf=edConfirmaContrasena.getText().toString();
-                if(ValidaDatos(cCorreo,cNombre,cPassword,cPasswordConf))
-                {
-                    CrearCuenta(cNombre,cCorreo,cPassword);
-                }
+        tvTerminos.setOnClickListener(view -> {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waaljanal.web.app/docs/terminos.pdf"));
+            startActivity(browserIntent);
+        });
+        btnCreaCuenta.setOnClickListener(view -> {
+            String cCorreo= edCorreo.getText().toString();
+            String cNombre=edNombre.getText().toString();
+            String cPassword=edContrasena.getText().toString();
+            String cPasswordConf=edConfirmaContrasena.getText().toString();
+            if(ValidaDatos(cCorreo,cNombre,cPassword,cPasswordConf))
+            {
+                CrearCuenta(cNombre,cCorreo,cPassword);
             }
         });
 

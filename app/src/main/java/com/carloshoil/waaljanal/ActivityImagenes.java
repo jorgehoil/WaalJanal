@@ -87,6 +87,10 @@ public class ActivityImagenes extends AppCompatActivity {
             firebaseStorage=FirebaseStorage.getInstance();
             storageReferenceImagenes=firebaseStorage.getReference().child("imgmenus");
             CargaImagenes();
+            if(!checkPermiso())
+            {
+                solicitaPermiso();
+            }
         }else{
             Toast.makeText(this, "No existe menu relacionado, favor de seleccionar", Toast.LENGTH_SHORT).show();
             finish();
@@ -108,6 +112,11 @@ public class ActivityImagenes extends AppCompatActivity {
         {
             Intent i= new Intent(ActivityImagenes.this, CropperActivity.class);
             i.putExtra("imageData", result.toString());
+            i.putExtra("iWidth", 1920);
+            i.putExtra("iHeight", 700);
+            i.putExtra("iX", 16);
+            i.putExtra("iY", 9);
+            i.putExtra("iPorcentaje",45 );
             startActivityForResult(i, 100);
 
         }
@@ -218,6 +227,7 @@ public class ActivityImagenes extends AppCompatActivity {
             String cUri=data.getStringExtra("CROP");
             SubirImagen(cUri);
         }
+
 
     }
     private void cargaImagenViewPager(List<ViewPagerData> listData) {

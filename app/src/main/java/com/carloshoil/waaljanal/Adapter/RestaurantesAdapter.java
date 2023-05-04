@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -57,6 +58,7 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
     String cIdMenu="";
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
+    FirebaseStorage firebaseStorage;
     public RestaurantesAdapter(Context context, List<Restaurante> lstRestaurante)
     {
         this.context=context;
@@ -64,6 +66,7 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
         cIdMenu=Global.RecuperaPreferencia(CCLAVEMENU, context);
         firebaseAuth=FirebaseAuth.getInstance();
         firebaseDatabase=FirebaseDatabase.getInstance();
+        firebaseStorage=FirebaseStorage.getInstance();
     }
     @NonNull
     @Override
@@ -182,10 +185,11 @@ public class RestaurantesAdapter  extends RecyclerView.Adapter<RestaurantesAdapt
                 hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/adminlugares/"+restaurante.cLlave, null);
                 hashMapDelete.put("usuarios/"+firebaseAuth.getUid()+"/dataInfoUso/iTotalMenus", ServerValue.increment(-1));
                 hashMapDelete.put("menus/"+restaurante.cIdMenu, null);
+
                 firebaseDatabase.getReference().updateChildren(hashMapDelete).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(context, "Se ha eliminado el menú correctamente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "¡Se ha eliminado el menú correctamente!", Toast.LENGTH_SHORT).show();
                     }
                 });
             }

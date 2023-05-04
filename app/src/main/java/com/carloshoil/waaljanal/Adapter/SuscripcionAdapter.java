@@ -1,6 +1,8 @@
 package com.carloshoil.waaljanal.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,11 +47,17 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
                 holder.btnSuscribirse.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(context, "¡Link!"+ suscripcion.cUrl, Toast.LENGTH_SHORT).show();
+                       AbrirExploradorSuscripcion(suscripcion.cUrl);
                     }
                 });
                 holder.tvAhorroSus.setText(suscripcion.cAhorro.isEmpty()?"":"Ahorra un " +suscripcion.cAhorro +"%");
             }
+
+    }
+
+    private void AbrirExploradorSuscripcion(String cUrl) {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(cUrl));
+        context.startActivity(browserIntent);
 
     }
 

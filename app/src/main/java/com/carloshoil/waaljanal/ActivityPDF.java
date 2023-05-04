@@ -159,7 +159,8 @@ public class ActivityPDF extends AppCompatActivity {
                     texto.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
                 }
             }
-            cPath=this.getFilesDir().getPath()+ "/pruebita.pdf";
+
+            cPath=this.getFilesDir().getPath()+"/"+ java.util.UUID.randomUUID().toString().replace("-", "").substring(0,8)+ ".pdf";
 
             document= new File(cPath);
             pdfDocument.finishPage(myPage);

@@ -246,19 +246,6 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <Button
-                android:id="@+id/btnGuardaConfig"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="guardar"
-                app:icon="@drawable/ic_cloud" />
-
-            <View
-                android:id="@+id/divider2"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?android:attr/listDivider" />
-
         </LinearLayout>
     </ScrollView>
 

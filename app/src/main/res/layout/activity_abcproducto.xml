@@ -95,6 +95,19 @@
                 android:lines="5"
                 android:singleLine="false" />
 
+            <TextView
+                android:id="@+id/textView44"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Imagen" />
+
+            <ImageView
+                android:id="@+id/ivProducto"
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/add_photo" />
+
         </LinearLayout>
     </ScrollView>
 

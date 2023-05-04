@@ -27,20 +27,30 @@ public class CropperActivity extends AppCompatActivity {
     }
 
     private void Init() {
+        int iX;
+        int iY;
+        int iWidth;
+        int iHeight;
+        int iPorcentaje;
         File obj= getCacheDir();
         obj.mkdirs();
         cSourceUri=getIntent().getStringExtra("imageData")==null?"":getIntent().getStringExtra("imageData");
+        iX=getIntent().getIntExtra("iX", 16);
+        iY=getIntent().getIntExtra("iY", 9);
+        iWidth=getIntent().getIntExtra("iWidth", 1920);
+        iHeight=getIntent().getIntExtra("iHeight", 700);
+        iPorcentaje=getIntent().getIntExtra("iPorcentaje", 45);
         if(!cSourceUri.isEmpty())
         {
             uri=Uri.parse(cSourceUri);
         }
         cDestinationUri= UUID.randomUUID().toString()+"jpg";
         UCrop.Options options= new UCrop.Options();
-        options.setCompressionQuality(Values.PORCENTAJE_COMPRESS);
+        options.setCompressionQuality(iPorcentaje);
         UCrop.of(uri, Uri.fromFile(new File(obj, cDestinationUri)))
                 .withOptions(options)
-                .withAspectRatio(16,9)
-                .withMaxResultSize(1920, 700)
+                .withAspectRatio(iX,iY)
+                .withMaxResultSize(iWidth, iHeight)
                 .start(CropperActivity.this);
 
     }

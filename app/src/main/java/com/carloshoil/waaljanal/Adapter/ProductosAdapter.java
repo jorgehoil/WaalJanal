@@ -2,6 +2,8 @@ package com.carloshoil.waaljanal.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.ContentInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -30,6 +33,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.core.utilities.Utilities;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,14 +45,18 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
     List<Producto> lstProducto;
     FragmentProductos fragmentProductos;
     FirebaseDatabase firebaseDatabase;
+    StorageReference storageReference;
     String cIdMenu="";
-    public ProductosAdapter(Context context, List<Producto> lstProducto, FragmentProductos fragmentProductos, String cIdMenu)
+    boolean lModificacionPrecios;
+    public ProductosAdapter(Context context, List<Producto> lstProducto, FragmentProductos fragmentProductos, String cIdMenu, boolean lModificacionPrecios)
     {
         this.cIdMenu=cIdMenu;
         this.context=context;
         this.lstProducto=lstProducto;
         this.fragmentProductos=fragmentProductos;
+        this.lModificacionPrecios=lModificacionPrecios;
         firebaseDatabase=FirebaseDatabase.getInstance();
+        storageReference= FirebaseStorage.getInstance().getReference();
     }
     @NonNull
     @Override
@@ -61,39 +70,82 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         Producto producto= lstProducto.get(position);
         if(producto!=null)
         {
+            holder.tvNombreProducto.setText(producto.cNombre);
            holder.ckProdDisp.setChecked(producto.lDisponible);
-           holder.tvPrecio.setText("$"+producto.cPrecio);
-           holder.tvNombreProducto.setText(producto.cNombre);
+           if(lModificacionPrecios)
+           {
+               holder.tvPrecio.setText("$");
+               holder.edPrecio.setText(producto.cPrecio);
+               holder.ckProdDisp.setEnabled(false);
+               holder.btnOpcionesProd.setVisibility(View.GONE);
+               holder.edPrecio.setVisibility(View.VISIBLE);
+               holder.edPrecio.addTextChangedListener(new TextWatcher() {
+                   @Override
+                   public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-           holder.ckProdDisp.setOnClickListener(view -> {
-               lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
-               fragmentProductos.MostrarBotonPublicar(true);
-           });
-           holder.btnOpcionesProd.setOnClickListener(view -> {
-               PopupMenu popupMenu= new PopupMenu(context, holder.btnOpcionesProd);
-               popupMenu.inflate(R.menu.menu_opciones_abc);
-               popupMenu.setOnMenuItemClickListener(menuItem -> {
-                   int iIdItem=menuItem.getItemId();
-                   if(iIdItem==R.id.eliminarABC)
-                   {
-                       ConfirmaEliminar(producto,holder.getAdapterPosition());
-                   } else if(iIdItem==R.id.editarABC) {
-                       Intent i= new Intent(context, ABCProductoActivity.class);
-                       i.putExtra("cIdProducto",producto.cLlave);
-                       context.startActivity(i);
                    }
 
-                   return false;
-               });
-               popupMenu.show();
+                   @Override
+                   public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                       if(!charSequence.toString().isEmpty())
+                       {
+                           producto.cPrecio=charSequence.toString();
+                       }
+                       else {
+                           producto.cPrecio="0";
+                       }
 
-           });
-           holder.tvNombreProducto.setOnClickListener(view -> {
-               holder.ckProdDisp.setChecked(!holder.ckProdDisp.isChecked());
-               lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
-               fragmentProductos.MostrarBotonPublicar(true);
-           });
+                   }
+
+                   @Override
+                   public void afterTextChanged(Editable editable) {
+
+                   }
+               });
+
+           }
+           else {
+               holder.edPrecio.setVisibility(View.GONE);
+               holder.btnOpcionesProd.setVisibility(View.VISIBLE);
+               holder.tvPrecio.setText("$"+producto.cPrecio);
+               holder.ckProdDisp.setOnClickListener(view -> {
+                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
+                   fragmentProductos.CargaOpcionPublicar(true);
+               });
+               holder.ckProdDisp.setEnabled(true);
+               holder.btnOpcionesProd.setOnClickListener(view -> {
+                   PopupMenu popupMenu= new PopupMenu(context, holder.btnOpcionesProd);
+                   popupMenu.inflate(R.menu.menu_opciones_abc);
+                   popupMenu.setOnMenuItemClickListener(menuItem -> {
+                       int iIdItem=menuItem.getItemId();
+                       if(iIdItem==R.id.eliminarABC)
+                       {
+                           ConfirmaEliminar(producto,holder.getAdapterPosition());
+                       } else if(iIdItem==R.id.editarABC) {
+                           Intent i= new Intent(context, ABCProductoActivity.class);
+                           i.putExtra("cIdProducto",producto.cLlave);
+                           context.startActivity(i);
+                       }
+
+                       return false;
+                   });
+                   popupMenu.show();
+
+               });
+               holder.tvNombreProducto.setOnClickListener(view -> {
+                   holder.ckProdDisp.setChecked(!holder.ckProdDisp.isChecked());
+                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
+                   fragmentProductos.CargaOpcionPublicar(true);
+               });
+           }
+
+
         }
+    }
+    public void CargaModificarPrecios(boolean lModificacion)
+    {
+        lModificacionPrecios=lModificacion;
+        notifyDataSetChanged();
     }
     private void EliminaProductoLista(String cKey)
     {
@@ -146,7 +198,10 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
             if(task.isSuccessful())
             {
                 Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show();
+                storageReference.child("imgproductos/"+cIdMenu+ "/"+ producto.cLlave+ ".jpg").delete();
+                storageReference.child("imgproductosmin/"+cIdMenu+ "/"+ producto.cLlave+ ".jpg").delete();
                 EliminaProductoLista(producto.cLlave);
+
             }
             else
             {
@@ -180,6 +235,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         TextView tvNombreProducto, tvPrecio;
         Button btnOpcionesProd;
         CheckBox ckProdDisp;
+        EditText edPrecio;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -187,6 +243,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
             tvPrecio=itemView.findViewById(R.id.tvProductoPrecio);
             btnOpcionesProd=itemView.findViewById(R.id.btnOpcionesProd);
             ckProdDisp=itemView.findViewById(R.id.ckProdDisponible);
+            edPrecio=itemView.findViewById(R.id.edPrecioProdMod);
         }
     }
     public void LimpiarLista()

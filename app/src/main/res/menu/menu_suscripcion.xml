@@ -6,5 +6,5 @@
         android:title="Estatus de suscripción" />
     <item
         android:id="@+id/ayudaSuscripcion"
-        android:title="Ayuda" />
+        android:title="¿Cómo pagar?" />
 </menu>
