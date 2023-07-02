@@ -1,13 +1,8 @@
 package com.carloshoil.waaljanal;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuProvider;
 
+import android.app.Activity;
+//import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -25,18 +20,31 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.carloshoil.waaljanal.Adapter.ViewPager2Adapter;
 import com.carloshoil.waaljanal.DTO.Producto;
-import com.carloshoil.waaljanal.DTO.ViewPagerData;
+import com.carloshoil.waaljanal.DTO.Variedad;
+import com.carloshoil.waaljanal.Dialog.DialogABCIngrediente;
+import com.carloshoil.waaljanal.Dialog.DialogABCVariedad;
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -51,7 +59,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ABCProductoActivity extends AppCompatActivity {
-    String cIdMenu="", cUrlImagen, cUrlMin, cUriImagen;
+    String cIdMenu="", cUrlImagen="", cUrlMin="", cUriImagen, cIdProducto, cIdCategoriaSel, cLlaveG;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReferenceMenu;
     StorageReference storageReference;
@@ -60,12 +68,19 @@ public class ABCProductoActivity extends AppCompatActivity {
     DialogoCarga dialogoCarga;
     List<String> lstCategorias;
     List<String> lstIdCategorias;
-    String cIdProducto, cIdCategoriaSel;
     Producto productoG;
     ImageView ivProducto;
-    boolean lImagenSubida=false;
     private CheckBox ckPublicar;
     private String CCLAVEMENU="cIdMenu";
+    private FragmentProductos fragmentProductos;
+    private boolean lImagenSubida=false, lRegistrosNuevos=false, lCambioCat=false;
+    ViewPager2 viewPager2;
+    ViewPager2Adapter viewPager2Adapter;
+    private TabLayout tabLayoutVarIng;
+    Button btnNuevoVariedad, btnNuevoIng, btnConfIng;
+    FragmentExtras fragmentExtras;
+    FragmentVariedades fragmentVariedades;
+
 
     private ActivityResultLauncher<String[]> permission= registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranded-> {
         if (!isGranded.containsValue(false)) {
@@ -104,17 +119,38 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
     @Override
     public boolean onSupportNavigateUp() {
+        AbrirRetorno(false,lRegistrosNuevos,null);
         finish();
         return true;
     }
 
     private void Init() {
+        Log.d("DEBUGX", "Init");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        viewPager2=findViewById(R.id.viewPager2Prod);
+        tabLayoutVarIng=findViewById(R.id.tabLayout);
+        setViewPager2Adapter();
+        InicializarFragments();
+        new TabLayoutMediator(tabLayoutVarIng, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+               if(position==0)
+               {
+                   tab.setText("Variedades");
+               }
+               else {
+                   tab.setText("Ingredientes ext.");
+               }
+            }
+        }).attach();
         cIdProducto=getIntent().getStringExtra("cIdProducto")==null?"":getIntent().getStringExtra("cIdProducto");
         cIdCategoriaSel=getIntent().getStringExtra("cIdCatSel")==null?"":getIntent().getStringExtra("cIdCatSel");
         lstCategorias= new ArrayList<>();
         lstIdCategorias= new ArrayList<>();
         firebaseDatabase=FirebaseDatabase.getInstance();
+        btnConfIng=findViewById(R.id.btnConfigIng);
+        btnNuevoIng=findViewById(R.id.btnNuevoIng);
+        btnNuevoVariedad=findViewById(R.id.btnNuevoVar);
         edNombreProducto= findViewById(R.id.edNombreProducto);
         edPrecioProducto= findViewById(R.id.edPrecioProducto);
         edDescripconProd=findViewById(R.id.edDescripcionProducto);
@@ -122,23 +158,29 @@ public class ABCProductoActivity extends AppCompatActivity {
         ckPublicar=findViewById(R.id.ckPublicar);
         spCategorias= findViewById(R.id.spCategorias);
         cIdMenu=Global.RecuperaPreferencia(CCLAVEMENU,this);
-        ivProducto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!checkPermiso())
-                {
-                    solicitaPermiso();
-                }
-                else {
-                    cropImage.launch("image/*");
-                }
+        fragmentProductos= new FragmentProductos();
+        ivProducto.setOnClickListener(view -> {
+            if(!checkPermiso())
+            {
+                solicitaPermiso();
+            }
+            else {
+                cropImage.launch("image/*");
             }
         });
         if(!cIdMenu.isEmpty())
         {
             storageReference= FirebaseStorage.getInstance().getReference();
             databaseReferenceMenu=firebaseDatabase.getReference().child("menus").child(cIdMenu);
+            btnNuevoVariedad.setOnClickListener(v->{
+                AbrirNuevoVariante();
+            });
+            btnNuevoIng.setOnClickListener(v->{
+                AbrirNuevoIngrediente();
+            });
+            btnConfIng.setOnClickListener(v->{
 
+            });
             addMenuProvider(new MenuProvider() {
                 @Override
                 public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -169,14 +211,16 @@ public class ABCProductoActivity extends AppCompatActivity {
 
     private void cargaDatosProducto()
     {
+        Log.d("DEBUGX", "cargaDatosProducto");
         if(productoG!=null)
         {
             edNombreProducto.setText(productoG.cNombre);
-            edPrecioProducto.setText(productoG.cPrecio);
+            edPrecioProducto.setText(productoG.lstVariedad.size()==0?productoG.cPrecio:"0");
             edDescripconProd.setText(productoG.cDescripcion);
             ckPublicar.setChecked(productoG.lDisponible);
             cUrlMin=productoG.cUrlImagenMin;
             cUrlImagen=productoG.cUrlImagen;
+            fragmentVariedades.cargaVariedades(productoG.lstVariedad==null?new ArrayList<>():productoG.lstVariedad);
         }
     }
     private boolean checkPermiso()
@@ -190,7 +234,9 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
 
     private void ObtenerEdicion() {
+        Log.d("DEBUGX", "ObtenerEdicion");
         abrirDialogoCarga();
+        List<Variedad> lstVariedad= new ArrayList<>();
         databaseReferenceMenu.child("productos").child(cIdProducto).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -207,6 +253,16 @@ public class ABCProductoActivity extends AppCompatActivity {
                     productoG.cUrlImagen=dataSnapshot.child("cUrlImagen").getValue()==null?"":dataSnapshot.child("cUrlImagen").getValue().toString();
                     productoG.cUrlImagenMin=dataSnapshot.child("cUrlImagenMin").getValue()==null?"":dataSnapshot.child("cUrlImagenMin").getValue().toString();
                     productoG.lDisponible=dataSnapshot.child("lDisponible").getValue()==null?false:dataSnapshot.child("lDisponible").getValue(boolean.class);
+                    for(DataSnapshot dataSnapshot1: dataSnapshot.child("lstVariedad").getChildren())
+                    {
+                        lstVariedad.add(new Variedad(
+                           dataSnapshot1.getKey(),
+                           dataSnapshot1.child("cNombre").getValue(String.class),
+                           dataSnapshot1.child("cPrecio").getValue(String.class),
+                           dataSnapshot1.child("lDisponible").getValue(boolean.class)
+                        ));
+                    }
+                    productoG.lstVariedad=lstVariedad;
                     if(!productoG.cUrlImagen.isEmpty())
                     {
                         Picasso.get().load(productoG.cUrlImagen).placeholder(R.drawable.ic_time).into(ivProducto);
@@ -233,85 +289,90 @@ public class ABCProductoActivity extends AppCompatActivity {
         }
 
     }
-
+    private void setViewPager2Adapter()
+    {
+        Log.d("DEBUGX", "setViewPager2Adapter");
+       viewPager2Adapter = new ViewPager2Adapter(this);
+       List<Fragment> lstFragments= new ArrayList<>();
+       lstFragments.add(new FragmentVariedades());
+       lstFragments.add(new FragmentExtras());
+       viewPager2Adapter.setFragments(lstFragments);
+       viewPager2.setAdapter(viewPager2Adapter);
+       viewPager2.setOffscreenPageLimit(2);
+    }
     private void GuardarDatos()
     {
-        String cMenu="menus/"+cIdMenu+"/";
+        String cMenu="menus/"+cIdMenu;
+        String cLLaveVar="";
         HashMap<String, Object> updates= new HashMap<>();
-        if(ValidarDatos(edNombreProducto.getText().toString(), edPrecioProducto.getText().toString())){
+        Producto producto= obtenerProductoGuardar();
+
+        if(ValidarDatos(producto)) {
             abrirDialogoCarga();
-            Producto producto= obtenerProductoGuardar();
-            if(cIdProducto.isEmpty())//NUEVO PRODUCTO
+            cLlaveG = databaseReferenceMenu.child("productos").push().getKey();
+            cLlaveG = cIdProducto.isEmpty() ? cLlaveG : cIdProducto;
+            producto.cLlave=cLlaveG;
+            producto.cPrecio=producto.lstVariedad.size()!=0?"":producto.cPrecio;
+            updates.put(cMenu+"/productos/"+ producto.cLlave, producto);
+            if(producto.lDisponible)
             {
-                String cLlave= databaseReferenceMenu.child("productos").push().getKey();
-                updates.put(cMenu+"/productos/"+cLlave,producto);
-                if(producto.lDisponible)
-                {
-                    updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cLlave,producto);
-                }
-                firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
-                    if(task.isSuccessful())
-                    {
-                        producto.cLlave=cLlave;
-                        productoG=producto;
-                        if(lImagenSubida)
-                        {
-                            SubirImagen();
-                        }
-                        else {
-                            cerrarDialogoCarga();
-                            limpiarCampos();
-                            Toast.makeText(ABCProductoActivity.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
-                        }
-
-                    }
-                });
+                updates.put(cMenu+ "/menu_publico/"+ producto.cIdCategoria+"/"+ producto.cLlave, producto);
             }
-            else //ACTUALIZAR PRODUCTO
+            else {
+                updates.put(cMenu+ "/menu_publico/"+ producto.cIdCategoria+"/"+ producto.cLlave,null);
+            }
+            if(productoG!=null&&!productoG.cIdCategoria.equals(ObtenerIdCatSeleccionada()))//CAMBIO DE CATEGORIA
             {
-                updates.put(cMenu+"/productos/"+cIdProducto,producto);
-                if(productoG.cIdCategoria.equals(ObtenerIdCatSeleccionada()))//SI NO CAMBIA DE CATEGORIA
-                {
-                    if(!producto.lDisponible){
-                        updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto, null);
-                    }
-                    else
-                    {
-                        updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,producto);
-                    }
-                }
-                else //CAMBIO DE CATEGORIA
-                {
-                    updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,null);
-                    if(productoG.lDisponible)
-                    {
-                        updates.put(cMenu+"/menu_publico/"+ObtenerIdCatSeleccionada()+"/"+cIdProducto,producto);
-                    }
-                }
-                firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
-                    if(task.isSuccessful())
-                    {
-                        if(lImagenSubida)
+                lCambioCat=true;
+                updates.put(cMenu+"/menu_publico/"+productoG.cIdCategoria+"/"+cIdProducto,null);
+            }
+            firebaseDatabase.getReference().updateChildren(updates).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    producto.cLlave = cLlaveG;
+                    productoG = producto;
+                    if (lImagenSubida) {
+                        SubirImagen();
+                    } else {
+                        cerrarDialogoCarga();
+                        limpiarCampos();
+                        if(!lRegistrosNuevos)
                         {
-                            SubirImagen();
-                        }
-                        else {
-                            cerrarDialogoCarga();
-                            limpiarCampos();
+                            AbrirRetorno(true, false, producto);
                             finish();
-                            Toast.makeText(ABCProductoActivity.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
                         }
+                        Toast.makeText(ABCProductoActivity.this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
                     }
-                    else
-                    {
-                        Global.MostrarMensaje(ABCProductoActivity.this,
-                                "Error al guardar",
-                                "Se ha presentado un error al guardar, intenta de nuevo");
-                    }
-                });
-            }
 
-        };
+                }else
+                {
+                    Global.MostrarMensaje(ABCProductoActivity.this,
+                            "Error al guardar",
+                            "Se ha presentado un error al guardar, intenta de nuevo");
+                }
+            });
+        }
+
+    }
+
+
+
+
+    private void AbrirRetorno(boolean lActualiza, boolean lNuevos, Producto producto)
+    {
+        Log.d("DEBUGX", "lActualiza:"+ lActualiza+"lNuevos"+lNuevos);
+        Intent intent = new Intent();
+        intent.putExtra("lNuevos", lNuevos);
+        intent.putExtra("lActualiza", lActualiza);
+        intent.putExtra("entProd", producto);
+        intent.putExtra("lCambioCat", lCambioCat);
+        setResult(Activity.RESULT_OK, intent);
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        AbrirRetorno(false,lRegistrosNuevos,null);
+        super.onBackPressed();
 
     }
 
@@ -320,7 +381,8 @@ public class ABCProductoActivity extends AppCompatActivity {
         edPrecioProducto.setText("");
         edDescripconProd.setText("");
         ivProducto.setImageURI(null);
-        ivProducto.setImageDrawable(getDrawable(R.drawable.ic_image));
+        ivProducto.setImageDrawable(getDrawable(R.drawable.add_photo));
+        fragmentVariedades.Limpiar();
     }
 
     @Override
@@ -338,6 +400,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     }
     private Producto obtenerProductoGuardar()
     {
+        Log.d("DEBUGX", "obtenerProductoGuardar");
         Producto producto= new Producto();
         producto.cNombre=edNombreProducto.getText().toString();
         producto.lDisponible=ckPublicar.isChecked();
@@ -347,6 +410,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         producto.cIdCategoria=ObtenerIdCatSeleccionada();
         producto.cPrecio=edPrecioProducto.getText().toString();
         producto.cDescripcion=edDescripconProd.getText().toString();
+        producto.lstVariedad=ObtenerVariedades();
         return producto;
     }
     private String ObtenerIdCatSeleccionada()
@@ -389,6 +453,12 @@ public class ABCProductoActivity extends AppCompatActivity {
         });
     }
 
+    private void InicializarFragments()
+    {
+        Log.d("DEBUGX", "InicializarFragments");
+        fragmentExtras= (FragmentExtras)viewPager2Adapter.obtenerFragment(1);
+        fragmentVariedades=(FragmentVariedades)viewPager2Adapter.obtenerFragment(0);
+    }
     private void SeleccionaCategoria() {
         String cIdCategoria=cIdProducto.isEmpty()?cIdCategoriaSel:productoG.cIdCategoria;
         int iPosition=0;
@@ -413,16 +483,16 @@ public class ABCProductoActivity extends AppCompatActivity {
         spCategorias.setAdapter(arrayAdapter);
     }
 
-    private boolean ValidarDatos(String cNombre, String cPrecio)
+    private boolean ValidarDatos(Producto producto)
     {
-        if(cNombre.isEmpty())
+        if(producto.cNombre.isEmpty())
         {
             edNombreProducto.setError("Este campo es obligatorio");
             return false;
         }
-        if(cPrecio.isEmpty())
+        if(producto.lstVariedad.size()==0&&producto.cPrecio.isEmpty())
         {
-            edPrecioProducto.setError("Este campo es obligatorio");
+            edPrecioProducto.setError("Es necesario ingresar un precio");
             return  false;
         }
     return true;
@@ -468,9 +538,14 @@ public class ABCProductoActivity extends AppCompatActivity {
     private void ActualizaRutasImagen()
     {
        HashMap<String, Object> hashMapUpdate= new HashMap<>();
-       hashMapUpdate.put("menus/"+ cIdMenu+ "/productos/"+ productoG.cLlave, productoG);
+       hashMapUpdate.put("menus/"+ cIdMenu+ "/productos/"+ productoG.cLlave+ "/cUrlImagen", productoG.cUrlImagen);
+        hashMapUpdate.put("menus/"+ cIdMenu+ "/productos/"+ productoG.cLlave+ "/cUrlImagenMin", productoG.cUrlImagen);
        if(productoG.lDisponible)
-            hashMapUpdate.put("menus/"+ cIdMenu+ "/menu_publico/"+ productoG.cIdCategoria+ "/"+ productoG.cLlave+ "/", productoG);
+       {
+           hashMapUpdate.put("menus/"+ cIdMenu+ "/menu_publico/"+ productoG.cIdCategoria+ "/"+ productoG.cLlave+ "/cUrlImagen", productoG.cUrlImagen);
+           hashMapUpdate.put("menus/"+ cIdMenu+ "/menu_publico/"+ productoG.cIdCategoria+ "/"+ productoG.cLlave+ "/cUrlImagenMin", productoG.cUrlImagenMin);
+       }
+
        firebaseDatabase.getReference().updateChildren(hashMapUpdate).addOnCompleteListener(task -> {
            cerrarDialogoCarga();
            if(task.isSuccessful())
@@ -479,8 +554,10 @@ public class ABCProductoActivity extends AppCompatActivity {
                if(cIdProducto.isEmpty())//SI ES NUEVO
                {
                    limpiarCampos();
+                   lRegistrosNuevos=true;
                }
                else {
+                   AbrirRetorno(true, false, productoG);
                    finish();
                }
            }
@@ -500,7 +577,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         Bitmap bitMapFinal;
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitMapFinal=Bitmap.createScaledBitmap(bitmap, 70, 70,false);
-        bitMapFinal.compress(Bitmap.CompressFormat.JPEG, 95, baos);
+        bitMapFinal.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
         UploadTask uploadTask= storageReference
                 .child("imgproductosmin")
@@ -521,4 +598,21 @@ public class ABCProductoActivity extends AppCompatActivity {
                     "un error al subir la imagen del producto, intenta de nuevo");
         });
     }
+    private List<Variedad> ObtenerVariedades()
+    {
+        return fragmentVariedades.RetornaVariedades();
+    }
+    private void AbrirNuevoVariante()
+    {
+        DialogABCVariedad dialogABCVariedad= new DialogABCVariedad(this, null, "N", fragmentVariedades);
+        dialogABCVariedad.show(getSupportFragmentManager(), "dialog_var");
+        dialogABCVariedad.setCancelable(false);
+    }
+    private void AbrirNuevoIngrediente()
+    {
+        DialogABCIngrediente dialogABCIngrediente= new DialogABCIngrediente(this, null, "N", fragmentExtras);
+        dialogABCIngrediente.show(getSupportFragmentManager(), "dialog_ing");
+        dialogABCIngrediente.setCancelable(false);
+    }
+
 }

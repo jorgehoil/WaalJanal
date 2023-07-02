@@ -14,23 +14,19 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="4dp"
         android:contentDescription="@string/nav_header_desc"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        app:srcCompat="@drawable/ic_logo" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="WaalJanal"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:tint="#F1EDED"
+        app:srcCompat="@drawable/logo2" />
 
     <TextView
         android:id="@+id/tvNombreCuenta"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="Jorge Carlos Hoil Briceno" />
 
 </LinearLayout>

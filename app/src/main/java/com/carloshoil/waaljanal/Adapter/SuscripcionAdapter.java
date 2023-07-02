@@ -79,8 +79,6 @@ public class SuscripcionAdapter extends RecyclerView.Adapter<SuscripcionAdapter.
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNombreSus, tvPrecioSus, tvAhorroSus;
         Button btnSuscribirse;
-
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombreSus=itemView.findViewById(R.id.tvTituloSus);

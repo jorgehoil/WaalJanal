@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +34,7 @@ public class CreaCuentaActvity extends AppCompatActivity {
     private EditText edCorreo, edContrasena, edConfirmaContrasena, edNombre;
     private TextView tvTerminos;
     private Button btnCreaCuenta;
+    private CheckBox ckTerminos;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
@@ -59,6 +61,13 @@ public class CreaCuentaActvity extends AppCompatActivity {
         tvTerminos.setOnClickListener(view -> {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://waaljanal.web.app/docs/terminos.pdf"));
             startActivity(browserIntent);
+        });
+        ckTerminos=findViewById(R.id.ckTerminos);
+        ckTerminos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                btnCreaCuenta.setEnabled(ckTerminos.isChecked());
+            }
         });
         btnCreaCuenta.setOnClickListener(view -> {
             String cCorreo= edCorreo.getText().toString();

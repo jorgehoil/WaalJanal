@@ -82,9 +82,7 @@ public class ActivityLogin extends AppCompatActivity {
                 case "VERIFY_MAIL":
                     cTitulo="Verifica tu correo electrónico";
                     cMensaje="Hemos enviado un correo a la direccion ingresada," +
-                            " haz clic en el enlace adjunto a él para activar tu cuenta. " +
-                            " " +
-                            "Verifica todas tus bandejas, incluso las de spam.";
+                            " haz clic en el enlace, no olvides revisar tu bandeja de spam.";
                     break;
                 default:
                     cMensaje="Se ha producido un error, por favor vuelve a iniciar sesión";

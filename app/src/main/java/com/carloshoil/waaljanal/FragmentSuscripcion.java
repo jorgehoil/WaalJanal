@@ -1,5 +1,7 @@
 package com.carloshoil.waaljanal;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -113,7 +115,7 @@ public class FragmentSuscripcion extends Fragment {
                     AbrirDialogoEstatus();
                 }else if(iIdItem==R.id.ayudaSuscripcion)
                 {
-                    Toast.makeText(getActivity(), "Abrir ayuda", Toast.LENGTH_SHORT).show();
+                    AbrirAyuda();
                 }
                 return false;
             }
@@ -121,6 +123,11 @@ public class FragmentSuscripcion extends Fragment {
         InicializarAdapter();
         ObtenerPaquetes("1menu");
 
+    }
+
+    private void AbrirAyuda() {
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://drive.google.com/file/d/1AshpDI-MSARoNK9yVHD0rEbZXaveVTSZ/view?usp=share_link"));
+        startActivity(browserIntent);
     }
 
     private void AbrirDialogoEstatus() {

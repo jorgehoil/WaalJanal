@@ -143,7 +143,7 @@ public class CategoriasAdapter extends RecyclerView.Adapter<CategoriasAdapter.Vi
         for(Categoria cat: lstCategoria)
         {
 
-            if(categoria.cLlave==cat.cLlave)
+            if(categoria.cLlave.equals(cat.cLlave))
             {
                 iItemMod=iPosicion;
             }

@@ -1,10 +1,16 @@
 package com.carloshoil.waaljanal;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
@@ -30,15 +36,20 @@ import android.widget.Toast;
 
 import com.carloshoil.waaljanal.Adapter.ProductosAdapter;
 import com.carloshoil.waaljanal.DTO.Producto;
+import com.carloshoil.waaljanal.DTO.Variedad;
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.errorprone.annotations.Var;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,11 +82,40 @@ public class FragmentProductos extends Fragment {
     private String mParam2;
     private List<String> lstNombresCategorias;
     private List<String> lstIdsCategorias;
-    private List<Producto> lstProductosPublicar;
     private MenuItem itemPublicar, itemModPrecios, itemCancelarModPre, itemGuardarPre, itemSeleccionarTod;
     private FloatingActionButton fbAgregarProd;
-    public String cIdCategoria;
+    public String cIdCategoria="";
+
     private boolean lPrimeraCarga=true;
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Log.d("DEBUGX", "RESULT:"+ result.getResultCode());
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        Bundle bundle = data.getExtras();
+                        boolean lActualiza = bundle.getBoolean("lActualiza");
+                        boolean lNuevo=bundle.getBoolean("lNuevos");
+                        boolean lCambioCat=bundle.getBoolean("lCambioCat");
+                        Producto producto= (Producto) bundle.getSerializable("entProd");
+                        Log.d("DEBUGX", "lActualiza: "+ lActualiza+ " lNuevos: "+ lNuevo);
+                        //SI SE HA ACTUALIZADO EL REGISTRO
+                        if(lCambioCat)
+                        {
+                            productosAdapter.EliminaProductoLista(producto.cLlave);
+                        }else if(lActualiza){
+                            productosAdapter.ActualizaProducto(producto);
+                        }else if(lNuevo)
+                        {
+                            productosAdapter.LimpiarLista();
+                            ConsultaProductos(cIdCategoria);
+                        }
+
+                    }
+                }
+            });
 
     public FragmentProductos() {
         // Required empty public constructor
@@ -107,155 +147,10 @@ public class FragmentProductos extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-    private void GuardarMasivo()
-    {
-        MostrarDialogoCarga();
-        HashMap<String, Object> hashMapDataPublic= new HashMap<>();
-        List<Producto> productos= productosAdapter.getLstProducto();
-        for(Producto producto: productos)
-        {
-            hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave, producto);
-            if(producto.lDisponible)
-            {
-                hashMapDataPublic.put("menus/"+cIdMenuG+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave, producto);
-            }
-            else
-            {
-                hashMapDataPublic.put("menus/"+cIdMenuG+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave,null);
-            }
-        }
-        firebaseDatabase.getReference().updateChildren(hashMapDataPublic).addOnCompleteListener(task -> {
-            OcultarDialogoCarga();
-            if(task.isSuccessful())
-            {
-                Toast.makeText(getActivity(), "¡Proceso exitoso!", Toast.LENGTH_SHORT).show();
-                CargaOpcionPublicar(false);
-                CargaModificarPrecios(false);
-            }
-            else
-            {
-                Global.MostrarMensaje(getActivity(), "Error", "No se ha podido" +
-                        " actualizar los datos, intenta de nuevo");
-            }
-        });
-    }
-    private void CargaProductosAdapter(List<Producto> lstProd)
-    {
-        Log.d("DEBUG", "CargaProductosAdapter");
-        productosAdapter.Agregar(lstProd);
-    }
-    private void CargaCategoriasAdapter(List<String> lstCategorias)
-    {
-        Log.d("DEBUG", "CargaCategorias");
-        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_dropdown_item, lstCategorias);
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCategorias.setAdapter(arrayAdapter);
-    }
-    private void IniciarAdapterProductos()
-    {
-        List<Producto> lst= new ArrayList<>();
-        Log.d("DEBUG", "IniciarAdapterProductos");
-        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
-        linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
-        recyclerViewProd.setLayoutManager(linearLayoutManager);
-        productosAdapter= new ProductosAdapter(getActivity(), lst, this, cIdMenuG, false);
-        recyclerViewProd.setAdapter(productosAdapter);
-
-    }
-
-    public void CargaOpcionPublicar(boolean lMostrar)
-    {
-        itemPublicar.setVisible(lMostrar);
-        itemModPrecios.setVisible(!lMostrar);
-
-    }
-
-    private void ConsultaProductos(String cIdCategoria){
-        Log.d("DEBUG", "ConsultaProductos");
-        if(cIdCategoria.isEmpty())
-        {
-            Global.MostrarMensaje(getActivity(), "Información", "No existen categorias registrados");
-        }
-        else
-        {
-            pbCargaProd.setVisibility(View.VISIBLE);
-            databaseReferenceMenu.child("productos")
-                    .orderByChild("cIdCategoria")
-                    .equalTo(cIdCategoria)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        List<Producto> lsProducto = new ArrayList<>();
-                        Producto producto;
-                        if (task.isSuccessful()) {
-
-                            for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
-                                if (dataSnapshot != null) {
-                                    producto = new Producto();
-                                    producto.cLlave = dataSnapshot.getKey();
-                                    producto.cNombre = dataSnapshot.child("cNombre").getValue() == null ? "" : dataSnapshot.child("cNombre").getValue().toString();
-                                    producto.cDescripcion = dataSnapshot.child("cDescripcion").getValue() == null ? "" : dataSnapshot.child("cDescripcion").getValue().toString();
-                                    producto.cPrecio = dataSnapshot.child("cPrecio").getValue() == null ? "" : dataSnapshot.child("cPrecio").getValue().toString();
-                                    producto.cIdCategoria = dataSnapshot.child("cIdCategoria").getValue() == null ? "" : dataSnapshot.child("cIdCategoria").getValue().toString();
-                                    producto.cUrlImagen = dataSnapshot.child("cUrlImagen").getValue() == null ? "" : dataSnapshot.child("cUrlImagen").getValue().toString();
-                                    producto.cUrlImagenMin= dataSnapshot.child("cUrlImagenMin").getValue() == null ? "" : dataSnapshot.child("cUrlImagenMin").getValue().toString();
-                                    producto.lDisponible = dataSnapshot.child("lDisponible").getValue() == null ? false : dataSnapshot.child("lDisponible").getValue(boolean.class);
-                                    lsProducto.add(producto);
-                                }
-                            }
-                            if (lsProducto.size() == 0)
-                            {
-                                Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
-                            }
-
-                            CargaProductosAdapter(lsProducto);
-                        } else {
-                            Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
-                                    "un error al carga productos, inténtelo de nuevo" + task.getException());
-                        }
-                        pbCargaProd.setVisibility(View.GONE);
-            });
-        }
-    }
-    private void ConsultaCategorias()
-    {
-        Log.d("DEBUG", "ConsultaCategorias");
-        pbCargaProd.setVisibility(View.VISIBLE);
-        databaseReferenceMenu.child("categorias").get().addOnCompleteListener(task -> {
-            if(task.isSuccessful())
-            {
-                String cIdCat;
-                String cCat;
-                for(DataSnapshot dataSnapshot: task.getResult().getChildren())
-                {
-                    cIdCat=dataSnapshot.getKey();
-                    cCat=dataSnapshot.child("cNombre").getValue().toString();
-                    lstIdsCategorias.add(cIdCat);
-                    lstNombresCategorias.add(cCat);
-                }
-                if(lstNombresCategorias.size()==0)
-                {
-                    pbCargaProd.setVisibility(View.GONE);
-                    Global.MostrarMensaje(getActivity(), "No existen categorías", "Dirígete a la opción <<Categorías>> para iniciar el registro.");
-                    fbAgregarProd.setEnabled(false);
-                }
-                else
-                {
-                    cIdCategoria=lstIdsCategorias.get(0);
-                    CargaCategoriasAdapter(lstNombresCategorias);
-                }
-            }
-            else
-            {
-                ConsultaCategorias();
-            }
-        });
-    }
-
     void Init(View view)
     {
 
-        Log.d("DEBUG", "Init");
+        Log.d("DEBUGX", "Init");
         lPrimeraCarga=true;
         firebaseAuth=FirebaseAuth.getInstance();
         if(firebaseAuth!=null)
@@ -325,12 +220,16 @@ public class FragmentProductos extends Fragment {
                         }
                         else if(iId==R.id.modPrecios)
                         {
+                            productosAdapter.CargaModificarPrecios(true);
                             CargaModificarPrecios(true);
                         }
                         else if(iId==R.id.cancelarModPrecios)
                         {
                             EsconderTeclado();
-                            CargaModificarPrecios(false);;
+                            CargaModificarPrecios(false);
+                            productosAdapter.LimpiarLista();
+                            ConsultaProductos(cIdCategoria);
+
                         } else if(iId==R.id.guardarPrecios)
                         {
                             EsconderTeclado();
@@ -338,8 +237,9 @@ public class FragmentProductos extends Fragment {
                         }
                         return false;
                     }
-                },getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+                },getViewLifecycleOwner());
                 IniciarAdapterProductos();
+                CargaDatos();
             }
         }
         else
@@ -347,12 +247,168 @@ public class FragmentProductos extends Fragment {
             AbreLogin();
         }
 
+
+    }
+
+    private void GuardarMasivo()
+    {
+        MostrarDialogoCarga();
+        HashMap<String, Object> hashMapDataPublic= new HashMap<>();
+        List<Producto> productos= productosAdapter.getLstProducto();
+        for(Producto producto: productos)
+        {
+            hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave+"/lDisponible", producto);
+            if(producto.lDisponible) {
+                producto.lstVariedad.removeIf(variedad -> !variedad.lDisponible);
+                hashMapDataPublic.put("menus/" + cIdMenuG + "/menu_publico/" + producto.cIdCategoria + "/" + producto.cLlave, producto);
+            }
+            else
+            {
+                hashMapDataPublic.put("menus/"+cIdMenuG+"/menu_publico/"+producto.cIdCategoria+"/"+producto.cLlave,null);
+            }
+        }
+        firebaseDatabase.getReference().updateChildren(hashMapDataPublic).addOnCompleteListener(task -> {
+            OcultarDialogoCarga();
+            if(task.isSuccessful())
+            {
+                Toast.makeText(getActivity(), "¡Proceso exitoso!", Toast.LENGTH_SHORT).show();
+                CargaOpcionPublicar(false);
+                CargaModificarPrecios(false);
+            }
+            else
+            {
+                Global.MostrarMensaje(getActivity(), "Error", "No se ha podido" +
+                        " actualizar los datos, intenta de nuevo");
+            }
+        });
+    }
+    private void CargaCategoriasAdapter(List<String> lstCategorias)
+    {
+        Log.d("DEBUGX", "CargaCategorias");
+        ArrayAdapter<String> arrayAdapter= new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_dropdown_item, lstCategorias);
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategorias.setAdapter(arrayAdapter);
+    }
+    private void IniciarAdapterProductos()
+    {
+        List<Producto> lst= new ArrayList<>();
+        Log.d("DEBUGX", "IniciarAdapterProductos");
+        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
+        recyclerViewProd.setLayoutManager(linearLayoutManager);
+        productosAdapter= new ProductosAdapter(getActivity(), lst, this, cIdMenuG, false, mStartForResult);
+        recyclerViewProd.setAdapter(productosAdapter);
+
+    }
+
+    public void CargaOpcionPublicar(boolean lMostrar)
+    {
+        itemPublicar.setVisible(lMostrar);
+        itemModPrecios.setVisible(!lMostrar);
+
+    }
+
+    private void ConsultaProductos(String cIdCategoria){
+        Log.d("DEBUG", "ConsultaProductos");
+        if(cIdCategoria.isEmpty())
+        {
+            Global.MostrarMensaje(getActivity(), "Información", "No existen categorias registrados");
+        }
+        else
+        {
+            pbCargaProd.setVisibility(View.VISIBLE);
+            databaseReferenceMenu.child("productos")
+                    .orderByChild("cIdCategoria")
+                    .equalTo(cIdCategoria)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        Producto producto;
+                        if (task.isSuccessful()) {
+                            List<Producto> lstProductos= new ArrayList<>();
+                            List<Variedad> lstVariedad;
+                            for (DataSnapshot dataSnapshot : task.getResult().getChildren()) {
+                                lstVariedad= new ArrayList<>();
+                                if (dataSnapshot != null) {
+                                    producto = new Producto();
+                                    producto.cLlave = dataSnapshot.getKey();
+                                    producto.cNombre = dataSnapshot.child("cNombre").getValue() == null ? "" : dataSnapshot.child("cNombre").getValue().toString();
+                                    producto.cDescripcion = dataSnapshot.child("cDescripcion").getValue() == null ? "" : dataSnapshot.child("cDescripcion").getValue().toString();
+                                    producto.cPrecio = dataSnapshot.child("cPrecio").getValue() == null ? "" : dataSnapshot.child("cPrecio").getValue().toString();
+                                    producto.cIdCategoria = dataSnapshot.child("cIdCategoria").getValue() == null ? "" : dataSnapshot.child("cIdCategoria").getValue().toString();
+                                    producto.cUrlImagen = dataSnapshot.child("cUrlImagen").getValue() == null ? "" : dataSnapshot.child("cUrlImagen").getValue().toString();
+                                    producto.cUrlImagenMin= dataSnapshot.child("cUrlImagenMin").getValue() == null ? "" : dataSnapshot.child("cUrlImagenMin").getValue().toString();
+                                    producto.lDisponible = dataSnapshot.child("lDisponible").getValue() == null ? false : dataSnapshot.child("lDisponible").getValue(boolean.class);
+                                    for(DataSnapshot dataSnapshot1: dataSnapshot.child("lstVariedad").getChildren())
+                                    {
+                                        lstVariedad.add(new Variedad(
+                                                dataSnapshot1.getKey(),
+                                                dataSnapshot1.child("cNombre").getValue(String.class),
+                                                dataSnapshot1.child("cPrecio").getValue(String.class),
+                                                dataSnapshot1.child("lDisponible").getValue(boolean.class)
+                                        ));
+                                    }
+                                    producto.lstVariedad=lstVariedad;
+                                    lstProductos.add(producto);
+                                }
+                            }
+                            if (lstProductos.size() == 0)
+                            {
+                                Toast.makeText(getActivity(), "No se encontró ningún producto", Toast.LENGTH_SHORT).show();
+                            }
+
+                            productosAdapter.Agregar(lstProductos);
+                        } else {
+                            Global.MostrarMensaje(getActivity(), "Error", "Se ha presentado " +
+                                    "un error al carga productos, inténtelo de nuevo" + task.getException());
+                        }
+                        pbCargaProd.setVisibility(View.GONE);
+            });
+        }
     }
 
 
+
+    private void ConsultaCategorias()
+    {
+        Log.d("DEBUGX", "ConsultaCategorias");
+        pbCargaProd.setVisibility(View.VISIBLE);
+        databaseReferenceMenu.child("categorias").get().addOnCompleteListener(task -> {
+            if(task.isSuccessful())
+            {
+                String cIdCat;
+                String cCat;
+                for(DataSnapshot dataSnapshot: task.getResult().getChildren())
+                {
+                    cIdCat=dataSnapshot.getKey();
+                    cCat=dataSnapshot.child("cNombre").getValue().toString();
+                    lstIdsCategorias.add(cIdCat);
+                    lstNombresCategorias.add(cCat);
+                }
+                if(lstNombresCategorias.size()==0)
+                {
+                    pbCargaProd.setVisibility(View.GONE);
+                    Global.MostrarMensaje(getActivity(), "No existen categorías", "Dirígete a la opción <<Categorías>> para iniciar el registro.");
+                    fbAgregarProd.setEnabled(false);
+                }
+                else
+                {
+                    //cIdCategoria=lstIdsCategorias.get(0);
+                    CargaCategoriasAdapter(lstNombresCategorias);
+                }
+            }
+            else
+            {
+                ConsultaCategorias();
+            }
+        });
+    }
+
+
+
     private void CargaModificarPrecios(boolean lModPrecios) {
-        fbAgregarProd.setVisibility(lModPrecios?View.GONE:View.VISIBLE);
         productosAdapter.CargaModificarPrecios(lModPrecios);
+        fbAgregarProd.setVisibility(lModPrecios?View.GONE:View.VISIBLE);
         itemCancelarModPre.setVisible(lModPrecios);
         itemGuardarPre.setVisible(lModPrecios);
         itemModPrecios.setVisible(!lModPrecios);
@@ -382,6 +438,7 @@ public class FragmentProductos extends Fragment {
 
     }
 
+
     private void MostrarDialogoCarga()
     {
         dialogoCarga= new DialogoCarga(getActivity());
@@ -396,7 +453,7 @@ public class FragmentProductos extends Fragment {
     {
         Intent i= new Intent(getActivity(), ABCProductoActivity.class);
         i.putExtra("cIdCatSel", cIdCategoria);
-        startActivity(i);
+        mStartForResult.launch(i);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -405,16 +462,18 @@ public class FragmentProductos extends Fragment {
         Log.d("DEBUG", "onCreate");
         View view=inflater.inflate(R.layout.fragment_productos, container, false);
         Init(view);
-
         return view;
     }
 
     @Override
     public void onResume() {
-        Log.d("debug", "onResume");
         super.onResume();
-        CargaDatos();
+    }
 
+    @Override
+    public void onDestroy() {
+        Log.d("DEBUGX", "ONDESTROY");
+        super.onDestroy();
     }
 
     private void CargaDatos() {
@@ -424,15 +483,6 @@ public class FragmentProductos extends Fragment {
             {
                 ConsultaCategorias();
                 lPrimeraCarga=false;
-            }
-            else
-            {
-                if(cIdCategoria!=null&&!cIdCategoria.isEmpty())
-                {
-                    productosAdapter.LimpiarLista();
-                    ConsultaProductos(cIdCategoria);
-                }
-
             }
         }
         else
@@ -448,19 +498,19 @@ public class FragmentProductos extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("DEBUG", "onPause");
+        Log.d("DEBUGX", "onPause");
 
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.d("DEBUG", "onStart");
+        Log.d("DEBUGX", "onStart");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d("DEBUG", "onStop");
+        Log.d("DEBUGX", "onStop");
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.ContentInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
@@ -48,7 +50,8 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
     StorageReference storageReference;
     String cIdMenu="";
     boolean lModificacionPrecios;
-    public ProductosAdapter(Context context, List<Producto> lstProducto, FragmentProductos fragmentProductos, String cIdMenu, boolean lModificacionPrecios)
+    ActivityResultLauncher<Intent> mStartForResult;
+    public ProductosAdapter(Context context, List<Producto> lstProducto, FragmentProductos fragmentProductos, String cIdMenu, boolean lModificacionPrecios, ActivityResultLauncher<Intent> mStartForResult)
     {
         this.cIdMenu=cIdMenu;
         this.context=context;
@@ -57,6 +60,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         this.lModificacionPrecios=lModificacionPrecios;
         firebaseDatabase=FirebaseDatabase.getInstance();
         storageReference= FirebaseStorage.getInstance().getReference();
+        this.mStartForResult=mStartForResult;
     }
     @NonNull
     @Override
@@ -70,10 +74,11 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         Producto producto= lstProducto.get(position);
         if(producto!=null)
         {
-            holder.tvNombreProducto.setText(producto.cNombre);
+           holder.tvNombreProducto.setText(producto.cNombre);
            holder.ckProdDisp.setChecked(producto.lDisponible);
            if(lModificacionPrecios)
            {
+               holder.edPrecio.setEnabled(producto.lstVariedad.size()==0);
                holder.tvPrecio.setText("$");
                holder.edPrecio.setText(producto.cPrecio);
                holder.ckProdDisp.setEnabled(false);
@@ -107,7 +112,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
            else {
                holder.edPrecio.setVisibility(View.GONE);
                holder.btnOpcionesProd.setVisibility(View.VISIBLE);
-               holder.tvPrecio.setText("$"+producto.cPrecio);
+               holder.tvPrecio.setText("$"+(producto.cPrecio.isEmpty()?"--":producto.cPrecio));
                holder.ckProdDisp.setOnClickListener(view -> {
                    lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
                    fragmentProductos.CargaOpcionPublicar(true);
@@ -124,18 +129,13 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
                        } else if(iIdItem==R.id.editarABC) {
                            Intent i= new Intent(context, ABCProductoActivity.class);
                            i.putExtra("cIdProducto",producto.cLlave);
-                           context.startActivity(i);
+                           mStartForResult.launch(i);
                        }
 
                        return false;
                    });
                    popupMenu.show();
 
-               });
-               holder.tvNombreProducto.setOnClickListener(view -> {
-                   holder.ckProdDisp.setChecked(!holder.ckProdDisp.isChecked());
-                   lstProducto.get(holder.getAdapterPosition()).lDisponible=holder.ckProdDisp.isChecked();
-                   fragmentProductos.CargaOpcionPublicar(true);
                });
            }
 
@@ -147,7 +147,26 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         lModificacionPrecios=lModificacion;
         notifyDataSetChanged();
     }
-    private void EliminaProductoLista(String cKey)
+    public void ActualizaProducto(Producto producto)
+    {
+
+        int iPosition=0;
+        int iContador=0;
+        for(Producto producto1:lstProducto)
+        {
+            if(producto1.cLlave.equals(producto.cLlave))
+            {
+                iPosition=iContador;
+            }
+            iContador++;
+        }
+        Log.d("DEBUGX", "SE ACTUALIZA ITEM"+ iPosition+", " +iContador);
+        lstProducto.remove(iPosition);
+        lstProducto.add(iPosition,producto);
+        notifyItemChanged(iPosition);
+
+    }
+    public void EliminaProductoLista(String cKey)
     {
         int iPosicion=0, iContador=0;
         for(Producto producto: lstProducto)
@@ -189,7 +208,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
         lstProducto.addAll(lstProductosTemp);
         notifyDataSetChanged();
     }
-    private  void EliminaProducto(Producto producto)
+    public void EliminaProducto(Producto producto)
     {
         HashMap<String, Object> hashMapUpdate= new HashMap<>();
         hashMapUpdate.put("menus/"+cIdMenu+"/productos/"+producto.cLlave, null);
@@ -198,8 +217,11 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
             if(task.isSuccessful())
             {
                 Toast.makeText(context, "Producto eliminado", Toast.LENGTH_SHORT).show();
-                storageReference.child("imgproductos/"+cIdMenu+ "/"+ producto.cLlave+ ".jpg").delete();
-                storageReference.child("imgproductosmin/"+cIdMenu+ "/"+ producto.cLlave+ ".jpg").delete();
+                if(!producto.cUrlImagenMin.isEmpty())
+                {
+                    storageReference.child("imgproductos/"+cIdMenu+ "/"+ producto.cLlave+ ".jpg").delete();
+                    storageReference.child("imgproductosmin/"+cIdMenu+ "/"+ producto.cLlave+ ".jpg").delete();
+                }
                 EliminaProductoLista(producto.cLlave);
 
             }

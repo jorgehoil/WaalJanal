@@ -36,7 +36,7 @@
                 android:background="@drawable/ed_diseno"
                 android:ems="10"
                 android:hint="ejemplo@mail.com"
-                android:inputType="textPersonName" />
+                android:inputType="textEmailAddress" />
 
             <TextView
                 android:id="@+id/textView25"
@@ -81,7 +81,7 @@
                 android:inputType="textPersonName|textPassword" />
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/ckTerminos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="He leído y acepto los términos y condiciones" />
@@ -100,6 +100,7 @@
                 android:id="@+id/btnCreaCuenta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:text="Verificar" />
 
         </LinearLayout>

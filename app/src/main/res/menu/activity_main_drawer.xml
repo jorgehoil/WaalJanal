@@ -11,11 +11,15 @@
         <item
             android:id="@+id/nav_categorias"
             android:icon="@drawable/ic_category"
-            android:title="Categorias" />
+            android:title="Categorías" />
         <item
             android:id="@+id/nav_restaurantes"
             android:icon="@drawable/ic_restaurant"
             android:title="Menus" />
+        <item
+            android:id="@+id/nav_pedidos"
+            android:icon="@drawable/ic_asignar"
+            android:title="Pedidos" />
         <item
             android:id="@+id/nav_registropagos"
             android:icon="@drawable/ic_money"

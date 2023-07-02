@@ -85,16 +85,81 @@
                 android:lines="3" />
 
             <TextView
+                android:id="@+id/textView56"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recibir pedidos por" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/ckComedorConfig"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Comedor" />
+
+                <CheckBox
+                    android:id="@+id/ckDomicilioConfig"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Domicilio" />
+
+                <CheckBox
+                    android:id="@+id/ckRecogeConfig"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Recoge" />
+            </LinearLayout>
+
+            <TextView
                 android:id="@+id/textView8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Moneda" />
+                android:text="Moneda / Número de mesas" />
 
-            <Spinner
-                android:id="@+id/spMoneda"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:entries="@array/monedas" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Spinner
+                    android:id="@+id/spMoneda"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="1"
+                    android:entries="@array/monedas" />
+
+                <Button
+                    android:id="@+id/btnReduceMesas"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    app:icon="@drawable/remove_circle"
+                    app:iconGravity="textStart"
+                    app:iconPadding="8dp" />
+
+                <TextView
+                    android:id="@+id/tvNumeroMesasConfig"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="1000" />
+
+                <Button
+                    android:id="@+id/btnAumentaMesas"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    app:icon="@drawable/add_circle"
+                    app:iconGravity="textStart" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView29"

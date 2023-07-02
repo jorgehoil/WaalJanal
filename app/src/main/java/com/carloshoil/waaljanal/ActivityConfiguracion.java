@@ -21,11 +21,13 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -69,7 +71,7 @@ public class ActivityConfiguracion extends AppCompatActivity {
     DatabaseReference databaseReferenceMenu;
     DatabaseReference databaseReference;
     FirebaseAuth firebaseAuth;
-    TextView cTextPrice1, cTextPrice2, cTextPlat1, cTextPlat2, cTextDescrip1, cTextDescrip2, cTextCat, tvTituloMenu;
+    TextView cTextPrice1, cTextPrice2, cTextPlat1, cTextPlat2, cTextDescrip1, cTextDescrip2, cTextCat,tvNumeroMesas,  tvTituloMenu;
     String cIdMenuG, cIdMenuActual;
     CardView cFondo;
     LinearLayout cFondoPlat, cFondoPlat2;
@@ -81,6 +83,9 @@ public class ActivityConfiguracion extends AppCompatActivity {
     Spinner spMoneda;
     boolean lInicio;
     int iEstatusPrueba;
+    int iNumeroMesas=0;
+    Button btnReduceMesas, btnAumentaMesas;
+    CheckBox ckDomicilio, ckComedor, ckRecoger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +116,15 @@ public class ActivityConfiguracion extends AppCompatActivity {
         cTextDescrip2=findViewById(R.id.tvMenuPerDescrip2);
         cFondoPlat=findViewById(R.id.layoutMenuPerFondoPlato);
         cFondoPlat2=findViewById(R.id.layoutMenuPerFondoPlato2);
+        btnAumentaMesas=findViewById(R.id.btnAumentaMesas);
+        btnReduceMesas=findViewById(R.id.btnReduceMesas);
         edHorarioRes=findViewById(R.id.edHorarioRes);
         edNombreRes=findViewById(R.id.edNombreRes);
         edTelefono=findViewById(R.id.edTelefonoRes);
+        ckComedor=findViewById(R.id.ckComedorConfig);
+        ckDomicilio=findViewById(R.id.ckDomicilioConfig);
+        ckRecoger=findViewById(R.id.ckRecogeConfig);
+        tvNumeroMesas=findViewById(R.id.tvNumeroMesasConfig);
         cIdMenuG=getIntent().getStringExtra("cIdMenu")==null?"":getIntent().getStringExtra("cIdMenu");
         lInicio=getIntent().getBooleanExtra("lInicio", false);
         iEstatusPrueba=getIntent().getIntExtra("iEstatusPeriodo", 3);
@@ -121,6 +132,18 @@ public class ActivityConfiguracion extends AppCompatActivity {
         firebaseAuth=FirebaseAuth.getInstance();
         cIdMenuActual=Global.RecuperaPreferencia("cIdMenu", this);
         databaseReference=firebaseDatabase.getReference();
+        btnReduceMesas.setOnClickListener(v->{
+            if(iNumeroMesas>1)
+            {
+                iNumeroMesas--;
+                tvNumeroMesas.setText(""+iNumeroMesas);
+            }
+
+        });
+        btnAumentaMesas.setOnClickListener(v->{
+            iNumeroMesas++;
+            tvNumeroMesas.setText(""+iNumeroMesas);
+        });
         addMenuProvider(new MenuProvider() {
             @Override
             public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
@@ -165,6 +188,7 @@ public class ActivityConfiguracion extends AppCompatActivity {
     }
     public void ConfiguraMenu(MenuPersonalizado menuPersonalizado)
     {
+        Log.d("DEBUGX", menuPersonalizado.cFondo);
         //Fondo
         cFondo.setCardBackgroundColor(Color.parseColor(menuPersonalizado.cFondo));
         //cTextDescrip
@@ -217,6 +241,8 @@ public class ActivityConfiguracion extends AppCompatActivity {
                                 dataSnapshot.child("cTextPlat").getValue(String.class);
                         menuPersonalizado.cTextPrice=dataSnapshot.child("cTextPrice").getValue()==null?"":
                                 dataSnapshot.child("cTextPrice").getValue(String.class);
+                        menuPersonalizado.cFondoVar=dataSnapshot.child("cFondoVar").getValue()==null?"":
+                                dataSnapshot.child("cFondoVar").getValue(String.class);
                         menuPersonalizado.lOscuro=dataSnapshot.child("lOscuro").getValue()==null?false:
                                 dataSnapshot.child("lOscuro").getValue(boolean.class);
                         if(menuPersonalizado.cKey.equals(cIdMenuPer))
@@ -356,6 +382,10 @@ public class ActivityConfiguracion extends AppCompatActivity {
         hashMapUpdate.put("menus/"+cIdMenu+"/info/cTelefono", edTelefono.getText().toString() );
         hashMapUpdate.put("menus/"+cIdMenu+"/info/cHorario", edHorarioRes.getText().toString() );
         hashMapUpdate.put("menus/"+ cIdMenu+"/info/iIdMoneda", spMoneda.getSelectedItemPosition());
+        hashMapUpdate.put("menus/"+cIdMenu+"/info/iNumeroMesas", iNumeroMesas);
+        hashMapUpdate.put("menus/"+cIdMenu+"/info/lComedor", ckComedor.isChecked());
+        hashMapUpdate.put("menus/"+cIdMenu+"/info/lDomicilio",ckDomicilio.isChecked());
+        hashMapUpdate.put("menus/"+cIdMenu+"/info/lRecoger", ckRecoger.isChecked());
         hashMapUpdate.put("menus/"+cIdMenu+"/info/cIdMenuPer", personalizacionAdapter.obtenerSeleccionado().cKey );
         hashMapUpdate.put("menus/"+cIdMenu+"/info/menuperinfo",personalizacionAdapter.obtenerSeleccionado());
         if(lNuevo)
@@ -435,7 +465,16 @@ public class ActivityConfiguracion extends AppCompatActivity {
 
                             if(task.getResult().exists())
                             {
+                                boolean lRecoge=false, lDomicilio=false, lComedor=false;
                                 DataSnapshot dataSnapshot= task.getResult();
+                                lDomicilio=dataSnapshot.child("lDomicilio").getValue()==null?false:dataSnapshot.child("lDomicilio").getValue(Boolean.class);
+                                lComedor=dataSnapshot.child("lComedor").getValue()==null?false:dataSnapshot.child("lComedor").getValue(Boolean.class);
+                                lRecoge=dataSnapshot.child("lRecoger").getValue()==null?false:dataSnapshot.child("lRecoger").getValue(Boolean.class);
+                                ckRecoger.setChecked(lRecoge);
+                                ckDomicilio.setChecked(lDomicilio);
+                                ckComedor.setChecked(lComedor);
+                                iNumeroMesas=dataSnapshot.child("iNumeroMesas").getValue()==null?0:dataSnapshot.child("iNumeroMesas").getValue(Integer.class);
+                                tvNumeroMesas.setText(""+iNumeroMesas);
                                 edNombreRes.setText(dataSnapshot.child("cNombre").getValue()==null?"":dataSnapshot.child("cNombre").getValue(String.class));
                                 edHorarioRes.setText(dataSnapshot.child("cHorario").getValue()==null?"":dataSnapshot.child("cHorario").getValue(String.class));
                                 edTelefono.setText(dataSnapshot.child("cTelefono").getValue()==null?"":dataSnapshot.child("cTelefono").getValue(String.class));
