@@ -8,9 +8,9 @@ public class Pedido {
     public String cDetallePedido;
     public String cTelefono;
     public long lFechaRegistro;
-    public String cPrecio;
+    public String cTotal;
 
-    public Pedido(String cKey,String cNombreCliente, String cMesa, String cDireccion, String cDetallePedido, String cTelefono, long lFechaRegistro, String cPrecio) {
+    public Pedido(String cKey,String cNombreCliente, String cMesa, String cDireccion, String cDetallePedido, String cTelefono, long lFechaRegistro, String cTotal) {
         this.cKey = cKey;
         this.cNombreCliente = cNombreCliente;
         this.cMesa = cMesa;
@@ -18,7 +18,7 @@ public class Pedido {
         this.cDetallePedido = cDetallePedido;
         this.cTelefono = cTelefono;
         this.lFechaRegistro = lFechaRegistro;
-        this.cPrecio=cPrecio;
+        this.cTotal=cTotal;
     }
     public Pedido()
     {

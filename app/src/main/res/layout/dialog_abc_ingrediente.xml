@@ -21,7 +21,8 @@
             android:id="@+id/textView53"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Agregar ingrediente" />
+            android:text="Agregar ingrediente"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView48"
@@ -51,7 +52,8 @@
                 android:background="@drawable/ed_diseno"
                 android:drawableLeft="@drawable/ic_money"
                 android:ems="10"
-                android:inputType="textPersonName" />
+                android:enabled="false"
+                android:inputType="number" />
 
             <CheckBox
                 android:id="@+id/ckCostoAdicionalIng"
@@ -75,7 +77,7 @@
                 android:layout_marginRight="8dp"
                 android:layout_weight="1"
                 android:backgroundTint="#D3C4C4"
-                android:text="CANCELAR"
+                android:text="CERRAR"
                 app:icon="@drawable/ic_cancel" />
 
             <Button

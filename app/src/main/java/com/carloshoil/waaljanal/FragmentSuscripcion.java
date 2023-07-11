@@ -119,7 +119,7 @@ public class FragmentSuscripcion extends Fragment {
                 }
                 return false;
             }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
+        }, getViewLifecycleOwner());
         InicializarAdapter();
         ObtenerPaquetes("1menu");
 

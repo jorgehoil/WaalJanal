@@ -257,9 +257,9 @@ public class FragmentProductos extends Fragment {
         List<Producto> productos= productosAdapter.getLstProducto();
         for(Producto producto: productos)
         {
-            hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave+"/lDisponible", producto);
+            hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave+"/lDisponible", producto.lDisponible);
+            hashMapDataPublic.put("menus/"+cIdMenuG+"/productos/"+producto.cLlave+"/cPrecio", producto.cPrecio);
             if(producto.lDisponible) {
-                producto.lstVariedad.removeIf(variedad -> !variedad.lDisponible);
                 hashMapDataPublic.put("menus/" + cIdMenuG + "/menu_publico/" + producto.cIdCategoria + "/" + producto.cLlave, producto);
             }
             else

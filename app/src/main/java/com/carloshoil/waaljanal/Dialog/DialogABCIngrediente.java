@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -49,14 +50,16 @@ public class DialogABCIngrediente extends DialogFragment {
         edNombreIng =view.findViewById(R.id.edNombreIng);
         edPrecioIng=view.findViewById(R.id.edPrecioIng);
         ckPrecioAdicional=view.findViewById(R.id.ckCostoAdicionalIng);
+        ckPrecioAdicional.setOnCheckedChangeListener((compoundButton, b) -> edPrecioIng.setEnabled(b));
         btnGuardar=view.findViewById(R.id.btnGuardarIng);
         btnCancelar=view.findViewById(R.id.btnCancelarIng);
         btnGuardar.setOnClickListener(v->{
-           /* if(ValidaGuardado(ObtenerIngrediente()))
+            if(ValidaGuardado(ObtenerIngrediente()))
             {
-                Toast.makeText(context, "Guardado!", Toast.LENGTH_SHORT).show();
-            }*/
-            fe.MuestraMensaje();
+                AgregaIngrediente(ObtenerIngrediente());
+                LimpiaCampos();
+                Toast.makeText(context, "Se agregó el ingrediente", Toast.LENGTH_SHORT).show();
+            }
         });
         btnCancelar.setOnClickListener(v->{
             dismiss();
@@ -65,12 +68,23 @@ public class DialogABCIngrediente extends DialogFragment {
         return dialog.create();
     }
 
+    private void LimpiaCampos() {
+        edNombreIng.setText("");
+        edPrecioIng.setText("");
+        ckPrecioAdicional.setChecked(false);
+    }
+
+    private void AgregaIngrediente(Ingrediente objIngrediente) {
+        fe.agregaIngrediente(objIngrediente);
+    }
+
     private Ingrediente ObtenerIngrediente() {
         Ingrediente ingredienteR= new Ingrediente();
         ingredienteR.cKey=ingrediente==null?"": ingrediente.cKey;
         ingredienteR.cNombre=edNombreIng.getText().toString().trim();
         ingredienteR.cPrecio=edPrecioIng.getText().toString().trim();
         ingredienteR.lPrecioAdicional=ckPrecioAdicional.isChecked();
+        ingredienteR.lDisponible=true;
         return ingredienteR;
     }
 
@@ -98,6 +112,7 @@ public class DialogABCIngrediente extends DialogFragment {
             edNombreIng.setText(ingrediente.cNombre);
             edPrecioIng.setText(ingrediente.cPrecio);
             ckPrecioAdicional.setEnabled(ingrediente.lPrecioAdicional);
+            edPrecioIng.setEnabled(ingrediente.lPrecioAdicional);
         }
     }
 }

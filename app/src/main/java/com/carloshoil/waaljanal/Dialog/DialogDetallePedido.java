@@ -88,7 +88,6 @@ public class DialogDetallePedido extends DialogFragment {
 
         LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
-
         recyclerViewDetalles.setLayoutManager(linearLayoutManager);
         adapterPedidoDetalle = new AdapterPedidoDetalle(getActivity(), lstDetalles);
         recyclerViewDetalles.setAdapter(adapterPedidoDetalle);
@@ -96,7 +95,7 @@ public class DialogDetallePedido extends DialogFragment {
 
     private void CargaDatos() {
         IniciaAdapter();
-        tvPrecio.setText("$ "+ pedido.cPrecio);
+        tvPrecio.setText("$ "+ pedido.cTotal);
         tvOrden.setText("Detalle de Pedido #"+ pedido.cKey);
         tvNombreCliente.setText(pedido.cNombreCliente);
         tvDireccion.setText(pedido.cDireccion);
@@ -111,13 +110,13 @@ public class DialogDetallePedido extends DialogFragment {
             btnTomar.setEnabled(false);
             btnCerrar.setEnabled(false);
             progressBarCargaDetalle.setVisibility(View.VISIBLE);
-            hashMapUpdates.put("pedidos/"+ cIdMenu+"/"+cTipoPedido+"/recibidos/"+pedido.cKey, null);
-            hashMapUpdates.put("pedidos/"+ cIdMenu+"/"+cTipoPedido+"/tomados/"+pedido.cKey, pedido);
-            hashMapUpdates.put("pedidos/"+ cIdMenu+"/todos/"+pedido.cKey+"/iEstatus", 2);
+            hashMapUpdates.put("pedidos/"+ cIdMenu+"/generados/"+cTipoPedido+"/recibido/"+pedido.cKey, null);
+            hashMapUpdates.put("pedidos/"+ cIdMenu+"/generados/"+cTipoPedido+"/tomado/"+pedido.cKey, pedido);
+            hashMapUpdates.put("pedidos/"+ cIdMenu+"/todo/"+pedido.cKey+"/cEstatus", "tomado");
             hashMapUpdates.put("pedidos/"+ cIdMenu+"/count/"+cTipoPedido+"/data", ServerValue.increment(-1));
             databaseReference.updateChildren(hashMapUpdates).addOnCompleteListener(task -> {
-                btnTomar.setEnabled(false);
-                btnCerrar.setEnabled(false);
+                btnTomar.setEnabled(true);
+                btnCerrar.setEnabled(true);
                 progressBarCargaDetalle.setVisibility(View.INVISIBLE);
                 if(task.isSuccessful())
                 {

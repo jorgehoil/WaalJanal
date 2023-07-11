@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.carloshoil.waaljanal.Adapter.ViewPager2Adapter;
+import com.carloshoil.waaljanal.DTO.Ingrediente;
 import com.carloshoil.waaljanal.DTO.Producto;
 import com.carloshoil.waaljanal.DTO.Variedad;
 import com.carloshoil.waaljanal.Dialog.DialogABCIngrediente;
@@ -221,6 +222,7 @@ public class ABCProductoActivity extends AppCompatActivity {
             cUrlMin=productoG.cUrlImagenMin;
             cUrlImagen=productoG.cUrlImagen;
             fragmentVariedades.cargaVariedades(productoG.lstVariedad==null?new ArrayList<>():productoG.lstVariedad);
+            fragmentExtras.cargaIngredientes(productoG.lstIngrediente==null?new ArrayList<>():productoG.lstIngrediente);
         }
     }
     private boolean checkPermiso()
@@ -237,6 +239,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         Log.d("DEBUGX", "ObtenerEdicion");
         abrirDialogoCarga();
         List<Variedad> lstVariedad= new ArrayList<>();
+        List<Ingrediente> lstIngrediente= new ArrayList<>();
         databaseReferenceMenu.child("productos").child(cIdProducto).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -262,6 +265,20 @@ public class ABCProductoActivity extends AppCompatActivity {
                            dataSnapshot1.child("lDisponible").getValue(boolean.class)
                         ));
                     }
+                    for(DataSnapshot dataSnapshot1: dataSnapshot.child("lstIngrediente").getChildren())
+                    {
+                        lstIngrediente.add(new Ingrediente(
+                                dataSnapshot1.getKey(),
+                                dataSnapshot1.child("cNombre").getValue()==null?"":
+                                        dataSnapshot1.child("cNombre").getValue().toString(),
+                                dataSnapshot1.child("cPrecio").getValue()==null?"0":
+                                        dataSnapshot1.child("cPrecio").getValue().toString(),
+                                dataSnapshot1.child("lPrecioAdicional").getValue()==null?false:
+                                        dataSnapshot1.child("lPrecioAdicional").getValue(Boolean.class),
+                                dataSnapshot1.child("lDisponible").getValue()==null?false:
+                                        dataSnapshot1.child("lDisponible").getValue(boolean.class)));
+                    }
+                    productoG.lstIngrediente=lstIngrediente;
                     productoG.lstVariedad=lstVariedad;
                     if(!productoG.cUrlImagen.isEmpty())
                     {
@@ -411,6 +428,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         producto.cPrecio=edPrecioProducto.getText().toString();
         producto.cDescripcion=edDescripconProd.getText().toString();
         producto.lstVariedad=ObtenerVariedades();
+        producto.lstIngrediente=ObtenerIngredientes();
         return producto;
     }
     private String ObtenerIdCatSeleccionada()
@@ -601,6 +619,10 @@ public class ABCProductoActivity extends AppCompatActivity {
     private List<Variedad> ObtenerVariedades()
     {
         return fragmentVariedades.RetornaVariedades();
+    }
+    private List<Ingrediente> ObtenerIngredientes()
+    {
+        return fragmentExtras.ObtenerIngreDientes();
     }
     private void AbrirNuevoVariante()
     {

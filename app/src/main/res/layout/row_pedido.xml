@@ -25,7 +25,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/teal_200"
+                android:background="@color/teal_700"
                 android:orientation="horizontal">
 
                 <TextView
@@ -35,6 +35,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:text="# ORDEN : 1003"
+                    android:textColor="#F1EBEB"
                     android:textStyle="bold" />
 
                 <TextView
@@ -44,7 +45,8 @@
                     android:layout_marginRight="8dp"
                     android:layout_weight="1"
                     android:gravity="right"
-                    android:text="19/05/2023 10:50 a.m." />
+                    android:text="19/05/2023 10:50 a.m."
+                    android:textColor="#F4EFEF" />
             </LinearLayout>
 
             <LinearLayout

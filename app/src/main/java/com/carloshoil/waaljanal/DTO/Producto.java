@@ -13,9 +13,10 @@ public class Producto implements Serializable {
     public String cUrlImagenMin;
     public boolean lDisponible;
     public List<Variedad> lstVariedad;
+    public List<Ingrediente> lstIngrediente;
 
 
-    public Producto(String cLlave, String cNombre, String cDescripcion, String cPrecio, String cIdCategoria, String cUrlImagen, List<Variedad> lstVariedad) {
+    public Producto(String cLlave, String cNombre, String cDescripcion, String cPrecio, String cIdCategoria, String cUrlImagen, List<Variedad> lstVariedad, List<Ingrediente> lstIngrediente) {
         this.cNombre = cNombre;
         this.cDescripcion = cDescripcion;
         this.cPrecio = cPrecio;
@@ -23,6 +24,7 @@ public class Producto implements Serializable {
         this.cUrlImagen = cUrlImagen;
         this.cLlave=cLlave;
         this.lstVariedad=lstVariedad;
+        this.lstIngrediente=lstIngrediente;
     }
     public Producto()
     {

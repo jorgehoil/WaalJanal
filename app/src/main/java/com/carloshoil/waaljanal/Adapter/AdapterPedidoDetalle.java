@@ -27,6 +27,12 @@ public class AdapterPedidoDetalle extends RecyclerView.Adapter<AdapterPedidoDeta
         View view = LayoutInflater.from(context).inflate(R.layout.row_resumen_pedido,parent, false);
         return new AdapterPedidoDetalle.ViewHolder(view);
     }
+    public void CargaDatos(List<String> lstDetalle)
+    {
+        this.lstDetalle.clear();
+        this.lstDetalle=lstDetalle;
+        notifyDataSetChanged();
+    }
 
     @Override
     public void onBindViewHolder(@NonNull AdapterPedidoDetalle.ViewHolder holder, int position) {

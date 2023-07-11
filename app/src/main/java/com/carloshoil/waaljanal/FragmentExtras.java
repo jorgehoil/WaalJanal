@@ -3,14 +3,20 @@ package com.carloshoil.waaljanal;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.carloshoil.waaljanal.Adapter.IngredientesAdapter;
+import com.carloshoil.waaljanal.Adapter.VariedadesAdapter;
 import com.carloshoil.waaljanal.DTO.Ingrediente;
+import com.carloshoil.waaljanal.Dialog.DialogABCIngrediente;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,7 +34,9 @@ public class FragmentExtras extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    RecyclerView recyclerViewIng;
 
+    IngredientesAdapter ingredientesAdapter;
     public FragmentExtras() {
         // Required empty public constructor
     }
@@ -66,17 +74,43 @@ public class FragmentExtras extends Fragment {
 
     public void cargaIngredientes(List<Ingrediente> lstIngredientes)
     {
-
+        ingredientesAdapter.cargaIngredientes(lstIngredientes);
+    }
+    public List<Ingrediente> ObtenerIngreDientes()
+    {
+        return ingredientesAdapter.ObtenerIngredientes();
     }
     public void agregaIngrediente(Ingrediente ingrediente)
     {
-
+        ingredientesAdapter.AgregaIngrediente(ingrediente);
     }
+    public void AbreDialogo(Ingrediente ingrediente)
+    {
+        DialogABCIngrediente dialogABCIngrediente= new DialogABCIngrediente(getActivity(), ingrediente, "M", this);
+        dialogABCIngrediente.show(getActivity().getSupportFragmentManager(), "dialgo_ingredientes");
+        dialogABCIngrediente.setCancelable(false);
+    }
+    private void PreparaAdapter()
+    {
+        LinearLayoutManager linearLayoutManager= new LinearLayoutManager(getActivity());
+        linearLayoutManager.setOrientation(linearLayoutManager.VERTICAL);
+        recyclerViewIng.setLayoutManager(linearLayoutManager);
+        ingredientesAdapter= new IngredientesAdapter(getActivity(), new ArrayList<>(), this);
+        recyclerViewIng.setAdapter(ingredientesAdapter);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_extras, container, false);
+        View view=inflater.inflate(R.layout.fragment_extras, container, false);
+        Init(view);
+        return view;
+    }
+
+    private void Init(View view) {
+        recyclerViewIng=view.findViewById(R.id.recycleIngredientes);
+        PreparaAdapter();
     }
 }

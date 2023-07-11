@@ -50,10 +50,10 @@ public class AdapterPedidos extends RecyclerView.Adapter<AdapterPedidos.ViewHold
         Pedido pedido= listPedidos.get(holder.getAdapterPosition());
         if(pedido!=null)
         {
-            holder.tvNombre.setText(pedido.cNombreCliente);
-            holder.tvMesa.setText(pedido.cMesa);
-            holder.tvDireccion.setText(pedido.cDireccion);
-            holder.tvNumeroOrden.setText("#"+pedido.cKey);
+            holder.tvNombre.setText(pedido.cNombreCliente.isEmpty()?"***":pedido.cNombreCliente);
+            holder.tvMesa.setText(pedido.cMesa.isEmpty()?"***": pedido.cMesa);
+            holder.tvDireccion.setText(pedido.cDireccion.isEmpty()?"***":pedido.cDireccion);
+            holder.tvNumeroOrden.setText("# "+pedido.cKey);
             holder.tvFecha.setText(ObtenerFecha(pedido.lFechaRegistro));
             holder.linearLayout.setOnClickListener(v->{
                 AbrirDialogoPedidoDetalle(pedido.cDetallePedido, pedido);

@@ -94,8 +94,9 @@ public class FragmentComedor extends Fragment {
             databaseReferenceRecibidos= firebaseDatabase.getReference()
                     .child("pedidos")
                     .child(cIdMenu)
+                    .child("generados")
                     .child("comedor")
-                    .child("recibidos");
+                    .child("recibido");
             databaseReferenceRecibidos
                     .orderByKey()
                     .limitToFirst(10)

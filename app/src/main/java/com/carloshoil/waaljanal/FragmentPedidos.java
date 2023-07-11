@@ -1,13 +1,18 @@
 package com.carloshoil.waaljanal;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -45,6 +50,7 @@ public class FragmentPedidos extends Fragment {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     ValueEventListener valueEventListener;
+    String cIdMenu="";
     public FragmentPedidos() {
         // Required empty public constructor
     }
@@ -102,7 +108,7 @@ public class FragmentPedidos extends Fragment {
     }
     private void AgregaListener()
     {
-        String cIdMenu=Global.RecuperaPreferencia("cIdMenu", getActivity());
+        cIdMenu=Global.RecuperaPreferencia("cIdMenu", getActivity());
         if(!cIdMenu.isEmpty())
         {
             databaseReference=firebaseDatabase.getReference().child("pedidos")
@@ -170,8 +176,30 @@ public class FragmentPedidos extends Fragment {
                    break;
            }
         }).attach();
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_pedidos, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                int iId=menuItem.getItemId();
+                if(iId==R.id.buscarPedido)
+                {
+                    AbrirBuscar();
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner());
 
     }
+
+    private void AbrirBuscar() {
+        Intent i= new Intent(getActivity(), BuscarActivity.class);
+        startActivity(i);
+    }
+
     private void setViewPagerPedidos() {
         viewPager2Adapter = new ViewPager2Adapter(this);
         List<Fragment> lstFragments= new ArrayList<>();

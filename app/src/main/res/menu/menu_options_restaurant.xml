@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/administrarRes"
-        android:title="Marcar para Administrar" />
+        android:title="Seleccionar" />
     <item
         android:id="@+id/informacionRes"
         android:title="Configurar" />

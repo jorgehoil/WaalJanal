@@ -54,8 +54,8 @@ public class DialogABCVariedad  extends DialogFragment {
         btnGuardar.setOnClickListener(v->{
             if(ValidaGuardado(ObtenerVariedad()))
             {
+                LimpiaCampos();
                 fv.agregaVariedad(ObtenerVariedad());
-                dismiss();
             }
         });
         btnCancelar=view.findViewById(R.id.btnCancelarABCVar);
@@ -64,6 +64,11 @@ public class DialogABCVariedad  extends DialogFragment {
         });
         CargaDatos(variedad);
         return dialog.create();
+    }
+
+    private void LimpiaCampos() {
+        edPrecio.setText("");
+        edNombreVariedad.setText("");
     }
 
     private Variedad ObtenerVariedad()

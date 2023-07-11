@@ -120,7 +120,10 @@ public class FragmentRecoger extends Fragment {
         if(!cIdMenu.isEmpty())
         {
             databaseReferenceRecibidos= firebaseDatabase.getReference().child("pedidos")
-                    .child(cIdMenu).child("recoger").child("recibidos");
+                    .child(cIdMenu)
+                    .child("generados")
+                    .child("recoger")
+                    .child("recibido");
             databaseReferenceRecibidos
                     .orderByKey()
                     .limitToFirst(10)

@@ -98,7 +98,10 @@ public class FragmentDomicilio extends Fragment {
         if(!cIdMenu.isEmpty())
         {
             databaseReferenceRecibidos= firebaseDatabase.getReference().child("pedidos")
-                    .child(cIdMenu).child("domicilio").child("recibidos");
+                    .child(cIdMenu)
+                    .child("generados")
+                    .child("domicilio")
+                    .child("recibido");
             databaseReferenceRecibidos
                     .orderByKey()
                     .limitToFirst(10)
