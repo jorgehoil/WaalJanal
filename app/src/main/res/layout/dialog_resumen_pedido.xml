@@ -175,7 +175,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/btnTomarPedidoDialog"
@@ -183,14 +183,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="4dp"
                 android:layout_weight="3"
-                android:text="TOMAR" />
+                android:text="TOMAR"
+                app:icon="@drawable/ic_tomar" />
 
             <Button
                 android:id="@+id/btnCerrarPedidoDetalle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="CERRAR" />
+                android:backgroundTint="#C3AFAF"
+                android:text="CERRAR"
+                app:icon="@drawable/ic_eliminar2" />
 
         </LinearLayout>
 

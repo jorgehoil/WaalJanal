@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/pedidoBusTomar"
+        android:title="Tomar" />
+    <item
+        android:id="@+id/pedidoBusRecibir"
+        android:title="Recibir" />
+    <item
+        android:id="@+id/pedidoBusCancelar"
+        android:title="Cancelar" />
+</menu>
