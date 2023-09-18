@@ -80,7 +80,7 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
            {
                holder.edPrecio.setEnabled(producto.lstVariedad.size()==0);
                holder.tvPrecio.setText("$");
-               holder.edPrecio.setText(producto.cPrecio);
+               holder.edPrecio.setText(producto.cPrecio.isEmpty()?"":producto.cPrecio);
                holder.ckProdDisp.setEnabled(false);
                holder.btnOpcionesProd.setVisibility(View.GONE);
                holder.edPrecio.setVisibility(View.VISIBLE);
@@ -94,10 +94,10 @@ public class ProductosAdapter extends RecyclerView.Adapter<ProductosAdapter.View
                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                        if(!charSequence.toString().isEmpty())
                        {
-                           producto.cPrecio=charSequence.toString();
+                           lstProducto.get(holder.getAdapterPosition()).cPrecio=charSequence.toString();
                        }
                        else {
-                           producto.cPrecio="0";
+                           lstProducto.get(holder.getAdapterPosition()).cPrecio="";
                        }
 
                    }

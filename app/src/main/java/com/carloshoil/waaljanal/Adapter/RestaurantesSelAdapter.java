@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,14 +37,17 @@ public class RestaurantesSelAdapter extends RecyclerView.Adapter<RestaurantesSel
         Restaurante restaurante= lstRestaurantes.get(position);
         if(restaurante!=null)
         {
+            holder.tvNombreRest.setText(restaurante.cNombre);
             holder.ckSeleccionado.setChecked(cIdTemp.equals(restaurante.cIdMenu));
-            holder.ckSeleccionado.setOnClickListener(view -> {
-                if(holder.ckSeleccionado.isChecked())
+            holder.ckSeleccionado.setOnCheckedChangeListener((compoundButton, b) -> {
+                if(b)
                 {
                     cIdTemp=restaurante.cIdMenu;
+                    notifyDataSetChanged();
                 }
+
             });
-            holder.tvNombreRest.setText(restaurante.cNombre);
+
         }
     }
 

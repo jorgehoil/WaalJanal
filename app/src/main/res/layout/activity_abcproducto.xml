@@ -101,7 +101,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Publicar" />
+                    android:text="¿Disponible?" />
             </LinearLayout>
 
             <TextView
@@ -131,7 +131,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center"
+                android:gravity="right"
                 android:orientation="horizontal">
 
                 <Button
@@ -154,6 +154,7 @@
                     android:id="@+id/btnConfigIng"
                     android:layout_width="48dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
                     app:icon="@drawable/config_ingrediente"
                     app:iconSize="20dp" />
             </LinearLayout>
@@ -182,7 +183,7 @@
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager2Prod"
                 android:layout_width="match_parent"
-                android:layout_height="300dp">
+                android:layout_height="200dp">
 
             </androidx.viewpager2.widget.ViewPager2>
 

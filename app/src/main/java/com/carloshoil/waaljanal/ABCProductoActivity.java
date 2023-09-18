@@ -1,8 +1,10 @@
 package com.carloshoil.waaljanal;
 
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 //import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -23,11 +25,14 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
@@ -39,6 +44,7 @@ import com.carloshoil.waaljanal.DTO.Producto;
 import com.carloshoil.waaljanal.DTO.Variedad;
 import com.carloshoil.waaljanal.Dialog.DialogABCIngrediente;
 import com.carloshoil.waaljanal.Dialog.DialogABCVariedad;
+import com.carloshoil.waaljanal.Dialog.DialogConfigIng;
 import com.carloshoil.waaljanal.Dialog.DialogoCarga;
 import com.carloshoil.waaljanal.Utils.Global;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -55,6 +61,8 @@ import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,29 +89,40 @@ public class ABCProductoActivity extends AppCompatActivity {
     Button btnNuevoVariedad, btnNuevoIng, btnConfIng;
     FragmentExtras fragmentExtras;
     FragmentVariedades fragmentVariedades;
+    private HashMap<String, Integer> hashMapIngredientes;
 
-
-    private ActivityResultLauncher<String[]> permission= registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranded-> {
-        if (!isGranded.containsValue(false)) {
-
-        }
-        else
-        {
-            Toast.makeText(this, "Es necesario otorgar todos los permisos", Toast.LENGTH_SHORT).show();
+    private ActivityResultLauncher<Intent> cropper= registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if(result.getData()!=null)
+            {
+                lImagenSubida=true;
+                cUriImagen=result.getData().getStringExtra("CROP");
+                ivProducto.setImageURI(null);
+                ivProducto.setImageURI(Uri.parse(cUriImagen));
+            }
+            else{
+                Toast.makeText(ABCProductoActivity.this, "No se obtuvo la imagen", Toast.LENGTH_SHORT).show();
+            }
         }
     });
+
     private ActivityResultLauncher<String> cropImage = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
         if(result!=null)
         {
+            int dataSize=0;
+            File f= null;
+            //Uri uri  = result;
             Intent i= new Intent(ABCProductoActivity.this, CropperActivity.class);
+            File file= new File(result.getPath());
+            Log.d("DEBUGX", result.toString());
             i.putExtra("imageData", result.toString());
             i.putExtra("iWidth", 960);
             i.putExtra("iHeight", 960);
             i.putExtra("iX", 9);
             i.putExtra("iY", 9);
-            i.putExtra("iPorcentaje", 15);
-            startActivityForResult(i, 100);
-
+            i.putExtra("iPorcentaje", 23);
+            cropper.launch(i);
         }
         else
         {
@@ -111,10 +130,22 @@ public class ABCProductoActivity extends AppCompatActivity {
         }
 
     });
+    private ActivityResultLauncher<String[]> permission= registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), isGranded-> {
+        if (!isGranded.containsValue(false)) {
+            cropImage.launch("image/*");
+        }
+        else
+        {
+            Toast.makeText(this, "Es necesario otorgar todos los permisos", Toast.LENGTH_SHORT).show();
+        }
+    });
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_abcproducto);
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         ABCProductoActivity.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Init();
     }
@@ -144,6 +175,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                }
             }
         }).attach();
+        hashMapIngredientes= new HashMap<>();
         cIdProducto=getIntent().getStringExtra("cIdProducto")==null?"":getIntent().getStringExtra("cIdProducto");
         cIdCategoriaSel=getIntent().getStringExtra("cIdCatSel")==null?"":getIntent().getStringExtra("cIdCatSel");
         lstCategorias= new ArrayList<>();
@@ -160,6 +192,12 @@ public class ABCProductoActivity extends AppCompatActivity {
         spCategorias= findViewById(R.id.spCategorias);
         cIdMenu=Global.RecuperaPreferencia(CCLAVEMENU,this);
         fragmentProductos= new FragmentProductos();
+        btnConfIng.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AbrirDialogoConfigIngrediente();
+            }
+        });
         ivProducto.setOnClickListener(view -> {
             if(!checkPermiso())
             {
@@ -180,7 +218,7 @@ public class ABCProductoActivity extends AppCompatActivity {
                 AbrirNuevoIngrediente();
             });
             btnConfIng.setOnClickListener(v->{
-
+                AbrirDialogoConfigIngrediente();
             });
             addMenuProvider(new MenuProvider() {
                 @Override
@@ -216,13 +254,15 @@ public class ABCProductoActivity extends AppCompatActivity {
         if(productoG!=null)
         {
             edNombreProducto.setText(productoG.cNombre);
-            edPrecioProducto.setText(productoG.lstVariedad.size()==0?productoG.cPrecio:"0");
+            edPrecioProducto.setText(productoG.cPrecio
+            );
             edDescripconProd.setText(productoG.cDescripcion);
             ckPublicar.setChecked(productoG.lDisponible);
             cUrlMin=productoG.cUrlImagenMin;
             cUrlImagen=productoG.cUrlImagen;
             fragmentVariedades.cargaVariedades(productoG.lstVariedad==null?new ArrayList<>():productoG.lstVariedad);
             fragmentExtras.cargaIngredientes(productoG.lstIngrediente==null?new ArrayList<>():productoG.lstIngrediente);
+            hashMapIngredientes= productoG.dataIngrediente;
         }
     }
     private boolean checkPermiso()
@@ -280,6 +320,13 @@ public class ABCProductoActivity extends AppCompatActivity {
                     }
                     productoG.lstIngrediente=lstIngrediente;
                     productoG.lstVariedad=lstVariedad;
+                    productoG.dataIngrediente= new HashMap<>();
+                    productoG.dataIngrediente.put("iMaximo",(dataSnapshot.child("dataIngrediente")
+                            .getValue()==null?0:dataSnapshot.child("dataIngrediente")
+                            .child("iMaximo").getValue(Integer.class)));
+                    productoG.dataIngrediente.put("iMinimo",(dataSnapshot.child("dataIngrediente")
+                            .getValue()==null?0:dataSnapshot.child("dataIngrediente")
+                            .child("iMinimo").getValue(Integer.class)));
                     if(!productoG.cUrlImagen.isEmpty())
                     {
                         Picasso.get().load(productoG.cUrlImagen).placeholder(R.drawable.ic_time).into(ivProducto);
@@ -294,18 +341,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         });
 
     }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==100&&resultCode==101)
-        {
-            lImagenSubida=true;
-            cUriImagen=data.getStringExtra("CROP");
-            ivProducto.setImageURI(null);
-            ivProducto.setImageURI(Uri.parse(cUriImagen));
-        }
 
-    }
     private void setViewPager2Adapter()
     {
         Log.d("DEBUGX", "setViewPager2Adapter");
@@ -323,13 +359,13 @@ public class ABCProductoActivity extends AppCompatActivity {
         String cLLaveVar="";
         HashMap<String, Object> updates= new HashMap<>();
         Producto producto= obtenerProductoGuardar();
-
+        lRegistrosNuevos=cIdProducto.isEmpty();
         if(ValidarDatos(producto)) {
             abrirDialogoCarga();
             cLlaveG = databaseReferenceMenu.child("productos").push().getKey();
             cLlaveG = cIdProducto.isEmpty() ? cLlaveG : cIdProducto;
             producto.cLlave=cLlaveG;
-            producto.cPrecio=producto.lstVariedad.size()!=0?"":producto.cPrecio;
+            producto.cPrecio=fragmentVariedades.ObtenerActivos()!=0?"":producto.cPrecio;
             updates.put(cMenu+"/productos/"+ producto.cLlave, producto);
             if(producto.lDisponible)
             {
@@ -351,7 +387,6 @@ public class ABCProductoActivity extends AppCompatActivity {
                         SubirImagen();
                     } else {
                         cerrarDialogoCarga();
-                        limpiarCampos();
                         if(!lRegistrosNuevos)
                         {
                             AbrirRetorno(true, false, producto);
@@ -429,6 +464,7 @@ public class ABCProductoActivity extends AppCompatActivity {
         producto.cDescripcion=edDescripconProd.getText().toString();
         producto.lstVariedad=ObtenerVariedades();
         producto.lstIngrediente=ObtenerIngredientes();
+        producto.dataIngrediente= hashMapIngredientes;
         return producto;
     }
     private String ObtenerIdCatSeleccionada()
@@ -503,15 +539,25 @@ public class ABCProductoActivity extends AppCompatActivity {
 
     private boolean ValidarDatos(Producto producto)
     {
+        int iMaximo=0, iMinimo=0;
+        iMinimo=producto.dataIngrediente.get("iMinimo")==null?0:producto.dataIngrediente.get("iMinimo");
+        iMaximo=producto.dataIngrediente.get("iMaximo")==null?0:producto.dataIngrediente.get("iMaximo");
+
         if(producto.cNombre.isEmpty())
         {
             edNombreProducto.setError("Este campo es obligatorio");
             return false;
         }
-        if(producto.lstVariedad.size()==0&&producto.cPrecio.isEmpty())
+        if(fragmentVariedades.ObtenerActivos()==0&&producto.cPrecio.isEmpty())
         {
             edPrecioProducto.setError("Es necesario ingresar un precio");
             return  false;
+        }
+        if((iMinimo>0&&iMinimo> fragmentExtras.ObtenerTotalActivos()|| iMaximo>0&&iMaximo>=fragmentExtras.ObtenerTotalActivos()))
+        {
+            Global.MostrarMensaje(this, "Error", "No puedes configurar más " +
+                    "ingredientes de los que tienes activos, revisa la configuración");
+            return false;
         }
     return true;
 
@@ -557,7 +603,7 @@ public class ABCProductoActivity extends AppCompatActivity {
     {
        HashMap<String, Object> hashMapUpdate= new HashMap<>();
        hashMapUpdate.put("menus/"+ cIdMenu+ "/productos/"+ productoG.cLlave+ "/cUrlImagen", productoG.cUrlImagen);
-        hashMapUpdate.put("menus/"+ cIdMenu+ "/productos/"+ productoG.cLlave+ "/cUrlImagenMin", productoG.cUrlImagen);
+       hashMapUpdate.put("menus/"+ cIdMenu+ "/productos/"+ productoG.cLlave+ "/cUrlImagenMin", productoG.cUrlImagenMin);
        if(productoG.lDisponible)
        {
            hashMapUpdate.put("menus/"+ cIdMenu+ "/menu_publico/"+ productoG.cIdCategoria+ "/"+ productoG.cLlave+ "/cUrlImagen", productoG.cUrlImagen);
@@ -569,10 +615,9 @@ public class ABCProductoActivity extends AppCompatActivity {
            if(task.isSuccessful())
            {
                Toast.makeText(ABCProductoActivity.this, "¡Guardado exitoso!", Toast.LENGTH_SHORT).show();
-               if(cIdProducto.isEmpty())//SI ES NUEVO
+               if(lRegistrosNuevos)//SI ES NUEVO
                {
                    limpiarCampos();
-                   lRegistrosNuevos=true;
                }
                else {
                    AbrirRetorno(true, false, productoG);
@@ -635,6 +680,12 @@ public class ABCProductoActivity extends AppCompatActivity {
         DialogABCIngrediente dialogABCIngrediente= new DialogABCIngrediente(this, null, "N", fragmentExtras);
         dialogABCIngrediente.show(getSupportFragmentManager(), "dialog_ing");
         dialogABCIngrediente.setCancelable(false);
+    }
+    private void AbrirDialogoConfigIngrediente()
+    {
+        DialogConfigIng dialogConfigIng= new DialogConfigIng(this, hashMapIngredientes, fragmentExtras.ObtenerTotalActivos());
+        dialogConfigIng.show(getSupportFragmentManager(), "dialog_ingredientes");
+        dialogConfigIng.setCancelable(false);
     }
 
 }

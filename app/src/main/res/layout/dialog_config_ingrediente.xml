@@ -22,7 +22,7 @@
             android:id="@+id/textView49"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Establece si el cliente debe seleccionar una cantidad mínima y/o máxima de ingredientes" />
+            android:text="Establece si tus clientes deben seleccionar una cantidad mínima y/o máxima de ingredientes" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,32 +32,34 @@
             android:orientation="horizontal">
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/ckConfIngMin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
+                android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="Mínimo" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/btnDisminuyeMin"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
                 app:icon="@drawable/remove_circle" />
 
             <TextView
-                android:id="@+id/textView50"
-                android:layout_width="45dp"
+                android:id="@+id/tvMinimoIng"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
                 android:gravity="center"
                 android:text="0" />
 
             <Button
-                android:id="@+id/button9"
+                android:id="@+id/btnAumentaMin"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="32dp"
                 app:icon="@drawable/add_circle" />
         </LinearLayout>
 
@@ -69,14 +71,16 @@
             android:orientation="horizontal">
 
             <CheckBox
-                android:id="@+id/checkBox2"
+                android:id="@+id/ckConfIngMax"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
                 android:layout_weight="1"
+                android:checked="true"
                 android:text="Máximo" />
 
             <Button
-                android:id="@+id/button10"
+                android:id="@+id/btnDisminuyeMax"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"
@@ -84,19 +88,29 @@
                 app:icon="@drawable/remove_circle" />
 
             <TextView
-                android:id="@+id/textView51"
-                android:layout_width="45dp"
+                android:id="@+id/tvMaximoIng"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
                 android:gravity="center"
                 android:text="0" />
 
             <Button
-                android:id="@+id/button11"
+                android:id="@+id/btnAumentaMax"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="32dp"
                 app:icon="@drawable/add_circle" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvInfoConfigIng"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Debes de ingresar una cantidad mayor a cero"
+            android:textColor="#F31C1C"
+            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -104,7 +118,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/button12"
+                android:id="@+id/btnCerrarIngreConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
@@ -114,7 +128,7 @@
                 app:icon="@drawable/ic_cancel" />
 
             <Button
-                android:id="@+id/button13"
+                android:id="@+id/btnGuardaIngreConfig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dp"

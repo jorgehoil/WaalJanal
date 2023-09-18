@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FragmentCuenta">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView60"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Mis datos" />
+
+                    <TextView
+                        android:id="@+id/textView57"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Correo" />
+
+                    <EditText
+                        android:id="@+id/edCorreoConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ed_diseno"
+                        android:ems="10"
+                        android:enabled="false"
+                        android:inputType="textPersonName" />
+
+                    <TextView
+                        android:id="@+id/textView58"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre" />
+
+                    <EditText
+                        android:id="@+id/edNombreConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ed_diseno"
+                        android:editable="false"
+                        android:ems="10"
+                        android:inputType="textPersonName" />
+
+                    <Button
+                        android:id="@+id/btnGuardarDatosConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Guardar"
+                        app:icon="@drawable/ic_save" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginBottom="2dp"
+                app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView62"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Cambiar contraseña" />
+
+                    <TextView
+                        android:id="@+id/textView66"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Contraseña anterior" />
+
+                    <EditText
+                        android:id="@+id/edContrasenaAntConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ed_diseno"
+                        android:ems="10"
+                        android:inputType="textPersonName" />
+
+                    <TextView
+                        android:id="@+id/textView67"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nueva contraseña" />
+
+                    <EditText
+                        android:id="@+id/edContrasenaNueConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ed_diseno"
+                        android:ems="10"
+                        android:inputType="textPersonName" />
+
+                    <Button
+                        android:id="@+id/btnActualizarContConfig"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Actualizar contraseña"
+                        app:icon="@drawable/change" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

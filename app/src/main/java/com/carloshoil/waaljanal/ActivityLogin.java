@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,12 +33,13 @@ public class ActivityLogin extends AppCompatActivity {
     Button btnIngresar;
     EditText edCorreo, edContrasena;
     DialogoCarga dialogoCarga;
-    TextView tvRegistrate;
+    TextView tvRegistrate, tvOlvideContrasena;
     String cData="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ActivityLogin.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         Init();
@@ -52,6 +54,7 @@ public class ActivityLogin extends AppCompatActivity {
         btnIngresar= findViewById(R.id.btnIngresar);
         edContrasena=findViewById(R.id.edContrasenia);
         edCorreo=findViewById(R.id.edCorreo);
+        tvOlvideContrasena=findViewById(R.id.tvOlvideContrasena);
         btnIngresar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +67,12 @@ public class ActivityLogin extends AppCompatActivity {
             public void onClick(View view) {
                 AbrirRegistro();
             }
+        });
+        tvOlvideContrasena.setOnClickListener(v->{
+            Intent i= new Intent(ActivityLogin.this, ActivityRecuperaContrasena.class);
+            startActivity(i);
+
+
         });
     }
 

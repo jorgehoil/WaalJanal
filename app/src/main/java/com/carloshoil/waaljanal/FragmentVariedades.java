@@ -96,6 +96,16 @@ public class FragmentVariedades extends Fragment {
     {
         return variedadesAdapter.obtenerVariedades();
     }
+    public int ObtenerActivos()
+    {
+        int iContador=0;
+        for(Variedad variedad: variedadesAdapter.obtenerVariedades())
+        {
+            if(variedad.lDisponible)
+                iContador++;
+        }
+        return iContador;
+    }
     private void Init(View view)
     {
         recyclerViewVariedades=view.findViewById(R.id.recycleVariedades);

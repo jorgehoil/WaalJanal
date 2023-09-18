@@ -80,6 +80,18 @@ public class FragmentExtras extends Fragment {
     {
         return ingredientesAdapter.ObtenerIngredientes();
     }
+    public int ObtenerTotalActivos()
+    {
+        int iTotal=0;
+        for (Ingrediente ingrediente: ingredientesAdapter.ObtenerIngredientes())
+        {
+            if(ingrediente.lDisponible)
+            {
+                iTotal++;
+            }
+        }
+        return iTotal;
+    }
     public void agregaIngrediente(Ingrediente ingrediente)
     {
         ingredientesAdapter.AgregaIngrediente(ingrediente);

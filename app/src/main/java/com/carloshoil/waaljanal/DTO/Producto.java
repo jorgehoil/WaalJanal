@@ -1,6 +1,7 @@
 package com.carloshoil.waaljanal.DTO;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 
 public class Producto implements Serializable {
@@ -14,9 +15,10 @@ public class Producto implements Serializable {
     public boolean lDisponible;
     public List<Variedad> lstVariedad;
     public List<Ingrediente> lstIngrediente;
+    public HashMap<String, Integer> dataIngrediente;
 
 
-    public Producto(String cLlave, String cNombre, String cDescripcion, String cPrecio, String cIdCategoria, String cUrlImagen, List<Variedad> lstVariedad, List<Ingrediente> lstIngrediente) {
+    public Producto(String cLlave, String cNombre, String cDescripcion, String cPrecio, String cIdCategoria, String cUrlImagen, List<Variedad> lstVariedad, List<Ingrediente> lstIngrediente, HashMap<String, Integer> dataIngrediente) {
         this.cNombre = cNombre;
         this.cDescripcion = cDescripcion;
         this.cPrecio = cPrecio;
@@ -25,6 +27,7 @@ public class Producto implements Serializable {
         this.cLlave=cLlave;
         this.lstVariedad=lstVariedad;
         this.lstIngrediente=lstIngrediente;
+        this.dataIngrediente=dataIngrediente;
     }
     public Producto()
     {

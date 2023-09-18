@@ -56,6 +56,14 @@
                 android:hint="*******"
                 android:inputType="textPersonName|textPassword" />
 
+            <TextView
+                android:id="@+id/tvOlvideContrasena"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Olvide mi contraseña" />
+
             <Button
                 android:id="@+id/btnIngresar"
                 android:layout_width="match_parent"

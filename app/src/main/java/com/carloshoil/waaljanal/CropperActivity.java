@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.carloshoil.waaljanal.Utils.Values;
 import com.yalantis.ucrop.UCrop;
@@ -33,6 +34,7 @@ public class CropperActivity extends AppCompatActivity {
         int iHeight;
         int iPorcentaje;
         File obj= getCacheDir();
+        File image;
         obj.mkdirs();
         cSourceUri=getIntent().getStringExtra("imageData")==null?"":getIntent().getStringExtra("imageData");
         iX=getIntent().getIntExtra("iX", 16);
@@ -43,9 +45,13 @@ public class CropperActivity extends AppCompatActivity {
         if(!cSourceUri.isEmpty())
         {
             uri=Uri.parse(cSourceUri);
+            image= new File(uri.getPath());
+            Log.d("DEBUGX","TAMANO IMAGEN:==== "+image+"");
         }
-        cDestinationUri= UUID.randomUUID().toString()+"jpg";
+        cDestinationUri= UUID.randomUUID().toString()+".jpg";
         UCrop.Options options= new UCrop.Options();
+
+
         options.setCompressionQuality(iPorcentaje);
         UCrop.of(uri, Uri.fromFile(new File(obj, cDestinationUri)))
                 .withOptions(options)

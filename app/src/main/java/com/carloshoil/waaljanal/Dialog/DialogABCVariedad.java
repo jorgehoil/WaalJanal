@@ -54,8 +54,9 @@ public class DialogABCVariedad  extends DialogFragment {
         btnGuardar.setOnClickListener(v->{
             if(ValidaGuardado(ObtenerVariedad()))
             {
-                LimpiaCampos();
                 fv.agregaVariedad(ObtenerVariedad());
+                LimpiaCampos();
+                Toast.makeText(context, "Variedad agregada", Toast.LENGTH_SHORT).show();
             }
         });
         btnCancelar=view.findViewById(R.id.btnCancelarABCVar);
